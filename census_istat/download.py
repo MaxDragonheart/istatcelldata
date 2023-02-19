@@ -63,10 +63,10 @@ def download_census_geodata(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     year_folder = str(year)[2:]
-    reqions = tqdm(range(1, 21, 1))
+    regions = tqdm(range(1, 21, 1))
 
     logging.info("Download census geodata")
-    for region in reqions:
+    for region in regions:
         region = str(region).zfill(2)
         data_link = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{year}/R{region}_{year_folder}_WGS84.zip"
 
@@ -124,7 +124,6 @@ def download_all_census_data(
         output_data_folder: Union[Path, PosixPath]
         year: int
     """
-    logging.info(f"Start download of data and geodata for {year}")
     # Download data
     download_census_data(
         output_data_folder=output_data_folder, year=year
@@ -139,7 +138,6 @@ def download_all_census_data(
     download_administrative_boundaries(
         output_data_folder=output_data_folder, year=year
     )
-    logging.info(f"End download of data and geodata for {year}")
 
 
 def _download_data(
@@ -185,4 +183,3 @@ def _download_data(
     except:
         logging.info("Something went wrong!!!")
         logging.info(f'Link {data_link} return status code {data.status_code}.')
-
