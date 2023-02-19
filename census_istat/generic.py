@@ -76,6 +76,18 @@ def census_folder(
     return destination_folder
 
 
+def census_geodata_folder(
+        output_data_folder: Union[Path, PosixPath],
+        year: int
+) -> Union[Path, PosixPath]:
+    # Make folder for yearly census data
+    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+
+    folder = destination_folder.joinpath('geodata')
+
+    return folder
+
+
 def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, PosixPath]) -> None:
     """Unzip input_data.
     Args:

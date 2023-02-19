@@ -16,4 +16,5 @@ logger.addHandler(console_handler)
 # PROJECT
 MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
-main_path = Path("/home/max/Desktop/census_istat/")
+MAIN_PATH = Path("/home/max/Desktop/census_istat/")
+OUTPUT_FOLDER = MAIN_PATH.joinpath('output')

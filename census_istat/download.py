@@ -35,31 +35,154 @@ def download_census_data(
     data_file_name = Path(data_link).stem + Path(data_link).suffix
     data_file_path_dest = Path(data_folder).joinpath(data_file_name)
 
+    logging.info("Download census data")
+    _download_data(
+        data_link=data_link,
+        data_file_path_destination=data_file_path_dest,
+        data_folder=data_folder,
+        destination_folder=destination_folder
+    )
+    logging.info("Download census data completed")
+
+
+def download_census_geodata(
+        output_data_folder: Union[Path, PosixPath],
+        year: int = 2011
+) -> None:
+    """Download census geodata
+    Args:
+        output_data_folder: Union[Path, PosixPath]
+        year: Integer. Default 2011.
+    """
+    # Make folder for yearly census data
+    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+    Path(destination_folder).mkdir(parents=True, exist_ok=True)
+
+    # Make data folder
+    data_folder = destination_folder.joinpath('geodata')
+    Path(data_folder).mkdir(parents=True, exist_ok=True)
+
+    year_folder = str(year)[2:]
+    reqions = tqdm(range(1, 21, 1))
+
+    logging.info("Download census geodata")
+    for region in reqions:
+        region = str(region).zfill(2)
+        data_link = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{year}/R{region}_{year_folder}_WGS84.zip"
+
+        data_file_name = data_link.split('/')[-1]
+        data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+
+        _download_data(
+            data_link=data_link,
+            data_file_path_destination=data_file_path_dest,
+            data_folder=data_folder,
+            destination_folder=destination_folder
+        )
+
+    logging.info("Download census geodata completed")
+
+
+def download_administrative_boundaries(
+        output_data_folder: Union[Path, PosixPath],
+        year: int = 2011
+):
+    """Download official boundaries for census year.
+    Args:
+        output_data_folder: Union[Path, PosixPath]
+        year: int
+    """
+    # Make folder for yearly census data
+    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+
+    # Make data folder
+    data_folder = destination_folder.joinpath('administrative_boundaries')
+    Path(data_folder).mkdir(parents=True, exist_ok=True)
+
+    data_link = f"{MAIN_LINK}/confini_amministrativi/non_generalizzati/Limiti{year}.zip"
+
+    data_file_name = data_link.split('/')[-1]
+    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+
+    logging.info("Download administrative boundaries")
+    _download_data(
+        data_link=data_link,
+        data_file_path_destination=data_file_path_dest,
+        data_folder=data_folder,
+        destination_folder=destination_folder
+    )
+    logging.info("Download administrative boundaries completed")
+
+
+def download_all_census_data(
+        output_data_folder: Union[Path, PosixPath],
+        year: int = 2011
+) -> None:
+    """Download all census data. Must be downloaded both data
+    and geodata per selected year.
+    Args:
+        output_data_folder: Union[Path, PosixPath]
+        year: int
+    """
+    logging.info(f"Start download of data and geodata for {year}")
+    # Download data
+    download_census_data(
+        output_data_folder=output_data_folder, year=year
+    )
+
+    # Download geodata
+    download_census_geodata(
+        output_data_folder=output_data_folder, year=year
+    )
+
+    # Download administrative boundaries
+    download_administrative_boundaries(
+        output_data_folder=output_data_folder, year=year
+    )
+    logging.info(f"End download of data and geodata for {year}")
+
+
+def _download_data(
+        data_link: str,
+        data_file_path_destination: Union[Path, PosixPath],
+        data_folder: Union[Path, PosixPath],
+        destination_folder: Union[Path, PosixPath],
+) -> Union[Path, PosixPath]:
+    """Download base function.
+
+    Args:
+        data_link: Union[Path, PosixPath]
+        data_file_path_destination: Union[Path, PosixPath]
+        data_folder: Union[Path, PosixPath]
+        destination_folder: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath]
+    """
     try:
         # Download data
         logging.info(f"Download census data | {data_link}")
         data = requests.get(data_link)
-        data_size = int(data.headers.get('Content-Length'))
 
         if data.status_code == 200:
+            data_size = int(data.headers.get('Content-Length'))
             # Progress bar via tqdm
             with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
-                open(data_file_path_dest, 'wb').write(data.content)
+                open(data_file_path_destination, 'wb').write(data.content)
             logging.info("Download completed")
         else:
-            raise Exception(f'Link {data_link} return status code {data.status_code}.')
+            raise Exception()
 
         logging.info("Unzip file")
-        unzip_data(data_file_path_dest, data_folder)
+        unzip_data(data_file_path_destination, data_folder)
 
-    finally:
-        try:
-            logging.info(f"Deleting zip file | {data_file_path_dest}")
-            os.remove(data_file_path_dest)
-            logging.info("File deleted")
+        logging.info(f"Deleting zip file | {data_file_path_destination}")
+        os.remove(data_file_path_destination)
+        logging.info("File deleted")
 
-            return destination_folder
+        return destination_folder
 
-        except Exception:
-            logging.info("Something went wrong!!")
-    logging.info("- Download census data completed")
+    except:
+        logging.info("Something went wrong!!!")
+        logging.info(f'Link {data_link} return status code {data.status_code}.')
+
