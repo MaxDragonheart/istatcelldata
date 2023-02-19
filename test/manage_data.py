@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.manage_data import read_csv
+from census_istat.data.manage_data import read_csv
 from test.generic import csv_data
 
 

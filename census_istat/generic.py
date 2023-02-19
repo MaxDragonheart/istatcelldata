@@ -108,3 +108,18 @@ def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, Po
     with zipfile.ZipFile(input_data, "r") as zf:
         zf.extractall(output_folder)
 
+
+def get_metadata(input_path: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> list:
+    file_list = list(input_path.rglob("*"))
+
+    path_list = []
+    for data_file in file_list:
+        file_name = data_file.stem.split('\\')[1]
+        process_data = csv_from_excel(
+            data=data_file,
+            output_path=output_path.joinpath(f'{file_name}.csv'),
+            metadata=True
+        )
+        path_list.append(process_data)
+
+    return path_list
