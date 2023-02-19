@@ -15,6 +15,8 @@ def read_csv(csv_path: str, separator: str = ';'):
 
     # Read data
     logging.info('Read data')
-    ddf = dd.read_csv(csv_path, encoding=data_encoding, sep=separator)
+    ddf = dd.read_csv(csv_path, encoding=data_encoding, sep=separator, sample=100000, assume_missing=True)
+    ddf.columns = ddf.columns.str.lower()
+    ddf = ddf.replace(['nan', 'NaN'], None)
 
     return ddf
