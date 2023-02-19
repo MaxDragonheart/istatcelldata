@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "census-istat"
+version = "0.2.0"
+description = ""
+authors = ["Massimiliano Moraca <info@massimilianomoraca.it>"]
+readme = "README.md"
+packages = [{include = "census_istat"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

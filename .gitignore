@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# IDE
+.idea
+
+# Poetry
+poetry.lock
+
+# Project
+istat_dataset
