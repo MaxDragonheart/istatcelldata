@@ -1,16 +1,20 @@
 import csv
 import logging
+import zipfile
+from pathlib import Path, PosixPath
+from typing import Union
 
 import chardet
 import xlrd
+from fsspec import get_fs_token_paths
 from tqdm import tqdm
 
 
-def check_encoding(data: str):
+def check_encoding(data: Union[Path, PosixPath]):
     """Check file encoding
 
     Args:
-        data: str
+        data: Union[Path, PosixPath]
 
     Returns:
         str
@@ -25,15 +29,15 @@ def check_encoding(data: str):
     return result['encoding']
 
 
-def csv_from_excel(data: str, output_path: str) -> str:
+def csv_from_excel(data: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> Union[Path, PosixPath]:
     """Convert xls to csv
 
     Args:
-        data: str
-        output_path: str
+        data: Union[Path, PosixPath]
+        output_path: Union[Path, PosixPath]
 
     Returns:
-        str
+        Union[Path, PosixPath]
     """
     sheet_name = data.stem.split('\\')[1][:-5]
 
@@ -50,3 +54,34 @@ def csv_from_excel(data: str, output_path: str) -> str:
     output_data.close()
 
     return output_path
+
+
+def census_folder(
+        output_data_folder: Union[Path, PosixPath],
+        year: int = 2011  # last official census at 2023 02 19
+) -> Union[Path, PosixPath]:
+    """Make folder for yearly census data and geodata.
+    Args:
+        output_data_folder: Union[Path, PosixPath]
+        year: int
+    Returns: Union[Path, PosixPath]
+    """
+    logging.info(f"Make folder for {year}' census data and geodata.")
+    download_folder_name = f"census_{year}"
+    fs, fs_token, paths = get_fs_token_paths(output_data_folder)
+
+    destination_folder = Path(paths[0]).joinpath(download_folder_name)
+    Path(destination_folder).mkdir(parents=True, exist_ok=True)
+
+    return destination_folder
+
+
+def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, PosixPath]) -> None:
+    """Unzip input_data.
+    Args:
+        input_data: Union[Path, PosixPath].
+        output_folder: Union[Path, PosixPath].
+    """
+    with zipfile.ZipFile(input_data, "r") as zf:
+        zf.extractall(output_folder)
+
