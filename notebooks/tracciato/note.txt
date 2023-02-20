@@ -1,4 +1,4 @@
-CAMPI COMUNI 1991-2011
+CAMPI COMUNI 1991-2001
 cod_pro
 cod_com
 pro_com
@@ -70,7 +70,7 @@ pf9
 
 
 CAMPI CHE VARIANO
-2011    1991
+2001    1991
 p9      p4
 p10     p5
 p11     p6
