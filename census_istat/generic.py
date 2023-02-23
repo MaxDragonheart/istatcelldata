@@ -39,6 +39,7 @@ def csv_from_excel(
     Args:
         data: Union[Path, PosixPath]
         output_path: Union[Path, PosixPath]
+        metadata: bool
 
     Returns:
         Union[Path, PosixPath]
