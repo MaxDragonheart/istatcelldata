@@ -44,4 +44,28 @@ SHARED_DATA = {
         'descrizione': 'Popolazione residente - età 10 - 14 anni',
         'codice': 'P16'
     },
+    'pop_15_19_anni': {
+        'descrizione': 'Popolazione residente - età 15 - 19 anni',
+        'codice': 'P1'
+    },
+    'pop_20_24_anni': {
+        'descrizione': 'Popolazione residente - età 20 - 24 anni',
+        'codice': 'P2'
+    },
+    'pop_25_29_anni': {
+        'descrizione': 'Popolazione residente - età 25 - 29 anni',
+        'codice': 'P3'
+    },
+    'pop_30_34_anni': {
+        'descrizione': 'Popolazione residente - età 30 - 34 anni',
+        'codice': 'P14'
+    },
+    'pop_35_39_anni': {
+        'descrizione': 'Popolazione residente - età 35 - 39 anni',
+        'codice': 'P15'
+    },
+    'pop_40_44_anni': {
+        'descrizione': 'Popolazione residente - età 40 - 44 anni',
+        'codice': 'P16'
+    },
 }
