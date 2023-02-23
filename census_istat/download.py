@@ -7,6 +7,7 @@ import requests
 from tqdm.auto import tqdm
 
 from census_istat.config import logger, console_handler, MAIN_LINK
+from census_istat.data.census_1991_2001 import read_xls
 from census_istat.generic import census_folder, unzip_data
 
 logger.addHandler(console_handler)
@@ -42,6 +43,13 @@ def download_census_data(
         data_folder=data_folder,
         destination_folder=destination_folder
     )
+
+    if year in [1991, 2001]:
+        print(True)
+        pass
+        # read_xls(
+        #
+        # )
     logging.info("Download census data completed")
 
 

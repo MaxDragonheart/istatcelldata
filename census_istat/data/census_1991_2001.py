@@ -1,10 +1,89 @@
+import logging
+import os
 from pathlib import Path, PosixPath
 from typing import Union
 
 import pandas as pd
+import xlrd
 from pandas import DataFrame
+from tqdm import tqdm
 
+from census_istat.config import logger, console_handler
 from census_istat.generic import get_metadata
+
+logger.addHandler(console_handler)
+
+
+def read_xls(
+        file_path: Union[Path, PosixPath],
+        census_code: str = 'sez1991',
+        output_path: Union[Path, PosixPath] = None,
+        metadata: bool = False
+) -> Union[DataFrame, Path, PosixPath]:
+    """Read census data for years 1991 and 2001 and return
+    DataFrame or csv.
+
+    Args:
+        file_path: Union[Path, PosixPath]
+        census_code: str
+        output_path: Union[Path, PosixPath]
+        metadata: bool
+
+    Returns:
+        Union[DataFrame, Path, PosixPath]
+    """
+    logging.info(f'Read data from {file_path}')
+    read_data = xlrd.open_workbook(file_path)
+
+    if metadata:
+        sheet_name = 'Metadati'
+    else:
+        sheet_list = read_data.sheet_names()
+        sheet_list.remove('Metadati')
+        sheet_name = sheet_list[0]
+
+    get_sheet = read_data.sheet_by_name(sheet_name)
+
+    dataset = []
+    for row_id in tqdm(range(get_sheet.nrows)):
+        dataset.append(get_sheet.row_values(row_id))
+
+    # Make DataFrame columns
+    df_columns = [column_name.lower() for column_name in dataset[0]]
+
+    # Make DataFrame data
+    df_data = dataset[1:]
+
+    # Make DataFrame
+    logging.info('Make DataFrame')
+    df = pd.DataFrame(data=df_data, columns=df_columns)
+    df = df.astype(int)
+    df.set_index(census_code, inplace=True)
+    df.sort_index(inplace=True)
+
+    if output_path is None:
+        return df
+
+    else:
+        file_name = file_path.stem.split('\\')[1]
+        logging.info(f"Save data to {output_path.joinpath(f'{file_name}.csv')}")
+        df.to_csv(path_or_buf=output_path.joinpath(f'{file_name}.csv'), sep=';')
+
+
+def remove_xls(folder_path: Union[Path, PosixPath], census_code: str):
+    files_path = list(folder_path.rglob("*.xls"))
+
+    # Convert xls to csv
+    for file_path in files_path:
+        read_xls(
+            file_path=file_path,
+            census_code=census_code,
+            output_path=folder_path
+        )
+
+    # Remove xls
+    for file_path in files_path:
+        os.remove(file_path)
 
 
 def compare_dataframe(data: list) -> DataFrame:
