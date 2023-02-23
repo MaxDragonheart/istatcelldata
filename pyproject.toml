@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "census_istat"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 pytest = "^7.2.1"
 pandas = "^1.5.3"
 geopandas = "^0.12.2"
