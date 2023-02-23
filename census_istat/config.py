@@ -160,4 +160,16 @@ SHARED_DATA = {
         'descrizione': 'Popolazione residente - Maschi - età > 74 anni',
         'codice': 'P45'
     },
+    'lavoratori_tot': {
+        'descrizione': 'Forze lavoro - TOTALE',
+        'codice': 'P60'
+    },
+    'lavoratori_occupati': {
+        'descrizione': 'Forze lavoro - Occupati',
+        'codice': 'P61'
+    },
+    'lavoratori_disoccupati': {
+        'descrizione': 'Forze lavoro - Disoccupati e altre persone in cerca di occupazione',
+        'codice': 'P62'
+    },
 }
