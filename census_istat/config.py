@@ -46,26 +46,54 @@ SHARED_DATA = {
     },
     'pop_15_19_anni': {
         'descrizione': 'Popolazione residente - età 15 - 19 anni',
-        'codice': 'P1'
+        'codice': 'P17'
     },
     'pop_20_24_anni': {
         'descrizione': 'Popolazione residente - età 20 - 24 anni',
-        'codice': 'P2'
+        'codice': 'P18'
     },
     'pop_25_29_anni': {
         'descrizione': 'Popolazione residente - età 25 - 29 anni',
-        'codice': 'P3'
+        'codice': 'P19'
     },
     'pop_30_34_anni': {
         'descrizione': 'Popolazione residente - età 30 - 34 anni',
-        'codice': 'P14'
+        'codice': 'P20'
     },
     'pop_35_39_anni': {
         'descrizione': 'Popolazione residente - età 35 - 39 anni',
-        'codice': 'P15'
+        'codice': 'P21'
     },
     'pop_40_44_anni': {
         'descrizione': 'Popolazione residente - età 40 - 44 anni',
-        'codice': 'P16'
+        'codice': 'P22'
+    },
+    'pop_45_49_anni': {
+        'descrizione': 'Popolazione residente - età 15 - 19 anni',
+        'codice': 'P23'
+    },
+    'pop_50_54_anni': {
+        'descrizione': 'Popolazione residente - età 20 - 24 anni',
+        'codice': 'P24'
+    },
+    'pop_55_59_anni': {
+        'descrizione': 'Popolazione residente - età 25 - 29 anni',
+        'codice': 'P25'
+    },
+    'pop_60_64_anni': {
+        'descrizione': 'Popolazione residente - età 30 - 34 anni',
+        'codice': 'P26'
+    },
+    'pop_65_69_anni': {
+        'descrizione': 'Popolazione residente - età 35 - 39 anni',
+        'codice': 'P27'
+    },
+    'pop_70_74_anni': {
+        'descrizione': 'Popolazione residente - età 40 - 44 anni',
+        'codice': 'P28'
+    },
+    'pop_maggiore_74_anni': {
+        'descrizione': 'Popolazione residente - età > 74 anni',
+        'codice': 'P29'
     },
 }
