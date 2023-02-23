@@ -172,4 +172,40 @@ SHARED_DATA = {
         'descrizione': 'Forze lavoro - Disoccupati e altre persone in cerca di occupazione',
         'codice': 'P62'
     },
+    'famiglie_tot': {
+        'descrizione': 'Famiglie totale',
+        'codice': 'PF1'
+    },
+    'famiglie_componenti_tot': {
+        'descrizione': 'Totale componenti delle famiglie',
+        'codice': 'PF2'
+    },
+    'famiglie_1_componente': {
+        'descrizione': 'Famiglie 1 componente',
+        'codice': 'PF3'
+    },
+    'famiglie_2_componenti': {
+        'descrizione': 'Famiglie 2 componenti',
+        'codice': 'PF4'
+    },
+    'famiglie_3_componenti': {
+        'descrizione': 'Famiglie 3 componenti',
+        'codice': 'PF5'
+    },
+    'famiglie_4_componenti': {
+        'descrizione': 'Famiglie 4 componenti',
+        'codice': 'PF6'
+    },
+    'famiglie_5_componenti': {
+        'descrizione': 'Famiglie 5 componenti',
+        'codice': 'PF7'
+    },
+    'famiglie_6_componenti_e_oltre': {
+        'descrizione': 'Famiglie 6 e oltre componenti',
+        'codice': 'PF8'
+    },
+    'famiglie_residenti_oltre_6_componenti': {
+        'descrizione': 'Componenti delle famiglie residenti di 6 e oltre componenti',
+        'codice': 'PF9'
+    },
 }
