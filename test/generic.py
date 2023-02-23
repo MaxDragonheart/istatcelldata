@@ -16,7 +16,8 @@ def test_csv_from_excel(tmp_path: Path):
     print('test_csv_from_excel')
     csv_from_excel(
         data=xls_data,
-        output_path=tmp_path.joinpath('output.csv')
+        output_path=tmp_path.joinpath('output.csv'),
+        metadata=True
     )
 
 

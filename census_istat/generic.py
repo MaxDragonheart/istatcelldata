@@ -29,7 +29,11 @@ def check_encoding(data: Union[Path, PosixPath]):
     return result['encoding']
 
 
-def csv_from_excel(data: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> Union[Path, PosixPath]:
+def csv_from_excel(
+        data: Union[Path, PosixPath],
+        output_path: Union[Path, PosixPath],
+        metadata: bool = False
+) -> Union[Path, PosixPath]:
     """Convert xls to csv
 
     Args:
@@ -39,11 +43,18 @@ def csv_from_excel(data: Union[Path, PosixPath], output_path: Union[Path, PosixP
     Returns:
         Union[Path, PosixPath]
     """
-    sheet_name = data.stem.split('\\')[1][:-5]
-
-    logging.info(f'Read data from {sheet_name}')
+    logging.info(f'Read data from {data}')
     read_data = xlrd.open_workbook(data)
+
+    if metadata:
+        sheet_name = 'Metadati'
+    else:
+        sheet_list = read_data.sheet_names()
+        sheet_list.remove('Metadati')
+        sheet_name = sheet_list[0]
+
     get_sheet = read_data.sheet_by_name(sheet_name)
+
     output_data = open(output_path, 'w')
     write_csv = csv.writer(output_data, quoting=csv.QUOTE_ALL)
 
@@ -97,3 +108,18 @@ def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, Po
     with zipfile.ZipFile(input_data, "r") as zf:
         zf.extractall(output_folder)
 
+
+def get_metadata(input_path: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> list:
+    file_list = list(input_path.rglob("*"))
+
+    path_list = []
+    for data_file in file_list:
+        file_name = data_file.stem.split('\\')[1]
+        process_data = csv_from_excel(
+            data=data_file,
+            output_path=output_path.joinpath(f'{file_name}.csv'),
+            metadata=True
+        )
+        path_list.append(process_data)
+
+    return path_list
