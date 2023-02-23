@@ -70,6 +70,42 @@ def read_xls(
         df.to_csv(path_or_buf=output_path.joinpath(f'{file_name}.csv'), sep=';')
 
 
+def make_tracciato(
+        file_path: Union[Path, PosixPath],
+        output_path: Union[Path, PosixPath],
+) -> Union[Path, PosixPath]:
+    """Make tracciato
+
+    Args:
+        file_path: Union[Path, PosixPath]
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath]
+    """
+    logging.info(f'Read data from {file_path}')
+    read_data = xlrd.open_workbook(file_path)
+
+    get_sheet = read_data.sheet_by_name('Metadati')
+
+    dataset = []
+    for row_id in range(get_sheet.nrows):
+        dataset.append(get_sheet.row_values(row_id)[:2])
+    dataset = dataset[7:]
+
+    # Make DataFrame columns
+    df_columns = [column_name for column_name in dataset[0]]
+
+    # Make DataFrame data
+    df_data = dataset[1:]
+
+    df = pd.DataFrame(data=df_data, columns=df_columns)
+    df.set_index('NOME CAMPO', inplace=True)
+
+    logging.info(f"Save data to {output_path.joinpath('tracciato.csv')}")
+    df.to_csv(output_path.joinpath('tracciato.csv'))
+
+
 def remove_xls(folder_path: Union[Path, PosixPath], census_code: str):
     files_path = list(folder_path.rglob("*.xls"))
 
