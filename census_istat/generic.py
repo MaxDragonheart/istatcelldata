@@ -9,6 +9,10 @@ import xlrd
 from fsspec import get_fs_token_paths
 from tqdm import tqdm
 
+from census_istat.config import logger, console_handler
+
+logger.addHandler(console_handler)
+
 
 def check_encoding(data: Union[Path, PosixPath]):
     """Check file encoding
@@ -39,6 +43,7 @@ def csv_from_excel(
     Args:
         data: Union[Path, PosixPath]
         output_path: Union[Path, PosixPath]
+        metadata: bool
 
     Returns:
         Union[Path, PosixPath]

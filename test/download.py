@@ -6,7 +6,7 @@ from census_istat.download import download_census_data, download_census_geodata,
 
 def test_download_census_data(tmp_path: Path):
     print('test_download_census_data')
-    download_census_data(output_data_folder=tmp_path, year=2022)
+    download_census_data(output_data_folder=tmp_path, year=2001)
 
 
 def test_download_census_geodata(tmp_path: Path):

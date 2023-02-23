@@ -7,6 +7,7 @@ import requests
 from tqdm.auto import tqdm
 
 from census_istat.config import logger, console_handler, MAIN_LINK
+from census_istat.data.census_1991_2001 import make_tracciato, remove_xls
 from census_istat.generic import census_folder, unzip_data
 
 logger.addHandler(console_handler)
@@ -42,6 +43,20 @@ def download_census_data(
         data_folder=data_folder,
         destination_folder=destination_folder
     )
+
+    if year in [1991, 2001]:
+        logging.info(f'Convert xls to csv for {year}')
+        files_list = list(data_folder.rglob("*.xls"))
+        first_element = files_list[0]
+        make_tracciato(
+            file_path=first_element,
+            year=year,
+            output_path=data_folder
+        )
+        remove_xls(
+            folder_path=data_folder,
+            census_code=f'sez{year}'
+        )
     logging.info("Download census data completed")
 
 
