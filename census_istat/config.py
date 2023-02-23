@@ -18,3 +18,30 @@ MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
 MAIN_PATH = Path("/home/max/Desktop/census_istat/")
 OUTPUT_FOLDER = MAIN_PATH.joinpath('output')
+
+SHARED_DATA = {
+    'pop_tot': {
+        'descrizione': 'Popolazione residente - TOTALE',
+        'codice': 'P1'
+    },
+    'pop_tot_m': {
+        'descrizione': 'Popolazione residente - Maschi',
+        'codice': 'P2'
+    },
+    'pop_tot_f': {
+        'descrizione': 'Popolazione residente - Femmine',
+        'codice': 'P3'
+    },
+    'pop_meno_5_anni': {
+        'descrizione': 'Popolazione residente - età < 5 anni',
+        'codice': 'P14'
+    },
+    'pop_5_9_anni': {
+        'descrizione': 'Popolazione residente - età 5 - 9 anni',
+        'codice': 'P15'
+    },
+    'pop_10_14_anni': {
+        'descrizione': 'Popolazione residente - età 10 - 14 anni',
+        'codice': 'P16'
+    },
+}
