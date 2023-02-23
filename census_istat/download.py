@@ -50,6 +50,7 @@ def download_census_data(
         first_element = files_list[0]
         make_tracciato(
             file_path=first_element,
+            year=year,
             output_path=data_folder
         )
         remove_xls(

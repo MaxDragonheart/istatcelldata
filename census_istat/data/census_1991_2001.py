@@ -72,12 +72,14 @@ def read_xls(
 
 def make_tracciato(
         file_path: Union[Path, PosixPath],
+        year: int,
         output_path: Union[Path, PosixPath],
 ) -> Union[Path, PosixPath]:
     """Make tracciato
 
     Args:
         file_path: Union[Path, PosixPath]
+        year: int
         output_path: Union[Path, PosixPath]
 
     Returns:
@@ -102,8 +104,9 @@ def make_tracciato(
     df = pd.DataFrame(data=df_data, columns=df_columns)
     df.set_index('NOME CAMPO', inplace=True)
 
-    logging.info(f"Save data to {output_path.joinpath('tracciato.csv')}")
-    df.to_csv(output_path.joinpath('tracciato.csv'))
+    file_name = f'tracciato_{year}_sezioni.csv'
+    logging.info(f"Save data to {output_path.joinpath(file_name)}")
+    df.to_csv(output_path.joinpath(file_name))
 
 
 def remove_xls(folder_path: Union[Path, PosixPath], census_code: str):
