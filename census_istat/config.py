@@ -96,4 +96,68 @@ SHARED_DATA = {
         'descrizione': 'Popolazione residente - età > 74 anni',
         'codice': 'P29'
     },
+    'pop_meno_5_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età < 5 anni',
+        'codice': 'P30'
+    },
+    'pop_5_9_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 5 - 9 anni',
+        'codice': 'P31'
+    },
+    'pop_10_14_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 10 - 14 anni',
+        'codice': 'P32'
+    },
+    'pop_15_19_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
+        'codice': 'P33'
+    },
+    'pop_20_24_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
+        'codice': 'P34'
+    },
+    'pop_25_29_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
+        'codice': 'P35'
+    },
+    'pop_30_34_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
+        'codice': 'P36'
+    },
+    'pop_35_39_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
+        'codice': 'P37'
+    },
+    'pop_40_44_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
+        'codice': 'P38'
+    },
+    'pop_45_49_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
+        'codice': 'P39'
+    },
+    'pop_50_54_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
+        'codice': 'P40'
+    },
+    'pop_55_59_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
+        'codice': 'P41'
+    },
+    'pop_60_64_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
+        'codice': 'P42'
+    },
+    'pop_65_69_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
+        'codice': 'P43'
+    },
+    'pop_70_74_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
+        'codice': 'P44'
+    },
+    'pop_maggiore_74_anni_m': {
+        'descrizione': 'Popolazione residente - Maschi - età > 74 anni',
+        'codice': 'P45'
+    },
 }
