@@ -9,7 +9,7 @@ import xlrd
 from fsspec import get_fs_token_paths
 from tqdm import tqdm
 
-from census_istat.config import logger, console_handler
+from census_istat.config import logger, console_handler, GEODATA_FOLDER
 
 logger.addHandler(console_handler)
 
@@ -99,7 +99,7 @@ def census_geodata_folder(
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
 
-    folder = destination_folder.joinpath('geodata')
+    folder = destination_folder.joinpath(GEODATA_FOLDER)
 
     return folder
 

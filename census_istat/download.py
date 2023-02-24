@@ -6,7 +6,8 @@ from typing import Union
 import requests
 from tqdm.auto import tqdm
 
-from census_istat.config import logger, console_handler, MAIN_LINK
+from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
+    BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from census_istat.data.census_1991_2001 import make_tracciato, remove_xls
 from census_istat.generic import census_folder, unzip_data
 
@@ -48,14 +49,20 @@ def download_census_data(
         logging.info(f'Convert xls to csv for {year}')
         files_list = list(data_folder.rglob("*.xls"))
         first_element = files_list[0]
+
+        # Make data folder
+        data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
+        Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
+
         make_tracciato(
             file_path=first_element,
             year=year,
-            output_path=data_folder
+            output_path=data_folder_1991_2001
         )
         remove_xls(
             folder_path=data_folder,
-            census_code=f'sez{year}'
+            census_code=f'sez{year}',
+            output_path=data_folder_1991_2001,
         )
     logging.info("Download census data completed")
 
@@ -74,7 +81,7 @@ def download_census_geodata(
     Path(destination_folder).mkdir(parents=True, exist_ok=True)
 
     # Make data folder
-    data_folder = destination_folder.joinpath('geodata')
+    data_folder = destination_folder.joinpath(GEODATA_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     year_folder = str(year)[2:]
@@ -111,7 +118,7 @@ def download_administrative_boundaries(
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
 
     # Make data folder
-    data_folder = destination_folder.joinpath('administrative_boundaries')
+    data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     data_link = f"{MAIN_LINK}/confini_amministrativi/non_generalizzati/Limiti{year}.zip"
@@ -140,7 +147,7 @@ def download_all_census_data(
         year: int
     """
     # Make data folder
-    data_folder = output_data_folder.joinpath('preprocessing')
+    data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     # Download data

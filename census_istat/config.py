@@ -16,6 +16,13 @@ MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
 MAIN_PATH = Path("/home/max/Desktop/census_istat/")
 
+# PROJECT FOLDERS
+DATA_FOLDER = 'data'
+GEODATA_FOLDER = 'geodata'
+PREPROCESSING_FOLDER = 'preprocessing'
+CENSUS_DATA_FOLDER = 'Sezioni di Censimento'
+BOUNDARIES_DATA_FOLDER = 'administrative_boundaries'
+
 SHARED_DATA = {
     'pop_tot': {
         'descrizione': 'Popolazione residente - TOTALE',

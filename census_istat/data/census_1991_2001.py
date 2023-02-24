@@ -8,7 +8,8 @@ import xlrd
 from pandas import DataFrame
 from tqdm import tqdm
 
-from census_istat.config import logger, console_handler
+from census_istat.config import logger, console_handler, PREPROCESSING_FOLDER, BOUNDARIES_DATA_FOLDER
+from census_istat.data.manage_data import merge_data
 from census_istat.generic import get_metadata
 
 logger.addHandler(console_handler)
@@ -109,7 +110,11 @@ def make_tracciato(
     df.to_csv(output_path.joinpath(file_name))
 
 
-def remove_xls(folder_path: Union[Path, PosixPath], census_code: str):
+def remove_xls(
+        folder_path: Union[Path, PosixPath],
+        census_code: str,
+        output_path: Union[Path, PosixPath]
+):
     files_path = list(folder_path.rglob("*.xls"))
 
     # Convert xls to csv
@@ -117,7 +122,7 @@ def remove_xls(folder_path: Union[Path, PosixPath], census_code: str):
         read_xls(
             file_path=file_path,
             census_code=census_code,
-            output_path=folder_path
+            output_path=output_path
         )
 
     # Remove xls
@@ -160,7 +165,7 @@ def preprocess_csv_1991_2001(
         census_data_folder: Union[Path, PosixPath]
 ):
     # Make preprocess folder
-    processing_folder = output_path.joinpath('preprocessing')
+    processing_folder = output_path.joinpath(PREPROCESSING_FOLDER)
     Path(processing_folder).mkdir(parents=True, exist_ok=True)
 
     # Read metadata
@@ -169,3 +174,75 @@ def preprocess_csv_1991_2001(
     # Compare DataFrame
     df = compare_dataframe(data=processing_file_list)
     df.to_csv(processing_folder.joinpath(f'check_metadata_{census_year}.csv'))
+
+
+def merge_data_1991_2001(
+        csv_path: Union[Path, PosixPath],
+        year: int,
+        separator: str = ';',
+        output_path: Union[Path, PosixPath] = None,
+) -> Union[Path, PosixPath, DataFrame]:
+    administrative_boundaries = csv_path.parent.parent.joinpath(BOUNDARIES_DATA_FOLDER)
+
+    if year == 1991:
+        municipality_path = administrative_boundaries.joinpath(f'Limiti{year}')
+    elif year == 2001:
+        municipality_path = administrative_boundaries.joinpath(f'Limiti{year}').joinpath(f'Limiti{year}')
+    else:
+        pass
+
+    target_data = list(municipality_path.rglob('*.xls'))
+
+    if len(target_data) > 1:
+        raise Exception(f'Only one Excel file must be present in folder {municipality_path}')
+
+    # Get Municipality data
+    municipality_data = _merge_administrative_data(data_path=target_data[0], year=year)
+    municipality_data.columns = municipality_data.columns.str.lower()
+
+    # Get census data
+    census_data = merge_data(
+        csv_path=csv_path,
+        year=year,
+        separator=separator
+    )
+    # Dask DataFrame to Pandas DataFrame
+    census_data = census_data.compute()
+
+    # Join all
+    join_data = pd.merge(
+        left=census_data,
+        right=municipality_data,
+        on='pro_com'
+    )
+
+    if output_path is None:
+        # Pandas DataFrame to Dask DataFrame
+        return join_data.from_pandas()
+
+    else:
+        output_data = output_path.joinpath(f'data{year}.csv')
+        logging.info(f'Save data to {output_data}')
+        join_data.to_csv(output_data, sep=separator, index=False)
+
+
+def _merge_administrative_data(data_path: Union[Path, PosixPath], year: int) -> DataFrame:
+    # Get Municipality data
+    municipality_data = pd.read_excel(data_path, sheet_name=f'Comuni{year}')
+    municipality_data = municipality_data[['COD_REG', 'COD_PROV', 'PRO_COM', 'COMUNE']]
+
+    # Get regional and subregional data
+    other_data = pd.read_excel(data_path, sheet_name=f'RipRegProv{year}')
+    other_data = other_data[['COD_REG', 'DEN_REG', 'COD_PROV', 'DEN_PROV']]
+
+    # Join all
+    administrative_data = pd.merge(
+        left=municipality_data,
+        right=other_data,
+        on='COD_PROV',
+    )
+    administrative_data.drop(columns={'COD_REG_x'}, inplace=True)
+    administrative_data.rename(columns={'COD_REG_y': 'COD_REG'}, inplace=True)
+    administrative_data = administrative_data[['COD_REG', 'DEN_REG', 'COD_PROV', 'DEN_PROV', 'PRO_COM', 'COMUNE']]
+
+    return administrative_data
