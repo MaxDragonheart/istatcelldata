@@ -139,19 +139,23 @@ def download_all_census_data(
         output_data_folder: Union[Path, PosixPath]
         year: int
     """
+    # Make data folder
+    data_folder = output_data_folder.joinpath('preprocessing')
+    Path(data_folder).mkdir(parents=True, exist_ok=True)
+
     # Download data
     download_census_data(
-        output_data_folder=output_data_folder, year=year
+        output_data_folder=data_folder, year=year
     )
 
     # Download geodata
     download_census_geodata(
-        output_data_folder=output_data_folder, year=year
+        output_data_folder=data_folder, year=year
     )
 
     # Download administrative boundaries
     download_administrative_boundaries(
-        output_data_folder=output_data_folder, year=year
+        output_data_folder=data_folder, year=year
     )
 
 
