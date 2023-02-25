@@ -206,8 +206,9 @@ def merge_data_1991_2001(
         year=year,
         separator=separator
     )
-    # Dask DataFrame to Pandas DataFrame
-    census_data = census_data.compute()
+    # TODO Multithread processing with Dask #15
+    # # Dask DataFrame to Pandas DataFrame
+    # census_data = census_data.compute()
 
     # Join all
     join_data = pd.merge(
