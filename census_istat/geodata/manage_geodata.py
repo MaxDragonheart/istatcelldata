@@ -64,6 +64,7 @@ def read_geodata(
 def read_census_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
+        output_path: Union[Path, PosixPath] = None,
 ):
     main_path = data_path.joinpath(f'census_{year}').joinpath(GEODATA_FOLDER)
     files_list = list(main_path.rglob('*.shp'))

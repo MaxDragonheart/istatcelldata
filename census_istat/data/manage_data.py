@@ -86,6 +86,8 @@ def merge_data(
     else:
         output_data = output_path.joinpath(f'data{year}.csv')
         logging.info(f'Save data to {output_data}')
-        df = ddf.compute()
+        # TODO Multithread processing with Dask #15
+        # df = ddf.compute()
+        df = ddf
         df.to_csv(output_data, sep=separator, index=False)
 
