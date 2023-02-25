@@ -1,4 +1,4 @@
-import os
+import logging
 from pathlib import Path, PosixPath
 from typing import Union
 
@@ -8,7 +8,9 @@ import pandas as pd
 from geopandas import GeoDataFrame
 from tqdm import tqdm
 
-from census_istat.config import GEODATA_FOLDER
+from census_istat.config import GEODATA_FOLDER, logger, console_handler
+
+logger.addHandler(console_handler)
 
 
 tipo_localita = {
@@ -78,4 +80,11 @@ def read_census_geodata(
     df = pd.concat(geodata_list)
     print(df.columns)
     print(df.dtypes)
+
+    # if output_path is None:
+    #     return ddf
+    #
+    # else:
+    #     output_data = output_path.joinpath(f'data{year}.csv')
+    #     logging.info(f'Save data to {output_data}')
 

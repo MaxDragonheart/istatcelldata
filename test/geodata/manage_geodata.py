@@ -19,4 +19,5 @@ def test_read_census_geodata(tmp_path: Path) -> None:
     read_census_geodata(
         data_path=test_path,
         year=2011,
+        output_path=tmp_path
     )
