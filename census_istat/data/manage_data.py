@@ -2,14 +2,18 @@ import logging
 from pathlib import Path, PosixPath
 from typing import Union
 
-import dask.dataframe as dd
-from dask.dataframe import DataFrame
-from dask.distributed import Client, LocalCluster
+import pandas as pd
+# TODO Multithread processing with Dask #15
+# import dask.dataframe as dd
+# from dask.dataframe import DataFrame
+# from dask.distributed import Client, LocalCluster
+from pandas import DataFrame
 
-from census_istat.config import logger, console_handler, N_CORES
+from census_istat.config import logger, console_handler
 from census_istat.generic import check_encoding
 
 logger.addHandler(console_handler)
+# TODO Multithread processing with Dask #15
 # cluster = LocalCluster(n_workers=8, threads_per_worker=N_CORES, processes=True)
 # client = Client(cluster)
 
@@ -33,7 +37,9 @@ def read_csv(
 
     # Read data
     logging.info('Read data')
-    ddf = dd.read_csv(csv_path, encoding=data_encoding, sep=separator, sample=100000, assume_missing=True)
+    # TODO Multithread processing with Dask #15
+    # ddf = dd.read_csv(csv_path, encoding=data_encoding, sep=separator, sample=100000, assume_missing=True)
+    ddf = pd.read_csv(csv_path, encoding=data_encoding, sep=separator)
     ddf.columns = ddf.columns.str.lower()
     ddf = ddf.replace(['nan', 'NaN'], 0)
 
@@ -69,7 +75,9 @@ def merge_data(
 
     # Make Dask DataFrame
     logging.info('Make Dask DataFrame')
-    ddf = dd.concat(data_list)
+    # TODO Multithread processing with Dask #15
+    # ddf = dd.concat(data_list)
+    ddf = pd.concat(data_list)
     ddf = ddf.sort_values(f'sez{year}')
 
     if output_path is None:
@@ -78,6 +86,8 @@ def merge_data(
     else:
         output_data = output_path.joinpath(f'data{year}.csv')
         logging.info(f'Save data to {output_data}')
-        df = ddf.compute()
+        # TODO Multithread processing with Dask #15
+        # df = ddf.compute()
+        df = ddf
         df.to_csv(output_data, sep=separator, index=False)
 
