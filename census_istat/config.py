@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from multiprocessing import cpu_count
+# from multiprocessing import cpu_count
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -9,7 +9,7 @@ console_handler = logging.StreamHandler()
 console_handler.setFormatter(logging.Formatter(log_format))
 logger.addHandler(console_handler)
 
-N_CORES = cpu_count()
+# N_CORES = cpu_count()
 
 # PROJECT
 MAIN_LINK = "https://www.istat.it/storage/cartografia"

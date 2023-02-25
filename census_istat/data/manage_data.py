@@ -9,7 +9,7 @@ import pandas as pd
 # from dask.distributed import Client, LocalCluster
 from pandas import DataFrame
 
-from census_istat.config import logger, console_handler, N_CORES
+from census_istat.config import logger, console_handler
 from census_istat.generic import check_encoding
 
 logger.addHandler(console_handler)
