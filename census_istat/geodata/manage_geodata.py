@@ -120,10 +120,8 @@ def join_year_census(
         only_shared: bool = True,
         output_path: Union[Path, PosixPath] = None,
 ):
-    year_data_path = data_path.joinpath(f'census_{year}')
-
     # Read data
-    data = read_csv(csv_path=year_data_path.joinpath(f'data{year}.csv'))
+    data = read_csv(csv_path=data_path.joinpath(f'data{year}.csv'))
 
     if only_shared:
         # Filter shared columns
@@ -133,7 +131,7 @@ def join_year_census(
         data = data[shared_columns]
 
     # Read geodata
-    geodata = read_geodata(geodata_path=year_data_path.joinpath(f'geodata{year}.gpkg'))
+    geodata = read_geodata(geodata_path=data_path.joinpath(f'geodata{year}.gpkg'))
 
     # Join all
     logging.info('Join all')
@@ -148,8 +146,8 @@ def join_year_census(
     gdf = gpd.GeoDataFrame(df, crs=geodata.crs)
 
     if remove_processed:
-        logging.info(f'Delete data path {year_data_path}')
-        shutil.rmtree(year_data_path)
+        logging.info(f'Delete data path {data_path}')
+        shutil.rmtree(data_path)
 
     if output_path is None:
         return gdf
