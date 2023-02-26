@@ -6,10 +6,10 @@
 census_istat
 ========================================
 Con **census_istat** puoi scaricare facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati censuari.
-Questo progetto non è collegato ad ISTAT nè supportato da ISTAT.
 
 
 .. toctree::
+   note
    :maxdepth: 2
    :caption: Contents:
 
