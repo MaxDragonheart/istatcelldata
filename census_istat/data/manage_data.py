@@ -22,7 +22,7 @@ def read_csv(
         csv_path: Union[Path, PosixPath],
         separator: str = ';'
 ) -> DataFrame:
-    """Read csv using Dask and return a Dask DataFrame.
+    """Read csv and return DataFrame.
 
     Args:
         csv_path: Union[Path, PosixPath]
