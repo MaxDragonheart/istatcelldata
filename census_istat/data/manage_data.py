@@ -9,7 +9,7 @@ import pandas as pd
 # from dask.distributed import Client, LocalCluster
 from pandas import DataFrame
 
-from census_istat.config import logger, console_handler
+from census_istat.config import logger, console_handler, SHARED_DATA
 from census_istat.generic import check_encoding
 
 logger.addHandler(console_handler)
@@ -91,3 +91,12 @@ def merge_data(
         df = ddf
         df.to_csv(output_data, sep=separator, index=False)
 
+
+def list_shared_columns() -> list:
+
+    column_list = []
+    for key, value in SHARED_DATA.items():
+        column_code = value['codice'].lower()
+        column_list.append(column_code)
+
+    return column_list

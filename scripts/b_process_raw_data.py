@@ -5,7 +5,7 @@ from census_istat.config import logger, console_handler, MAIN_PATH, DATA_FOLDER,
     CENSUS_DATA_FOLDER
 from census_istat.data.census_1991_2001 import merge_data_1991_2001
 from census_istat.data.manage_data import merge_data
-from census_istat.geodata.manage_geodata import read_census_geodata
+from census_istat.geodata.manage_geodata import read_raw_census_geodata
 
 logger.addHandler(console_handler)
 target_years = [1991, 2001, 2011]
@@ -27,7 +27,7 @@ if __name__ == '__main__':
                 year=year,
                 output_path=output_data_path
             )
-            read_census_geodata(
+            read_raw_census_geodata(
                 data_path=data_path,
                 year=year,
                 output_path=output_data_path
@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 year=year,
                 output_path=output_data_path
             )
-            read_census_geodata(
+            read_raw_census_geodata(
                 data_path=data_path,
                 year=year,
                 output_path=output_data_path
