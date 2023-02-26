@@ -198,7 +198,6 @@ def merge_data_1991_2001(
 
     # Get Municipality data
     municipality_data = _merge_administrative_data(data_path=target_data[0], year=year)
-    municipality_data.columns = municipality_data.columns.str.lower()
 
     # Get census data
     census_data = merge_data(
@@ -216,6 +215,8 @@ def merge_data_1991_2001(
         right=municipality_data,
         on='pro_com'
     )
+    join_data.rename(columns={'cod_com': 'codcom'}, inplace=True)
+    join_data.drop(columns={'cod_pro', 'pro_com', 'sezione'}, inplace=True)
 
     if output_path is None:
         # Pandas DataFrame to Dask DataFrame
@@ -245,5 +246,13 @@ def _merge_administrative_data(data_path: Union[Path, PosixPath], year: int) -> 
     administrative_data.drop(columns={'COD_REG_x'}, inplace=True)
     administrative_data.rename(columns={'COD_REG_y': 'COD_REG'}, inplace=True)
     administrative_data = administrative_data[['COD_REG', 'DEN_REG', 'COD_PROV', 'DEN_PROV', 'PRO_COM', 'COMUNE']]
+    administrative_data.rename(columns={
+        'COD_REG': 'codreg',
+        'DEN_REG': 'regione',
+        'COD_PROV': 'codpro',
+        'DEN_PROV': 'provincia',
+        'PRO_COM': 'pro_com',
+        'COMUNE': 'comune',
+    }, inplace=True)
 
     return administrative_data
