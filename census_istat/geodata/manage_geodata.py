@@ -11,7 +11,7 @@ from shapely.validation import make_valid
 from tqdm import tqdm
 
 from census_istat.config import GEODATA_FOLDER, logger, console_handler
-from census_istat.data.manage_data import read_csv
+from census_istat.data.manage_data import read_csv, list_shared_columns
 
 logger.addHandler(console_handler)
 
@@ -117,37 +117,44 @@ def join_year_census(
         data_path: Union[Path, PosixPath],
         year: int,
         remove_processed: bool = False,
-        only_shared: bool = False,
+        only_shared: bool = True,
         output_path: Union[Path, PosixPath] = None,
 ):
     year_data_path = data_path.joinpath(f'census_{year}')
 
-    # # Read data
-    # data = read_csv(csv_path=year_data_path.joinpath(f'data{year}.csv'))
-    #
-    # # Read geodata
-    # geodata = read_geodata(geodata_path=year_data_path.joinpath(f'geodata{year}.gpkg'))
-    #
-    # # Join all
-    # logging.info('Join all')
-    # df = pd.merge(
-    #     left=geodata,
-    #     right=data,
-    #     on=f'sez{year}',
-    #     how='right'
-    # )
-    # df = df[df['comune'].notna()]
-    # df.set_index(f'sez{year}', inplace=True)
-    # gdf = gpd.GeoDataFrame(df, crs=geodata.crs)
+    # Read data
+    data = read_csv(csv_path=year_data_path.joinpath(f'data{year}.csv'))
+
+    if only_shared:
+        # Filter shared columns
+        shared_data_columns = list_shared_columns()
+        administrative_columns = [f'sez{year}', 'cod_reg', 'den_reg', 'cod_prov', 'den_prov', 'cod_com', 'comune']
+        shared_columns = administrative_columns + shared_data_columns
+        data = data[shared_columns]
+
+    # Read geodata
+    geodata = read_geodata(geodata_path=year_data_path.joinpath(f'geodata{year}.gpkg'))
+
+    # Join all
+    logging.info('Join all')
+    df = pd.merge(
+        left=geodata,
+        right=data,
+        on=f'sez{year}',
+        how='right'
+    )
+    df = df[df['comune'].notna()]
+    df.set_index(f'sez{year}', inplace=True)
+    gdf = gpd.GeoDataFrame(df, crs=geodata.crs)
 
     if remove_processed:
         logging.info(f'Delete data path {year_data_path}')
         shutil.rmtree(year_data_path)
 
-    # if output_path is None:
-    #     return gdf
-    #
-    # else:
-    #     output_data = output_path.joinpath(f'census_{year}.gpkg')
-    #     logging.info(f'Save data to {output_data}')
-    #     gdf.to_file(output_data, driver='GPKG')
+    if output_path is None:
+        return gdf
+
+    else:
+        output_data = output_path.joinpath(f'census_{year}.gpkg')
+        logging.info(f'Save data to {output_data}')
+        gdf.to_file(output_data, driver='GPKG')

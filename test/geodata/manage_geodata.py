@@ -29,5 +29,6 @@ def test_join_year_census(tmp_path: Path) -> None:
         data_path=test_path,
         year=1991,
         output_path=tmp_path,
-        remove_processed=False
+        remove_processed=False,
+        only_shared=True
     )

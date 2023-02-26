@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.data.manage_data import read_csv, merge_data
+from census_istat.data.manage_data import read_csv, merge_data, list_shared_columns
 from test.generic import csv_data
 
 test_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2011/data/Sezioni di Censimento')
@@ -18,3 +18,8 @@ def test_merge_data(tmp_path: Path):
         year=2011,
         output_path=test_path.parent,
     )
+
+
+def test_list_shared_columns():
+    print('test_list_shared_columns')
+    list_shared_columns()
