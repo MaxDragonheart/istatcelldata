@@ -126,7 +126,7 @@ def join_year_census(
     if only_shared:
         # Filter shared columns
         shared_data_columns = list_shared_columns()
-        administrative_columns = [f'sez{year}', 'codreg', 'regione', 'codprov', 'provincia', 'codcom', 'comune']
+        administrative_columns = [f'sez{year}', 'codreg', 'regione', 'codpro', 'provincia', 'codcom', 'comune']
         shared_columns = administrative_columns + shared_data_columns
         data = data[shared_columns]
 
