@@ -93,7 +93,11 @@ def merge_data(
 
 
 def list_shared_columns() -> list:
+    """Make list of alla shared data.
 
+    Returns:
+        list
+    """
     column_list = []
     for key, value in SHARED_DATA.items():
         column_code = value['codice'].lower()

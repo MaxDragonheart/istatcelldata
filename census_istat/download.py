@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 
 from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
     BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
-from census_istat.data.census_1991_2001 import make_tracciato, remove_xls
+from census_istat.data.census_1991_2001 import census_trace, remove_xls
 from census_istat.generic import census_folder, unzip_data
 
 logger.addHandler(console_handler)
@@ -54,7 +54,7 @@ def download_census_data(
         data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
         Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
 
-        make_tracciato(
+        census_trace(
             file_path=first_element,
             year=year,
             output_path=data_folder_1991_2001

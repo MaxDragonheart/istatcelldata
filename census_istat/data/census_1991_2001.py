@@ -71,7 +71,7 @@ def read_xls(
         df.to_csv(path_or_buf=output_path.joinpath(f'{file_name}.csv'), sep=';')
 
 
-def make_tracciato(
+def census_trace(
         file_path: Union[Path, PosixPath],
         year: int,
         output_path: Union[Path, PosixPath],
@@ -114,7 +114,14 @@ def remove_xls(
         folder_path: Union[Path, PosixPath],
         census_code: str,
         output_path: Union[Path, PosixPath]
-):
+) -> None:
+    """Delete all xls data.
+
+    Args:
+        folder_path: Union[Path, PosixPath]
+        census_code: str
+        output_path: Union[Path, PosixPath]
+    """
     files_path = list(folder_path.rglob("*.xls"))
 
     # Convert xls to csv
@@ -131,6 +138,14 @@ def remove_xls(
 
 
 def compare_dataframe(data: list) -> DataFrame:
+    """Compare census header data to find the differences.
+
+    Args:
+        data: list
+
+    Returns:
+        DataFrame
+    """
 
     df_list = []
     for file_data in data:
@@ -163,7 +178,17 @@ def preprocess_csv_1991_2001(
         census_year: int,
         output_path: Union[Path, PosixPath],
         census_data_folder: Union[Path, PosixPath]
-):
+) -> Union[Path, PosixPath]:
+    """Process csv data for 1991 and 2001.
+
+    Args:
+        census_year: int
+        output_path: Union[Path, PosixPath]
+        census_data_folder: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath]
+    """
     # Make preprocess folder
     processing_folder = output_path.joinpath(PREPROCESSING_FOLDER)
     Path(processing_folder).mkdir(parents=True, exist_ok=True)
@@ -182,6 +207,17 @@ def merge_data_1991_2001(
         separator: str = ';',
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, DataFrame]:
+    """Merge alla data for selected year.
+
+    Args:
+        csv_path: Union[Path, PosixPath]
+        year: int
+        separator: str
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath, DataFrame]
+    """
     administrative_boundaries = csv_path.parent.parent.joinpath(BOUNDARIES_DATA_FOLDER)
 
     if year == 1991:
@@ -229,6 +265,15 @@ def merge_data_1991_2001(
 
 
 def _merge_administrative_data(data_path: Union[Path, PosixPath], year: int) -> DataFrame:
+    """Merge administrative data.
+
+    Args:
+        data_path:
+        year:
+
+    Returns:
+
+    """
     # Get Municipality data
     municipality_data = pd.read_excel(data_path, sheet_name=f'Comuni{year}')
     municipality_data = municipality_data[['COD_REG', 'COD_PROV', 'PRO_COM', 'COMUNE']]

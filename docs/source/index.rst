@@ -10,8 +10,9 @@ Con **census_istat** puoi scaricare facilmente il set di dati riferiti ai censim
 
 .. toctree::
    note
+   documentation
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contenuti:
 
 
 
