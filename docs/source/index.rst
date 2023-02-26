@@ -5,7 +5,7 @@
 
 census_istat
 ========================================
-Con **census_istat** puoi scaricare facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati censuari.
+Con **census_istat** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
 
 
 .. toctree::
@@ -14,11 +14,5 @@ Con **census_istat** puoi scaricare facilmente il set di dati riferiti ai censim
    :maxdepth: 2
    :caption: Contenuti:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+:ref:`genindex`
+---------------
