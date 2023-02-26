@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path, PosixPath
 from typing import Union
 
@@ -10,11 +11,12 @@ from shapely.validation import make_valid
 from tqdm import tqdm
 
 from census_istat.config import GEODATA_FOLDER, logger, console_handler
+from census_istat.data.manage_data import read_csv
 
 logger.addHandler(console_handler)
 
 
-tipo_localita = {
+TIPO_LOC = {
     1991: {
         1: 'centro abitato',
         2: 'nucleo abitato',
@@ -35,11 +37,11 @@ tipo_localita = {
 }
 
 
-def read_geodata(
+def read_raw_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
 ) -> GeoDataFrame:
-    """Read single geodata file and clean geometries.
+    """Read single raw geodata file and clean geometries.
 
     Args:
         data_path: Union[Path, PosixPath]
@@ -54,7 +56,7 @@ def read_geodata(
     data_list = []
     for index, row in tqdm(read_data.iterrows()):
         if row[f'SEZ{year}'] != 0:
-            census_cell_tipe = tipo_localita[year][row['TIPO_LOC']]
+            census_cell_tipe = TIPO_LOC[year][row['TIPO_LOC']]
             census_cell_code = int(row[f'SEZ{year}'])
             census_cell_geometry = make_valid(row['geometry'])
             data = [census_cell_code, census_cell_tipe, census_cell_geometry]
@@ -67,7 +69,7 @@ def read_geodata(
     return gdf
 
 
-def read_census_geodata(
+def read_raw_census_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
         output_path: Union[Path, PosixPath] = None,
@@ -80,7 +82,7 @@ def read_census_geodata(
     geodata_list = []
     data_crs = []
     for path in tqdm(files_list):
-        geodata = read_geodata(data_path=path, year=year)
+        geodata = read_raw_geodata(data_path=path, year=year)
         data_crs.append(geodata.crs)
         geodata_list.append(geodata)
 
@@ -101,3 +103,51 @@ def read_census_geodata(
         logging.info(f'Save data to {output_data}')
         gdf.to_file(output_data, driver='GPKG')
 
+
+def read_geodata(
+        geodata_path: Union[Path, PosixPath],
+) -> GeoDataFrame:
+    logging.info('Read geodata')
+    gdf = gpd.read_file(geodata_path)
+
+    return gdf
+
+
+def join_year_census(
+        data_path: Union[Path, PosixPath],
+        year: int,
+        remove_processed: bool = False,
+        only_shared: bool = False,
+        output_path: Union[Path, PosixPath] = None,
+):
+    year_data_path = data_path.joinpath(f'census_{year}')
+
+    # # Read data
+    # data = read_csv(csv_path=year_data_path.joinpath(f'data{year}.csv'))
+    #
+    # # Read geodata
+    # geodata = read_geodata(geodata_path=year_data_path.joinpath(f'geodata{year}.gpkg'))
+    #
+    # # Join all
+    # logging.info('Join all')
+    # df = pd.merge(
+    #     left=geodata,
+    #     right=data,
+    #     on=f'sez{year}',
+    #     how='right'
+    # )
+    # df = df[df['comune'].notna()]
+    # df.set_index(f'sez{year}', inplace=True)
+    # gdf = gpd.GeoDataFrame(df, crs=geodata.crs)
+
+    if remove_processed:
+        logging.info(f'Delete data path {year_data_path}')
+        shutil.rmtree(year_data_path)
+
+    # if output_path is None:
+    #     return gdf
+    #
+    # else:
+    #     output_data = output_path.joinpath(f'census_{year}.gpkg')
+    #     logging.info(f'Save data to {output_data}')
+    #     gdf.to_file(output_data, driver='GPKG')
