@@ -1,0 +1,2 @@
+- name: Sphinx docs to GitHub Pages
+  uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.1.0-beta
