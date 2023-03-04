@@ -41,7 +41,7 @@ def read_raw_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
 ) -> GeoDataFrame:
-    """Read single raw geodata file and clean geometries.
+    """Lettura del singolo geodato censuario grezzo e pulizia topologica delle geometrie.
 
     Args:
         data_path: Union[Path, PosixPath]
@@ -74,6 +74,17 @@ def read_raw_census_geodata(
         year: int,
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, GeoDataFrame]:
+    """Lettura di tutti i geodati censuari grezzi per anno e
+    creazione di un unico GeoDataFrame.
+
+    Args:
+        data_path: Union[Path, PosixPath]
+        year: int
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath, GeoDataFrame]
+    """
     main_path = data_path.joinpath(f'census_{year}').joinpath(GEODATA_FOLDER)
     files_list = list(main_path.rglob('*.shp'))
 
@@ -107,6 +118,17 @@ def read_raw_census_geodata(
 def read_geodata(
         geodata_path: Union[Path, PosixPath],
 ) -> GeoDataFrame:
+    """Lettura del geodato. La funzione incapsula la funzione di lettura di
+    GeoPandas ma andrà successivamente sviuppata per rendere più rapida la
+    lettura dei dati.
+
+
+    Args:
+        geodata_path: Union[Path, PosixPath]
+
+    Returns:
+        GeoDataFrame
+    """
     logging.info('Read geodata')
     gdf = gpd.read_file(geodata_path)
 
@@ -119,7 +141,19 @@ def join_year_census(
         remove_processed: bool = False,
         only_shared: bool = True,
         output_path: Union[Path, PosixPath] = None,
-):
+) -> Union[Path, PosixPath, GeoDataFrame]:
+    """Generazione di un unico GeoDataFrame che unisce dati e geodati censuari per l'anno selezionato.
+
+    Args:
+        data_path: Union[Path, PosixPath]
+        year: int
+        remove_processed: bool
+        only_shared: bool
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath, GeoDataFrame]
+    """
     # Read data
     data = read_csv(csv_path=data_path.joinpath(f'data{year}.csv'))
 
