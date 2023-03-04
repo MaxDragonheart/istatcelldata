@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# https://betterprogramming.pub/quickly-generate-documentation-with-sphinx-cli-tools-99db0cb5994c
 
 MODULE_PATHS=$@
 SOURCE_DIR=docs/source
