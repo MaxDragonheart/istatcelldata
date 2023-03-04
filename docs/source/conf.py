@@ -5,6 +5,10 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
+
 
 project = 'census_istat'
 copyright = '2023, Massimiliano Moraca'
@@ -18,6 +22,8 @@ extensions = [
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
 ]
 
 templates_path = ['_templates']
@@ -30,3 +36,4 @@ language = 'it'
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+todo_include_todos = True

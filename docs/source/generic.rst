@@ -1,5 +1,5 @@
 Processi generici
-==============
+=================
 
 .. autofunction:: census_istat.generic.check_encoding(data: Union[Path, PosixPath]) -> str
 .. autofunction:: census_istat.generic.csv_from_excel(data: Union[Path, PosixPath], output_path: Union[Path, PosixPath], metadata: bool = False) -> Union[Path, PosixPath]
