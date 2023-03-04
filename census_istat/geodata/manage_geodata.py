@@ -41,7 +41,7 @@ def read_raw_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
 ) -> GeoDataFrame:
-    """Read single raw geodata file and clean geometries.
+    """Lettura del singolo geodato censuario grezzo e pulizia topologica delle geometrie.
 
     Args:
         data_path: Union[Path, PosixPath]
@@ -74,8 +74,8 @@ def read_raw_census_geodata(
         year: int,
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, GeoDataFrame]:
-    """Read all geodata per year and merge all in
-    unique GeoDataFrame.
+    """Lettura di tutti i geodati censuari grezzi per anno e
+    creazione di un unico GeoDataFrame.
 
     Args:
         data_path: Union[Path, PosixPath]
@@ -118,7 +118,10 @@ def read_raw_census_geodata(
 def read_geodata(
         geodata_path: Union[Path, PosixPath],
 ) -> GeoDataFrame:
-    """Read geodata.
+    """Lettura del geodato. La funzione incapsula la funzione di lettura di
+    GeoPandas ma andrà successivamente sviuppata per rendere più rapida la
+    lettura dei dati.
+
 
     Args:
         geodata_path: Union[Path, PosixPath]
@@ -139,7 +142,7 @@ def join_year_census(
         only_shared: bool = True,
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, GeoDataFrame]:
-    """Read data and geodata per year and make a unique GeoDataFrame.
+    """Generazione di un unico GeoDataFrame che unisce dati e geodati censuari per l'anno selezionato.
 
     Args:
         data_path: Union[Path, PosixPath]

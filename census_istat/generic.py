@@ -14,8 +14,8 @@ from census_istat.config import logger, console_handler, GEODATA_FOLDER
 logger.addHandler(console_handler)
 
 
-def check_encoding(data: Union[Path, PosixPath]):
-    """Check file encoding
+def check_encoding(data: Union[Path, PosixPath]) -> str:
+    """Verifica della codifica del dato.
 
     Args:
         data: Union[Path, PosixPath]
@@ -38,7 +38,7 @@ def csv_from_excel(
         output_path: Union[Path, PosixPath],
         metadata: bool = False
 ) -> Union[Path, PosixPath]:
-    """Convert xls to csv
+    """Conversione di un xls in csv.
 
     Args:
         data: Union[Path, PosixPath]
@@ -76,11 +76,15 @@ def census_folder(
         output_data_folder: Union[Path, PosixPath],
         year: int = 2011  # last official census at 2023 02 19
 ) -> Union[Path, PosixPath]:
-    """Make folder for yearly census data and geodata.
+    """Creazione delle cartelle per dati e geodati censuari
+    dell'anno selezionato.
+
     Args:
         output_data_folder: Union[Path, PosixPath]
         year: int
-    Returns: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath]
     """
     logging.info(f"Make folder for {year}' census data and geodata.")
     download_folder_name = f"census_{year}"
@@ -96,6 +100,15 @@ def census_geodata_folder(
         output_data_folder: Union[Path, PosixPath],
         year: int
 ) -> Union[Path, PosixPath]:
+    """Creazione della cartella dei geodati per l'anno censuario selezionato.
+
+    Args:
+        output_data_folder: Union[Path, PosixPath]
+        year: int
+
+    Returns:
+        Union[Path, PosixPath]
+    """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
 
@@ -104,17 +117,30 @@ def census_geodata_folder(
     return folder
 
 
-def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, PosixPath]) -> None:
-    """Unzip input_data.
+def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, PosixPath]) -> Union[Path, PosixPath]:
+    """Decompressione dei dati.
+
     Args:
         input_data: Union[Path, PosixPath].
         output_folder: Union[Path, PosixPath].
+
+    Returns:
+        Union[Path, PosixPath]
     """
     with zipfile.ZipFile(input_data, "r") as zf:
         zf.extractall(output_folder)
 
 
 def get_metadata(input_path: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> list:
+    """Lettura dei metadati.
+
+    Args:
+        input_path: Union[Path, PosixPath]
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        list
+    """
     file_list = list(input_path.rglob("*"))
 
     path_list = []

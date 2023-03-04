@@ -18,10 +18,12 @@ def download_census_data(
         output_data_folder: Union[Path, PosixPath],
         year: int = 2011
 ) -> Union[Path, PosixPath]:
-    """Download census data
+    """Download dei dati censuari.
+
     Args:
         output_data_folder: Union[Path, PosixPath]
         year: Integer. Default 2011.
+
     Returns
         Union[Path, PosixPath]
     """
@@ -70,11 +72,15 @@ def download_census_data(
 def download_census_geodata(
         output_data_folder: Union[Path, PosixPath],
         year: int = 2011
-) -> None:
-    """Download census geodata
+) -> Union[Path, PosixPath]:
+    """Download dei geodati censuari.
+
     Args:
         output_data_folder: Union[Path, PosixPath]
         year: Integer. Default 2011.
+
+    Returns:
+        Union[Path, PosixPath]
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -108,11 +114,15 @@ def download_census_geodata(
 def download_administrative_boundaries(
         output_data_folder: Union[Path, PosixPath],
         year: int = 2011
-):
-    """Download official boundaries for census year.
+) -> Union[Path, PosixPath]:
+    """Download dei limiti amministrativi dell'anno cenusario selezionato.
+
     Args:
         output_data_folder: Union[Path, PosixPath]
         year: int
+
+    Returns:
+        Union[Path, PosixPath]
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -140,8 +150,8 @@ def download_all_census_data(
         output_data_folder: Union[Path, PosixPath],
         year: int = 2011
 ) -> None:
-    """Download all census data. Must be downloaded both data
-    and geodata per selected year.
+    """Download di tutti i dati censuari per l'anno selezionato.
+
     Args:
         output_data_folder: Union[Path, PosixPath]
         year: int
@@ -172,7 +182,7 @@ def _download_data(
         data_folder: Union[Path, PosixPath],
         destination_folder: Union[Path, PosixPath],
 ) -> Union[Path, PosixPath]:
-    """Download base function.
+    """Funzione di download base.
 
     Args:
         data_link: Union[Path, PosixPath]

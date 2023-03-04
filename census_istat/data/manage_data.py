@@ -22,7 +22,7 @@ def read_csv(
         csv_path: Union[Path, PosixPath],
         separator: str = ';'
 ) -> DataFrame:
-    """Read csv and return DataFrame.
+    """Lettura di un csv e conversione in DataFrame.
 
     Args:
         csv_path: Union[Path, PosixPath]
@@ -52,8 +52,8 @@ def merge_data(
         separator: str = ';',
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, DataFrame]:
-    """Merge all census data per selected year in one
-    object.
+    """Unione di tutti i dati censuari per l'anno selezionato
+    in un unico DataFrame.
 
     Args:
         csv_path: Union[Path, PosixPath]
@@ -93,7 +93,7 @@ def merge_data(
 
 
 def list_shared_columns() -> list:
-    """Make list of alla shared data.
+    """Generazione della lista di tutti i dati condivisi.
 
     Returns:
         list
