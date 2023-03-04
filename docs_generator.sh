@@ -10,7 +10,6 @@ for MODULE_PATH in $MODULE_PATHS
 do
 # Generate source files from module path
 sphinx-apidoc -f -o $SOURCE_DIR $MODULE_PATH
-# make html
 done
 
 # Replace delimiter
