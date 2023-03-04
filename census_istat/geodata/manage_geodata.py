@@ -74,6 +74,17 @@ def read_raw_census_geodata(
         year: int,
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, GeoDataFrame]:
+    """Read all geodata per year and merge all in
+    unique GeoDataFrame.
+
+    Args:
+        data_path: Union[Path, PosixPath]
+        year: int
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath, GeoDataFrame]
+    """
     main_path = data_path.joinpath(f'census_{year}').joinpath(GEODATA_FOLDER)
     files_list = list(main_path.rglob('*.shp'))
 
@@ -107,6 +118,14 @@ def read_raw_census_geodata(
 def read_geodata(
         geodata_path: Union[Path, PosixPath],
 ) -> GeoDataFrame:
+    """Read geodata.
+
+    Args:
+        geodata_path: Union[Path, PosixPath]
+
+    Returns:
+        GeoDataFrame
+    """
     logging.info('Read geodata')
     gdf = gpd.read_file(geodata_path)
 
@@ -119,7 +138,19 @@ def join_year_census(
         remove_processed: bool = False,
         only_shared: bool = True,
         output_path: Union[Path, PosixPath] = None,
-):
+) -> Union[Path, PosixPath, GeoDataFrame]:
+    """Read data and geodata per year and make a unique GeoDataFrame.
+
+    Args:
+        data_path: Union[Path, PosixPath]
+        year: int
+        remove_processed: bool
+        only_shared: bool
+        output_path: Union[Path, PosixPath]
+
+    Returns:
+        Union[Path, PosixPath, GeoDataFrame]
+    """
     # Read data
     data = read_csv(csv_path=data_path.joinpath(f'data{year}.csv'))
 

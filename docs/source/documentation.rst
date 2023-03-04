@@ -1,6 +1,6 @@
 Documentazione
 ==============
-Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari, questi vengoo definiti moduli.
+Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari, questi vengono definiti moduli.
 
 .. toctree::
    data

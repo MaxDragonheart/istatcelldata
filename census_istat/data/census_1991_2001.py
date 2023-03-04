@@ -21,8 +21,8 @@ def read_xls(
         output_path: Union[Path, PosixPath] = None,
         metadata: bool = False
 ) -> Union[DataFrame, Path, PosixPath]:
-    """Read census data for years 1991 and 2001 and return
-    DataFrame or csv.
+    """Lettura dei dati censuari relativi agli anni 1991 e 2011
+    e costruzione di un DataFrame.
 
     Args:
         file_path: Union[Path, PosixPath]
@@ -76,7 +76,7 @@ def census_trace(
         year: int,
         output_path: Union[Path, PosixPath],
 ) -> Union[Path, PosixPath]:
-    """Make tracciato
+    """Creazione del file di tracciato per gli anni 1991 e 2001.
 
     Args:
         file_path: Union[Path, PosixPath]
@@ -115,7 +115,7 @@ def remove_xls(
         census_code: str,
         output_path: Union[Path, PosixPath]
 ) -> None:
-    """Delete all xls data.
+    """Eliminiazione di tutti i file Excel.
 
     Args:
         folder_path: Union[Path, PosixPath]
@@ -138,7 +138,7 @@ def remove_xls(
 
 
 def compare_dataframe(data: list) -> DataFrame:
-    """Compare census header data to find the differences.
+    """Comparazione dell'intestazione dei dati censuari per definirne le differenze.
 
     Args:
         data: list
@@ -179,7 +179,7 @@ def preprocess_csv_1991_2001(
         output_path: Union[Path, PosixPath],
         census_data_folder: Union[Path, PosixPath]
 ) -> Union[Path, PosixPath]:
-    """Process csv data for 1991 and 2001.
+    """Processamento dei dati censuari per gli anni 1991 e 2001.
 
     Args:
         census_year: int
@@ -207,7 +207,7 @@ def merge_data_1991_2001(
         separator: str = ';',
         output_path: Union[Path, PosixPath] = None,
 ) -> Union[Path, PosixPath, DataFrame]:
-    """Merge alla data for selected year.
+    """Generazione di un unico file con tutti i dati censuari dell'anno selezionato.
 
     Args:
         csv_path: Union[Path, PosixPath]
@@ -265,14 +265,14 @@ def merge_data_1991_2001(
 
 
 def _merge_administrative_data(data_path: Union[Path, PosixPath], year: int) -> DataFrame:
-    """Merge administrative data.
+    """Unione di tutti i dati sul partizionamento amministrativo delle aree censuarie.
 
     Args:
         data_path:
         year:
 
     Returns:
-
+        DataFrame
     """
     # Get Municipality data
     municipality_data = pd.read_excel(data_path, sheet_name=f'Comuni{year}')
