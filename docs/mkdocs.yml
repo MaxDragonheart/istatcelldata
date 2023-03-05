@@ -6,7 +6,13 @@ site_description: Con census_istat puoi ottenere facilmente il set di dati rifer
 site_author: Massimiliano Moraca
 nav:
   - Home: ./index.md
-  - Documentazione: ./documentation/intro.md
+  - Tutorial: ./tutorial/intro.md
+  - Documentazione:
+      - Intro: ./documentation/intro.md
+      - Download: ./documentation/download.md
+      - Data: ./documentation/data.md
+      - GeoData: ./documentation/geodata.md
+      - Generic: ./documentation/generic.md
   - Licenza: ./LICENSE.md
 theme:
   name: material
@@ -22,4 +28,9 @@ markdown_extensions:
   - admonition
 plugins:
     - search:
-        indexing: 'full'
+    - mkdocstrings:
+        default_handler: python
+        handlers:
+          python:
+            options:
+              show_source: true

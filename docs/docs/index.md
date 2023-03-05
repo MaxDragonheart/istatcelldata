@@ -16,5 +16,5 @@ Con **census_istat** puoi ottenere facilmente il set di dati riferiti ai censime
 
     Questo progetto non è collegato ad ISTAT nè supportato da ISTAT.
 
-Questo repository è stato creato grazie a [MkDocs](https://www.mkdocs.org/) e [Material for MkDocs](https://squidfunk.github.io/mkdocs-material).
+Questo repository è stato creato grazie a [MkDocs](https://www.mkdocs.org/), [Material for MkDocs](https://squidfunk.github.io/mkdocs-material) e [mkdocstring](https://mkdocstrings.github.io/).
 
