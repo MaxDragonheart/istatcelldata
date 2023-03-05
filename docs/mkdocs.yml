@@ -6,7 +6,7 @@ site_description: Con census_istat puoi ottenere facilmente il set di dati rifer
 site_author: Massimiliano Moraca
 nav:
   - Home: ./index.md
-  - Tutorial: ./tutorial/intro.md
+  - Tutorial: ./tutorial/test.ipynb
   - Documentazione:
       - Intro: ./documentation/intro.md
       - Download: ./documentation/download.md
@@ -26,11 +26,16 @@ theme:
 markdown_extensions:
   - abbr
   - admonition
+  - codehilite
 plugins:
     - search:
+        lang: it
     - mkdocstrings:
         default_handler: python
         handlers:
           python:
             options:
               show_source: true
+    - mknotebooks:
+        execute: true
+        allow_errors: false

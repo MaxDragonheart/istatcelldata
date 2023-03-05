@@ -26,6 +26,8 @@ jupyter-server-proxy = "^3.2.2"
 mkdocs = "^1.4.2"
 mkdocs-material = "^9.1.0"
 mkdocstrings = {extras = ["python"], version = "^0.20.0"}
+mknotebooks = "^0.7.1"
+Pygments = "^2.14.0"
 
 [build-system]
 requires = ["poetry-core"]
