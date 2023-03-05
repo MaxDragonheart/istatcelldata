@@ -136,3 +136,6 @@ poetry.lock
 
 # Project
 istat_dataset
+
+#MkDocs
+docs/site/
