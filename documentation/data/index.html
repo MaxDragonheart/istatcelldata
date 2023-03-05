@@ -50,6 +50,12 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -235,7 +241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorial/intro/" class="md-nav__link">
+      <a href="../../tutorial/test/" class="md-nav__link">
         Tutorial
       </a>
     </li>
@@ -655,7 +661,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 
 <h2 id="census_istat.data.census_1991_2001.census_trace" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">census_trace</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">census_trace</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -728,7 +734,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
 <span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
@@ -812,7 +818,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 
 <h2 id="census_istat.data.census_1991_2001.compare_dataframe" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">compare_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">compare_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
 
 </h2>
 
@@ -865,7 +871,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
 <span class="normal">143</span>
@@ -945,7 +951,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 
 <h2 id="census_istat.data.census_1991_2001.merge_data_1991_2001" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">merge_data_1991_2001</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">merge_data_1991_2001</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1028,7 +1034,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
@@ -1160,7 +1166,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 
 <h2 id="census_istat.data.census_1991_2001.preprocess_csv_1991_2001" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">preprocess_csv_1991_2001</span><span class="p">(</span><span class="n">census_year</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">census_data_folder</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">preprocess_csv_1991_2001</span><span class="p">(</span><span class="n">census_year</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">census_data_folder</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1233,7 +1239,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
 <span class="normal">180</span>
@@ -1293,7 +1299,7 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 
 <h2 id="census_istat.data.census_1991_2001.read_xls" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_xls</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">census_code</span><span class="o">=</span><span class="s1">&#39;sez1991&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">read_xls</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">census_code</span><span class="o">=</span><span class="s1">&#39;sez1991&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1377,7 +1383,7 @@ e costruzione di un DataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
@@ -1495,7 +1501,7 @@ e costruzione di un DataFrame.</p>
 
 
 <h2 id="census_istat.data.census_1991_2001.remove_xls" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">remove_xls</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">census_code</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">remove_xls</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span> <span class="n">census_code</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1550,7 +1556,7 @@ e costruzione di un DataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/census_1991_2001.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
 <span class="normal">116</span>
@@ -1637,7 +1643,7 @@ e costruzione di un DataFrame.</p>
 
 
 <h2 id="census_istat.data.manage_data.list_shared_columns" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">list_shared_columns</span><span class="p">()</span></code>
+<code class="codehilite language-python"><span class="n">list_shared_columns</span><span class="p">()</span></code>
 
 </h2>
 
@@ -1666,7 +1672,7 @@ e costruzione di un DataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/manage_data.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
@@ -1700,7 +1706,7 @@ e costruzione di un DataFrame.</p>
 
 
 <h2 id="census_istat.data.manage_data.merge_data" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">merge_data</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">merge_data</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1784,7 +1790,7 @@ in un unico DataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/manage_data.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
@@ -1882,7 +1888,7 @@ in un unico DataFrame.</p>
 
 
 <h2 id="census_istat.data.manage_data.read_csv" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">separator</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1945,7 +1951,7 @@ in un unico DataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/data/manage_data.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>

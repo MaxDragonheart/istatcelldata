@@ -50,6 +50,12 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -235,7 +241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorial/intro/" class="md-nav__link">
+      <a href="../../tutorial/test/" class="md-nav__link">
         Tutorial
       </a>
     </li>
@@ -538,7 +544,7 @@
 
 
 <h2 id="census_istat.geodata.manage_geodata.join_year_census" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">join_year_census</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">remove_processed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_shared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">join_year_census</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">remove_processed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">only_shared</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -631,7 +637,7 @@
 
       <details class="quote">
         <summary>Source code in <code>census_istat/geodata/manage_geodata.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
@@ -751,7 +757,7 @@
 
 
 <h2 id="census_istat.geodata.manage_geodata.read_geodata" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_geodata</span><span class="p">(</span><span class="n">geodata_path</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">read_geodata</span><span class="p">(</span><span class="n">geodata_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -806,7 +812,7 @@ lettura dei dati.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/geodata/manage_geodata.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
@@ -852,7 +858,7 @@ lettura dei dati.</p>
 
 
 <h2 id="census_istat.geodata.manage_geodata.read_raw_census_geodata" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_raw_census_geodata</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">read_raw_census_geodata</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -926,7 +932,7 @@ creazione di un unico GeoDataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/geodata/manage_geodata.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 72</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 72</span>
 <span class="normal"> 73</span>
 <span class="normal"> 74</span>
 <span class="normal"> 75</span>
@@ -1024,7 +1030,7 @@ creazione di un unico GeoDataFrame.</p>
 
 
 <h2 id="census_istat.geodata.manage_geodata.read_raw_geodata" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">read_raw_geodata</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">read_raw_geodata</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1087,7 +1093,7 @@ creazione di un unico GeoDataFrame.</p>
 
       <details class="quote">
         <summary>Source code in <code>census_istat/geodata/manage_geodata.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
+        <div class="codehilite"><table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
 <span class="normal">43</span>

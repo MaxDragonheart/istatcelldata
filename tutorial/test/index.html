@@ -12,20 +12,20 @@
         <meta name="author" content="Massimiliano Moraca">
       
       
-        <link rel="canonical" href="https://maxdragonheart.github.io/census_istat/documentation/intro/">
+        <link rel="canonical" href="https://maxdragonheart.github.io/census_istat/tutorial/test/">
       
       
-        <link rel="prev" href="../../tutorial/test/">
+        <link rel="prev" href="../..">
       
       
-        <link rel="next" href="../download/">
+        <link rel="next" href="../../documentation/intro/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.0">
     
     
       
-        <title>Intro - Census ISTAT</title>
+        <title>Tutorial - Census ISTAT</title>
       
     
     
@@ -80,11 +80,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#documentazione" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -116,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Intro
+              Tutorial
             
           </span>
         </div>
@@ -239,11 +234,19 @@
 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../tutorial/test/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Tutorial
       </a>
+      
     </li>
   
 
@@ -254,16 +257,14 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
       
       
-      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
       
       
       
@@ -272,7 +273,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
           Documentazione
@@ -283,21 +284,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../documentation/intro/" class="md-nav__link">
         Intro
       </a>
-      
     </li>
   
 
@@ -309,7 +300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../download/" class="md-nav__link">
+      <a href="../../documentation/download/" class="md-nav__link">
         Download
       </a>
     </li>
@@ -323,7 +314,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../data/" class="md-nav__link">
+      <a href="../../documentation/data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -337,7 +328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../geodata/" class="md-nav__link">
+      <a href="../../documentation/geodata/" class="md-nav__link">
         GeoData
       </a>
     </li>
@@ -351,7 +342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../generic/" class="md-nav__link">
+      <a href="../../documentation/generic/" class="md-nav__link">
         Generic
       </a>
     </li>
@@ -397,8 +388,6 @@
   
   
   
-    
-  
   
 </nav>
                   </div>
@@ -416,9 +405,62 @@
   
 
 
-<h1 id="documentazione">Documentazione</h1>
-<p>Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
-È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.</p>
+  <h1>Tutorial</h1>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+(function() {
+  function addWidgetsRenderer() {
+    var requireJsScript = document.createElement('script');
+    requireJsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js';
+
+    var mimeElement = document.querySelector('script[type="application/vnd.jupyter.widget-view+json"]');
+    var jupyterWidgetsScript = document.createElement('script');
+    var widgetRendererSrc = 'https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js';
+    var widgetState;
+
+    // Fallback for older version:
+    try {
+      widgetState = mimeElement && JSON.parse(mimeElement.innerHTML);
+
+      if (widgetState && (widgetState.version_major < 2 || !widgetState.version_major)) {
+        widgetRendererSrc = 'jupyter-js-widgets@*/dist/embed.js';
+      }
+    } catch(e) {}
+
+    jupyterWidgetsScript.src = widgetRendererSrc;
+
+    document.body.appendChild(requireJsScript);
+    document.body.appendChild(jupyterWidgetsScript);
+  }
+
+  document.addEventListener('DOMContentLoaded', addWidgetsRenderer);
+}());
+</script>
+
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+
+<div class="codehilite"><pre><span></span><code><span class="n">txt</span> <span class="o">=</span> <span class="s1">&#39;Coming soon!&#39;</span>
+<span class="n">txt</span>
+</code></pre></div>
+
+
+
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="output_text output_subarea output_execute_result">
+<pre>
+<code>&#39;Coming soon!&#39;</code>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 
 
 
