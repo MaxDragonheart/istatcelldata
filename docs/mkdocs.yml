@@ -1,0 +1,6 @@
+site_name: Census ISTAT
+site_url: https://github.com/MaxDragonheart/census_istat
+nav:
+  - Home: index.md
+  - Documentazione: ./documentation/intro.md
+theme: readthedocs
