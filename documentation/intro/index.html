@@ -419,6 +419,200 @@
 <h1 id="documentazione">Documentazione</h1>
 <p>Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
 È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.</p>
+<p>Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
+il loro codice. Questi campi sono stati definiti <code>SHARED_DATA</code> ed è possibile ottenerli scartando quelli che
+negli anni hanno cambiato codice. I campi condivisi sono i seguenti:</p>
+<div class="codehilite"><pre><span></span><code>SHARED_DATA = {
+    &#39;pop_tot&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - TOTALE&#39;,
+        &#39;codice&#39;: &#39;P1&#39;
+    },
+    &#39;pop_tot_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi&#39;,
+        &#39;codice&#39;: &#39;P2&#39;
+    },
+    &#39;pop_tot_f&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Femmine&#39;,
+        &#39;codice&#39;: &#39;P3&#39;
+    },
+    &#39;pop_meno_5_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età &lt; 5 anni&#39;,
+        &#39;codice&#39;: &#39;P14&#39;
+    },
+    &#39;pop_5_9_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 5 - 9 anni&#39;,
+        &#39;codice&#39;: &#39;P15&#39;
+    },
+    &#39;pop_10_14_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 10 - 14 anni&#39;,
+        &#39;codice&#39;: &#39;P16&#39;
+    },
+    &#39;pop_15_19_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 15 - 19 anni&#39;,
+        &#39;codice&#39;: &#39;P17&#39;
+    },
+    &#39;pop_20_24_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 20 - 24 anni&#39;,
+        &#39;codice&#39;: &#39;P18&#39;
+    },
+    &#39;pop_25_29_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 25 - 29 anni&#39;,
+        &#39;codice&#39;: &#39;P19&#39;
+    },
+    &#39;pop_30_34_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 30 - 34 anni&#39;,
+        &#39;codice&#39;: &#39;P20&#39;
+    },
+    &#39;pop_35_39_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 35 - 39 anni&#39;,
+        &#39;codice&#39;: &#39;P21&#39;
+    },
+    &#39;pop_40_44_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 40 - 44 anni&#39;,
+        &#39;codice&#39;: &#39;P22&#39;
+    },
+    &#39;pop_45_49_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 15 - 19 anni&#39;,
+        &#39;codice&#39;: &#39;P23&#39;
+    },
+    &#39;pop_50_54_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 20 - 24 anni&#39;,
+        &#39;codice&#39;: &#39;P24&#39;
+    },
+    &#39;pop_55_59_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 25 - 29 anni&#39;,
+        &#39;codice&#39;: &#39;P25&#39;
+    },
+    &#39;pop_60_64_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 30 - 34 anni&#39;,
+        &#39;codice&#39;: &#39;P26&#39;
+    },
+    &#39;pop_65_69_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 35 - 39 anni&#39;,
+        &#39;codice&#39;: &#39;P27&#39;
+    },
+    &#39;pop_70_74_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età 40 - 44 anni&#39;,
+        &#39;codice&#39;: &#39;P28&#39;
+    },
+    &#39;pop_maggiore_74_anni&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - età &gt; 74 anni&#39;,
+        &#39;codice&#39;: &#39;P29&#39;
+    },
+    &#39;pop_meno_5_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età &lt; 5 anni&#39;,
+        &#39;codice&#39;: &#39;P30&#39;
+    },
+    &#39;pop_5_9_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 5 - 9 anni&#39;,
+        &#39;codice&#39;: &#39;P31&#39;
+    },
+    &#39;pop_10_14_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 10 - 14 anni&#39;,
+        &#39;codice&#39;: &#39;P32&#39;
+    },
+    &#39;pop_15_19_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 15 - 19 anni&#39;,
+        &#39;codice&#39;: &#39;P33&#39;
+    },
+    &#39;pop_20_24_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 20 - 24 anni&#39;,
+        &#39;codice&#39;: &#39;P34&#39;
+    },
+    &#39;pop_25_29_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 25 - 29 anni&#39;,
+        &#39;codice&#39;: &#39;P35&#39;
+    },
+    &#39;pop_30_34_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 30 - 34 anni&#39;,
+        &#39;codice&#39;: &#39;P36&#39;
+    },
+    &#39;pop_35_39_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 35 - 39 anni&#39;,
+        &#39;codice&#39;: &#39;P37&#39;
+    },
+    &#39;pop_40_44_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 40 - 44 anni&#39;,
+        &#39;codice&#39;: &#39;P38&#39;
+    },
+    &#39;pop_45_49_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 15 - 19 anni&#39;,
+        &#39;codice&#39;: &#39;P39&#39;
+    },
+    &#39;pop_50_54_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 20 - 24 anni&#39;,
+        &#39;codice&#39;: &#39;P40&#39;
+    },
+    &#39;pop_55_59_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 25 - 29 anni&#39;,
+        &#39;codice&#39;: &#39;P41&#39;
+    },
+    &#39;pop_60_64_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 30 - 34 anni&#39;,
+        &#39;codice&#39;: &#39;P42&#39;
+    },
+    &#39;pop_65_69_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 35 - 39 anni&#39;,
+        &#39;codice&#39;: &#39;P43&#39;
+    },
+    &#39;pop_70_74_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età 40 - 44 anni&#39;,
+        &#39;codice&#39;: &#39;P44&#39;
+    },
+    &#39;pop_maggiore_74_anni_m&#39;: {
+        &#39;descrizione&#39;: &#39;Popolazione residente - Maschi - età &gt; 74 anni&#39;,
+        &#39;codice&#39;: &#39;P45&#39;
+    },
+    &#39;lavoratori_tot&#39;: {
+        &#39;descrizione&#39;: &#39;Forze lavoro - TOTALE&#39;,
+        &#39;codice&#39;: &#39;P60&#39;
+    },
+    &#39;lavoratori_occupati&#39;: {
+        &#39;descrizione&#39;: &#39;Forze lavoro - Occupati&#39;,
+        &#39;codice&#39;: &#39;P61&#39;
+    },
+    &#39;lavoratori_disoccupati&#39;: {
+        &#39;descrizione&#39;: &#39;Forze lavoro - Disoccupati e altre persone in cerca di occupazione&#39;,
+        &#39;codice&#39;: &#39;P62&#39;
+    },
+    &#39;famiglie_tot&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie totale&#39;,
+        &#39;codice&#39;: &#39;PF1&#39;
+    },
+    &#39;famiglie_componenti_tot&#39;: {
+        &#39;descrizione&#39;: &#39;Totale componenti delle famiglie&#39;,
+        &#39;codice&#39;: &#39;PF2&#39;
+    },
+    &#39;famiglie_1_componente&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 1 componente&#39;,
+        &#39;codice&#39;: &#39;PF3&#39;
+    },
+    &#39;famiglie_2_componenti&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 2 componenti&#39;,
+        &#39;codice&#39;: &#39;PF4&#39;
+    },
+    &#39;famiglie_3_componenti&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 3 componenti&#39;,
+        &#39;codice&#39;: &#39;PF5&#39;
+    },
+    &#39;famiglie_4_componenti&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 4 componenti&#39;,
+        &#39;codice&#39;: &#39;PF6&#39;
+    },
+    &#39;famiglie_5_componenti&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 5 componenti&#39;,
+        &#39;codice&#39;: &#39;PF7&#39;
+    },
+    &#39;famiglie_6_componenti_e_oltre&#39;: {
+        &#39;descrizione&#39;: &#39;Famiglie 6 e oltre componenti&#39;,
+        &#39;codice&#39;: &#39;PF8&#39;
+    },
+    &#39;famiglie_residenti_oltre_6_componenti&#39;: {
+        &#39;descrizione&#39;: &#39;Componenti delle famiglie residenti di 6 e oltre componenti&#39;,
+        &#39;codice&#39;: &#39;PF9&#39;
+    },
+}
+</code></pre></div>
 
 
 
