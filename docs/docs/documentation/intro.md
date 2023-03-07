@@ -197,5 +197,4 @@ SHARED_DATA = {
         'codice': 'PF9'
     },
 }
-
 ```
