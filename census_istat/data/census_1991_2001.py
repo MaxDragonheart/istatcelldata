@@ -254,8 +254,8 @@ def merge_data_1991_2001(
         right=municipality_data,
         on='pro_com'
     )
-    join_data.rename(columns={'cod_com': 'codcom'}, inplace=True)
-    join_data.drop(columns={'cod_pro', 'pro_com', 'sezione'}, inplace=True)
+    join_data.rename(columns={'cod_com': 'codcom', 'pro_com': 'procom'}, inplace=True)
+    join_data.drop(columns={'cod_pro', 'sezione'}, inplace=True)
 
     if output_path is None:
         # Pandas DataFrame to Dask DataFrame

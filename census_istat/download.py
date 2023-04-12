@@ -2,7 +2,6 @@ import logging
 import os
 from pathlib import Path
 
-import requests
 from tqdm.auto import tqdm
 
 from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
@@ -46,26 +45,26 @@ def download_census_data(
         destination_folder=destination_folder
     )
 
-    # if year in [1991, 2001]:
-    #     logging.info(f'Convert xls to csv for {year}')
-    #     files_list = list(data_folder.rglob("*.xls"))
-    #     first_element = files_list[0]
-    #
-    #     # Make data folder
-    #     data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
-    #     Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
-    #
-    #     census_trace(
-    #         file_path=first_element,
-    #         year=year,
-    #         output_path=data_folder_1991_2001
-    #     )
-    #     remove_xls(
-    #         folder_path=data_folder,
-    #         census_code=f'sez{year}',
-    #         output_path=data_folder_1991_2001,
-    #     )
-    # logging.info("Download census data completed")
+    if year in [1991, 2001]:
+        logging.info(f'Convert xls to csv for {year}')
+        files_list = list(data_folder.rglob("*.xls"))
+        first_element = files_list[0]
+
+        # Make data folder
+        data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
+        Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
+
+        census_trace(
+            file_path=first_element,
+            year=year,
+            output_path=data_folder_1991_2001
+        )
+        remove_xls(
+            folder_path=data_folder,
+            census_code=f'sez{year}',
+            output_path=data_folder_1991_2001,
+        )
+    logging.info("Download census data completed")
 
 
 def download_census_geodata(
