@@ -1,6 +1,6 @@
-# census_istat
+# ISTAT Cell Data
 
-Con **census_istat** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
+Con **ISTAT Cell Data** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
 
 ## Note
 Ad oggi i dati censuari ufficiali sono riferiti agli anni 1991, 2001 e 2011.

@@ -74,8 +74,9 @@ def merge_data(
             data_list.append(data)
 
     # Make Dask DataFrame
-    logging.info('Make Dask DataFrame')
+    logging.info('Make DataFrame')
     # TODO Multithread processing with Dask #15
+    # logging.info('Make Dask DataFrame')
     # ddf = dd.concat(data_list)
     ddf = pd.concat(data_list)
     ddf = ddf.sort_values(f'sez{year}')

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "census-istat"
+name = "istat-cell-data"
 version = "0.2.1"
 description = ""
 authors = ["Massimiliano Moraca <info@massimilianomoraca.it>"]
@@ -17,6 +17,7 @@ requests = "^2.28.2"
 fsspec = "^2023.1.0"
 openpyxl = "^3.1.1"
 xlrd = "^2.0.1"
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

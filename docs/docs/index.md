@@ -1,6 +1,6 @@
-# Census Istat
+# ISTAT Cell Data
 
-Con **census_istat** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
+Con **ISTAT Cell Data** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
 
 !!! NOTE
 

@@ -1,31 +1,29 @@
 import logging
 import os
-from pathlib import Path, PosixPath
-from typing import Union
+from pathlib import Path
 
-import requests
 from tqdm.auto import tqdm
 
 from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
     BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from census_istat.data.census_1991_2001 import census_trace, remove_xls
-from census_istat.generic import census_folder, unzip_data
+from census_istat.generic import census_folder, unzip_data, get_legacy_session
 
 logger.addHandler(console_handler)
 
 
 def download_census_data(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int = 2011
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Download dei dati censuari.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: Integer. Default 2011.
 
     Returns
-        Union[Path, PosixPath]
+        Path
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -70,17 +68,17 @@ def download_census_data(
 
 
 def download_census_geodata(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int = 2011
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Download dei geodati censuari.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: Integer. Default 2011.
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -112,17 +110,17 @@ def download_census_geodata(
 
 
 def download_administrative_boundaries(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int = 2011
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Download dei limiti amministrativi dell'anno cenusario selezionato.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: int
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -147,13 +145,13 @@ def download_administrative_boundaries(
 
 
 def download_all_census_data(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int = 2011
 ) -> None:
     """Download di tutti i dati censuari per l'anno selezionato.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: int
     """
     # Make data folder
@@ -178,25 +176,25 @@ def download_all_census_data(
 
 def _download_data(
         data_link: str,
-        data_file_path_destination: Union[Path, PosixPath],
-        data_folder: Union[Path, PosixPath],
-        destination_folder: Union[Path, PosixPath],
-) -> Union[Path, PosixPath]:
+        data_file_path_destination: Path,
+        data_folder: Path,
+        destination_folder: Path,
+) -> Path:
     """Funzione di download base.
 
     Args:
-        data_link: Union[Path, PosixPath]
-        data_file_path_destination: Union[Path, PosixPath]
-        data_folder: Union[Path, PosixPath]
-        destination_folder: Union[Path, PosixPath]
+        data_link: Path
+        data_file_path_destination: Path
+        data_folder: Path
+        destination_folder: Path
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     try:
         # Download data
         logging.info(f"Download census data | {data_link}")
-        data = requests.get(data_link)
+        data = get_legacy_session().get(data_link)
 
         if data.status_code == 200:
             data_size = int(data.headers.get('Content-Length'))
@@ -205,7 +203,7 @@ def _download_data(
                 open(data_file_path_destination, 'wb').write(data.content)
             logging.info("Download completed")
         else:
-            raise Exception()
+            raise Exception(f'Link {data_link} return status code {data.status_code}.')
 
         logging.info("Unzip file")
         unzip_data(data_file_path_destination, data_folder)
@@ -218,4 +216,4 @@ def _download_data(
 
     except:
         logging.info("Something went wrong!!!")
-        logging.info(f'Link {data_link} return status code {data.status_code}.')
+        #logging.info(f'Link {data_link} return status code {data.status_code}.')
