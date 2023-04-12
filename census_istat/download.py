@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
     BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from census_istat.data.census_1991_2001 import census_trace, remove_xls
-from census_istat.generic import census_folder, unzip_data
+from census_istat.generic import census_folder, unzip_data, get_legacy_session
 
 logger.addHandler(console_handler)
 
@@ -46,26 +46,26 @@ def download_census_data(
         destination_folder=destination_folder
     )
 
-    if year in [1991, 2001]:
-        logging.info(f'Convert xls to csv for {year}')
-        files_list = list(data_folder.rglob("*.xls"))
-        first_element = files_list[0]
-
-        # Make data folder
-        data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
-        Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
-
-        census_trace(
-            file_path=first_element,
-            year=year,
-            output_path=data_folder_1991_2001
-        )
-        remove_xls(
-            folder_path=data_folder,
-            census_code=f'sez{year}',
-            output_path=data_folder_1991_2001,
-        )
-    logging.info("Download census data completed")
+    # if year in [1991, 2001]:
+    #     logging.info(f'Convert xls to csv for {year}')
+    #     files_list = list(data_folder.rglob("*.xls"))
+    #     first_element = files_list[0]
+    #
+    #     # Make data folder
+    #     data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
+    #     Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
+    #
+    #     census_trace(
+    #         file_path=first_element,
+    #         year=year,
+    #         output_path=data_folder_1991_2001
+    #     )
+    #     remove_xls(
+    #         folder_path=data_folder,
+    #         census_code=f'sez{year}',
+    #         output_path=data_folder_1991_2001,
+    #     )
+    # logging.info("Download census data completed")
 
 
 def download_census_geodata(
@@ -192,12 +192,11 @@ def _download_data(
     Returns:
         Path
     """
-    print(requests.get(data_link))
     try:
         # Download data
         logging.info(f"Download census data | {data_link}")
-        data = requests.get(data_link)
-        print(data)
+        data = get_legacy_session().get(data_link)
+
         if data.status_code == 200:
             data_size = int(data.headers.get('Content-Length'))
             # Progress bar via tqdm
