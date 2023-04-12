@@ -65,7 +65,7 @@ def read_raw_geodata(
     df = pd.DataFrame(data_list, columns=[f'sez{year}', 'tipo_loc', 'geometry'])
     df.sort_values(f'sez{year}', ascending=True, inplace=True)
     gdf = gpd.GeoDataFrame(df, crs=read_data.crs)
-
+    print(gdf.columns)
     return gdf
 
 

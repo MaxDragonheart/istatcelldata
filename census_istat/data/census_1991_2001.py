@@ -1,6 +1,6 @@
 import logging
 import os
-from pathlib import Path, PosixPath
+from pathlib import Path
 from typing import Union
 
 import pandas as pd
@@ -16,22 +16,22 @@ logger.addHandler(console_handler)
 
 
 def read_xls(
-        file_path: Union[Path, PosixPath],
+        file_path: Path,
         census_code: str = 'sez1991',
-        output_path: Union[Path, PosixPath] = None,
+        output_path: Path = None,
         metadata: bool = False
-) -> Union[DataFrame, Path, PosixPath]:
+) -> Union[DataFrame, Path]:
     """Lettura dei dati censuari relativi agli anni 1991 e 2011
     e costruzione di un DataFrame.
 
     Args:
-        file_path: Union[Path, PosixPath]
+        file_path: Path
         census_code: str
-        output_path: Union[Path, PosixPath]
+        output_path: Path
         metadata: bool
 
     Returns:
-        Union[DataFrame, Path, PosixPath]
+        Union[DataFrame, Path]
     """
     logging.info(f'Read data from {file_path}')
     read_data = xlrd.open_workbook(file_path)
@@ -72,19 +72,19 @@ def read_xls(
 
 
 def census_trace(
-        file_path: Union[Path, PosixPath],
+        file_path: Path,
         year: int,
-        output_path: Union[Path, PosixPath],
-) -> Union[Path, PosixPath]:
+        output_path: Path,
+) -> Path:
     """Creazione del file di tracciato per gli anni 1991 e 2001.
 
     Args:
-        file_path: Union[Path, PosixPath]
+        file_path: Path
         year: int
-        output_path: Union[Path, PosixPath]
+        output_path: Path
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     logging.info(f'Read data from {file_path}')
     read_data = xlrd.open_workbook(file_path)
@@ -106,21 +106,24 @@ def census_trace(
     df.set_index('NOME CAMPO', inplace=True)
 
     file_name = f'tracciato_{year}_sezioni.csv'
-    logging.info(f"Save data to {output_path.joinpath(file_name)}")
-    df.to_csv(output_path.joinpath(file_name))
+    output_data = output_path.joinpath(file_name)
+    logging.info(f"Save data to {output_data}")
+    df.to_csv(output_data)
+    
+    return output_data
 
 
 def remove_xls(
-        folder_path: Union[Path, PosixPath],
+        folder_path: Path,
         census_code: str,
-        output_path: Union[Path, PosixPath]
+        output_path: Path
 ) -> None:
     """Eliminiazione di tutti i file Excel.
 
     Args:
-        folder_path: Union[Path, PosixPath]
+        folder_path: Path
         census_code: str
-        output_path: Union[Path, PosixPath]
+        output_path: Path
     """
     files_path = list(folder_path.rglob("*.xls"))
 
@@ -176,18 +179,18 @@ def compare_dataframe(data: list) -> DataFrame:
 
 def preprocess_csv_1991_2001(
         census_year: int,
-        output_path: Union[Path, PosixPath],
-        census_data_folder: Union[Path, PosixPath]
-) -> Union[Path, PosixPath]:
+        output_path: Path,
+        census_data_folder: Path
+) -> Path:
     """Processamento dei dati censuari per gli anni 1991 e 2001.
 
     Args:
         census_year: int
-        output_path: Union[Path, PosixPath]
-        census_data_folder: Union[Path, PosixPath]
+        output_path: Path
+        census_data_folder: Path
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     # Make preprocess folder
     processing_folder = output_path.joinpath(PREPROCESSING_FOLDER)
@@ -202,21 +205,21 @@ def preprocess_csv_1991_2001(
 
 
 def merge_data_1991_2001(
-        csv_path: Union[Path, PosixPath],
+        csv_path: Path,
         year: int,
         separator: str = ';',
-        output_path: Union[Path, PosixPath] = None,
-) -> Union[Path, PosixPath, DataFrame]:
+        output_path: Path = None,
+) -> Union[Path, DataFrame]:
     """Generazione di un unico file con tutti i dati censuari dell'anno selezionato.
 
     Args:
-        csv_path: Union[Path, PosixPath]
+        csv_path: Path
         year: int
         separator: str
-        output_path: Union[Path, PosixPath]
+        output_path: Path
 
     Returns:
-        Union[Path, PosixPath, DataFrame]
+        Union[Path, DataFrame]
     """
     administrative_boundaries = csv_path.parent.parent.joinpath(BOUNDARIES_DATA_FOLDER)
 
@@ -264,7 +267,7 @@ def merge_data_1991_2001(
         join_data.to_csv(output_data, sep=separator, index=False)
 
 
-def _merge_administrative_data(data_path: Union[Path, PosixPath], year: int) -> DataFrame:
+def _merge_administrative_data(data_path: Path, year: int) -> DataFrame:
     """Unione di tutti i dati sul partizionamento amministrativo delle aree censuarie.
 
     Args:
