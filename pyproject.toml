@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "census-istat"
+name = "istat-cell-data"
 version = "0.2.1"
 description = ""
 authors = ["Massimiliano Moraca <info@massimilianomoraca.it>"]
