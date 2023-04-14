@@ -2,6 +2,10 @@
 
 Con **ISTAT Cell Data** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
 
+## Installazione
+
+`pip install istatcelldata`
+
 ## Note
 Ad oggi i dati censuari ufficiali sono riferiti agli anni 1991, 2001 e 2011.
 Il 2 febbraio 2023 ISTAT ha pubblicato una [nota](https://www.istat.it/it/archivio/280254) in cui indica che i dati del censimento 2021 verranno pubblicati entro il primo semestre 2023.
