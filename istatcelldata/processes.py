@@ -34,7 +34,7 @@ def download_raw_data(output_data_folder: Union[str, Path]):
     logging.info(f'End analysis in {time_end}')
 
 
-def process_row_data(output_data_folder: Union[str, Path]):
+def process_raw_data(output_data_folder: Union[str, Path]):
     """Analisi dei dati grezzi e creazione nel path di destinazione
     di un .csv ed un .gpkg per ogni anno censuario.
 
