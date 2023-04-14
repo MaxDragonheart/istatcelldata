@@ -14,7 +14,7 @@ nav:
         - Data: ./documentation/data.md
         - GeoData: ./documentation/geodata.md
         - Generic: ./documentation/generic.md
-      - Tutorial: ./tutorial/test.ipynb
+      - Tutorial: ./tutorial/intro.md
   - Licenza: ./LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istatcelldata/issues
   - Roadmap: https://github.com/MaxDragonheart/istatcelldata/milestones
