@@ -16,6 +16,7 @@ logger.addHandler(console_handler)
 MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
 MAIN_PATH = Path(os.getenv("MAIN_PATH"))
+TARGET_YEARS = [1991, 2001, 2011]
 
 # PROJECT FOLDERS
 DATA_FOLDER = 'data'

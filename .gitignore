@@ -69,7 +69,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs-/_build/
 
 # PyBuilder
 target/
@@ -138,4 +138,4 @@ poetry.lock
 istat_dataset
 
 #MkDocs
-docs/site/
+docs-/site/

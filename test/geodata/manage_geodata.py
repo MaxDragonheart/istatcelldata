@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.geodata.manage_geodata import read_raw_geodata, read_raw_census_geodata, join_year_census
+from istatcelldata.geodata.manage_geodata import read_raw_geodata, read_raw_census_geodata, join_year_census
 
 test_file_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2001/geodata/R18_01_WGS84/R18_01_WGS84.shp')
 test_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2001')

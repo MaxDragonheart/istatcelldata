@@ -10,8 +10,8 @@ from geopandas import GeoDataFrame
 from shapely.validation import make_valid
 from tqdm import tqdm
 
-from census_istat.config import GEODATA_FOLDER, logger, console_handler
-from census_istat.data.manage_data import read_csv, list_shared_columns
+from istatcelldata.config import GEODATA_FOLDER, logger, console_handler
+from istatcelldata.data.manage_data import read_csv, list_shared_columns
 
 logger.addHandler(console_handler)
 
