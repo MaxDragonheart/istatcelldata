@@ -1,3 +1,3 @@
 # Modulo Download
 
-::: census_istat.download
+::: istatcelldata.download

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.download import download_census_data, download_census_geodata, download_administrative_boundaries, \
+from istatcelldata.download import download_census_data, download_census_geodata, download_administrative_boundaries, \
     download_all_census_data, _download_data
 
 

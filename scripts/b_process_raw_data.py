@@ -1,11 +1,11 @@
 import logging
 import datetime
 
-from census_istat.config import logger, console_handler, MAIN_PATH, DATA_FOLDER, PREPROCESSING_FOLDER, \
+from istatcelldata.config import logger, console_handler, MAIN_PATH, DATA_FOLDER, PREPROCESSING_FOLDER, \
     CENSUS_DATA_FOLDER
-from census_istat.data.census_1991_2001 import merge_data_1991_2001
-from census_istat.data.manage_data import merge_data
-from census_istat.geodata.manage_geodata import read_raw_census_geodata
+from istatcelldata.data.census_1991_2001 import merge_data_1991_2001
+from istatcelldata.data.manage_data import merge_data
+from istatcelldata.geodata.manage_geodata import read_raw_census_geodata
 
 logger.addHandler(console_handler)
 target_years = [1991, 2001, 2011]

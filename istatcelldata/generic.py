@@ -12,7 +12,7 @@ import xlrd
 from fsspec import get_fs_token_paths
 from tqdm import tqdm
 
-from census_istat.config import logger, console_handler, GEODATA_FOLDER
+from istatcelldata.config import logger, console_handler, GEODATA_FOLDER
 
 logger.addHandler(console_handler)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from census_istat.config import MAIN_PATH
-from census_istat.generic import check_encoding, csv_from_excel, census_folder
+from istatcelldata.config import MAIN_PATH
+from istatcelldata.generic import check_encoding, csv_from_excel, census_folder
 
 csv_data = MAIN_PATH.joinpath('tmp/csv/R03_indicatori_2011_sezioni.csv')
 xls_data = MAIN_PATH.joinpath('tmp/xls/dati-cpa_1991\R03_DatiCPA_1991.xls')

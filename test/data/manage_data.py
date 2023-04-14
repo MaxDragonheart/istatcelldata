@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.data.manage_data import read_csv, merge_data, list_shared_columns
+from istatcelldata.data.manage_data import read_csv, merge_data, list_shared_columns
 from test.generic import csv_data
 
 test_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2011/data/Sezioni di Censimento')

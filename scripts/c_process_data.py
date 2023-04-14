@@ -2,8 +2,8 @@ import logging
 import datetime
 import shutil
 
-from census_istat.config import logger, console_handler, MAIN_PATH, PREPROCESSING_FOLDER
-from census_istat.geodata.manage_geodata import join_year_census
+from istatcelldata.config import logger, console_handler, MAIN_PATH, PREPROCESSING_FOLDER
+from istatcelldata.geodata.manage_geodata import join_year_census
 
 logger.addHandler(console_handler)
 target_years = [1991, 2001, 2011]

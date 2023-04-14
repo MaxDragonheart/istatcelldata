@@ -9,8 +9,8 @@ import pandas as pd
 # from dask.distributed import Client, LocalCluster
 from pandas import DataFrame
 
-from census_istat.config import logger, console_handler, SHARED_DATA
-from census_istat.generic import check_encoding
+from istatcelldata.config import logger, console_handler, SHARED_DATA
+from istatcelldata.generic import check_encoding
 
 logger.addHandler(console_handler)
 # TODO Multithread processing with Dask #15

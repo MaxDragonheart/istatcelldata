@@ -1,3 +1,3 @@
 # Modulo GeoData
 
-::: census_istat.geodata.manage_geodata
+::: istatcelldata.geodata.manage_geodata

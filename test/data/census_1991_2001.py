@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from census_istat.data.census_1991_2001 import read_xls, remove_xls, census_trace, merge_data_1991_2001
+from istatcelldata.data.census_1991_2001 import read_xls, remove_xls, census_trace, merge_data_1991_2001
 
 test_dataset = Path('/home/max/Desktop/census_istat/output/census_2001/data/dati-cpa_2001\\R01_DatiCPA_2001.xls')
 test_path = Path('/home/max/Desktop/census_istat/preprocessing/census_1991/data/Sezioni di Censimento')

@@ -7,8 +7,8 @@ Si è scelto dunque di normalizzare i dati 1991-2001 secondo la struttura dati d
 
 ## Anni 1991-2001
 
-::: census_istat.data.census_1991_2001
+::: istatcelldata.data.census_1991_2001
 
 ## Anno 2011
 
-::: census_istat.data.manage_data
+::: istatcelldata.data.manage_data

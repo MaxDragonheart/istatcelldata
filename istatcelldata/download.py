@@ -4,10 +4,10 @@ from pathlib import Path
 
 from tqdm.auto import tqdm
 
-from census_istat.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
+from istatcelldata.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
     BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
-from census_istat.data.census_1991_2001 import census_trace, remove_xls
-from census_istat.generic import census_folder, unzip_data, get_legacy_session
+from istatcelldata.data.census_1991_2001 import census_trace, remove_xls
+from istatcelldata.generic import census_folder, unzip_data, get_legacy_session
 
 logger.addHandler(console_handler)
 

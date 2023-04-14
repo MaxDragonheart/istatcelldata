@@ -1,8 +1,8 @@
 import logging
 import datetime
 
-from census_istat.config import logger, console_handler, MAIN_PATH
-from census_istat.download import download_all_census_data
+from istatcelldata.config import logger, console_handler, MAIN_PATH
+from istatcelldata.download import download_all_census_data
 
 logger.addHandler(console_handler)
 target_years = [1991, 2001, 2011]

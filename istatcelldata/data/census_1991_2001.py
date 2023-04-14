@@ -8,9 +8,9 @@ import xlrd
 from pandas import DataFrame
 from tqdm import tqdm
 
-from census_istat.config import logger, console_handler, PREPROCESSING_FOLDER, BOUNDARIES_DATA_FOLDER
-from census_istat.data.manage_data import merge_data
-from census_istat.generic import get_metadata
+from istatcelldata.config import logger, console_handler, PREPROCESSING_FOLDER, BOUNDARIES_DATA_FOLDER
+from istatcelldata.data.manage_data import merge_data
+from istatcelldata.generic import get_metadata
 
 logger.addHandler(console_handler)
 
