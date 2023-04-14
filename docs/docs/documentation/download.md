@@ -1,3 +1,0 @@
-# Modulo Download
-
-istatcelldata.download

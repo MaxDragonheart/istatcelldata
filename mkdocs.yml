@@ -6,14 +6,15 @@ site_description: Con ISTAT Cell Data puoi ottenere facilmente il set di dati ri
 site_author: Massimiliano Moraca
 nav:
   - Home: ./index.md
-  - Tutorial: ./tutorial/test.ipynb
   - Documentazione:
       - Intro: ./documentation/intro.md
-      - Processes: ./documentation/processes.md
-#      - Download: ./documentation/download.md
-#      - Data: ./documentation/data.md
-#      - GeoData: ./documentation/geodata.md
-#      - Generic: ./documentation/generic.md
+      - References:
+        - Processes: ./documentation/processes.md
+        - Download: ./documentation/download.md
+        - Data: ./documentation/data.md
+        - GeoData: ./documentation/geodata.md
+        - Generic: ./documentation/generic.md
+      - Tutorial: ./tutorial/test.ipynb
   - Licenza: ./LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istatcelldata/issues
   - Roadmap: https://github.com/MaxDragonheart/istatcelldata/milestones
@@ -36,10 +37,10 @@ plugins:
     - mkdocstrings:
         handlers:
           python:
-            paths: [../istatcelldata]
-#            options:
-#              show_source: true
-#              show_root_heading: true
+            paths: [.istatcelldata]
+            options:
+              show_source: true
+              show_root_heading: true
     - mknotebooks:
         execute: true
         allow_errors: false

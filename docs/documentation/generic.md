@@ -1,3 +1,3 @@
 # Modulo Processi Generici
 
-istatcelldata.generic
+::: istatcelldata.generic
