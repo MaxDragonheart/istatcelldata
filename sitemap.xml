@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/LICENSE/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/LICENSE/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/documentation/data/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/data/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/documentation/download/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/download/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/documentation/generic/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/generic/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/documentation/geodata/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/geodata/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/documentation/intro/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/intro/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/tutorial/intro/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/processes/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/census_istat/tutorial/test/</loc>
-         <lastmod>2023-03-07</lastmod>
+         <loc>https://maxdragonheart.github.io/istatcelldata/tutorial/intro/</loc>
+         <lastmod>2023-04-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maxdragonheart.github.io/istatcelldata/tutorial/test/</loc>
+         <lastmod>2023-04-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
