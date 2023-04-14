@@ -28,7 +28,7 @@ mkdocs = "^1.4.2"
 mkdocs-material = "^9.1.6"
 mknotebooks = "^0.7.1"
 pygments = "^2.15.0"
-mkdocstrings = {extras = ["crystal", "python"], version = "^0.21.2"}
+mkdocstrings-python = "^0.9.0"
 
 [build-system]
 requires = ["poetry-core"]

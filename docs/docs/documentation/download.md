@@ -1,3 +1,3 @@
 # Modulo Download
 
-::: istatcelldata.download
+istatcelldata.download

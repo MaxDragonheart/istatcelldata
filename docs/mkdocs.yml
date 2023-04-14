@@ -9,10 +9,11 @@ nav:
   - Tutorial: ./tutorial/test.ipynb
   - Documentazione:
       - Intro: ./documentation/intro.md
-      - Download: ./documentation/download.md
-      - Data: ./documentation/data.md
-      - GeoData: ./documentation/geodata.md
-      - Generic: ./documentation/generic.md
+      - Processes: ./documentation/processes.md
+#      - Download: ./documentation/download.md
+#      - Data: ./documentation/data.md
+#      - GeoData: ./documentation/geodata.md
+#      - Generic: ./documentation/generic.md
   - Licenza: ./LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istatcelldata/issues
   - Roadmap: https://github.com/MaxDragonheart/istatcelldata/milestones
@@ -33,11 +34,12 @@ plugins:
     - search:
         lang: it
     - mkdocstrings:
-        default_handler: python
         handlers:
           python:
-            options:
-              show_source: true
+            paths: [../istatcelldata]
+#            options:
+#              show_source: true
+#              show_root_heading: true
     - mknotebooks:
         execute: true
         allow_errors: false
