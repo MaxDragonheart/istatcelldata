@@ -1,8 +1,8 @@
 site_name: Census ISTAT
-site_url: https://maxdragonheart.github.io/istat_cell_data/
-repo_url: https://github.com/MaxDragonheart/istat_cell_data
+site_url: https://maxdragonheart.github.io/istatcelldata/
+repo_url: https://github.com/MaxDragonheart/istatcelldata
 repo_name: istatcelldata
-site_description: Con istatcelldata puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
+site_description: Con ISTAT Cell Data puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie.
 site_author: Massimiliano Moraca
 nav:
   - Home: ./index.md
@@ -14,8 +14,8 @@ nav:
       - GeoData: ./documentation/geodata.md
       - Generic: ./documentation/generic.md
   - Licenza: ./LICENSE.md
-  - Issues: https://github.com/MaxDragonheart/istat_cell_data/issues
-  - Roadmap: https://github.com/MaxDragonheart/istat_cell_data/milestones
+  - Issues: https://github.com/MaxDragonheart/istatcelldata/issues
+  - Roadmap: https://github.com/MaxDragonheart/istatcelldata/milestones
 theme:
   name: material
   palette:
