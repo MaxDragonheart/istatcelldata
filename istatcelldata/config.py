@@ -1,5 +1,4 @@
 import logging
-import os
 from pathlib import Path
 # from multiprocessing import cpu_count
 
@@ -15,7 +14,7 @@ logger.addHandler(console_handler)
 # PROJECT
 MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
-MAIN_PATH = Path(os.getenv("MAIN_PATH"))
+MAIN_PATH = Path("/home/max/Desktop/test")  # FOR TEST ONLY
 TARGET_YEARS = [1991, 2001, 2011]
 
 # PROJECT FOLDERS
