@@ -281,9 +281,47 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Intro
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Intro
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#codice-regione" class="md-nav__link">
+    Codice Regione
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shared-data" class="md-nav__link">
+    Shared data
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -479,6 +517,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#codice-regione" class="md-nav__link">
+    Codice Regione
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shared-data" class="md-nav__link">
+    Shared data
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -498,6 +558,102 @@
 <h1 id="documentazione">Documentazione</h1>
 <p>Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
 È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.</p>
+<h2 id="codice-regione">Codice Regione</h2>
+<p>A partire dalla versione <code>0.6.0</code> è possibile elaborare i dati non per forza di tutta l'Italia ma anche solo di una o più 
+regioni, l'utente può scegliere. La scelta della o delle regioni da elaborare va fatta usado il codice della Regione di 
+interesse.</p>
+<table>
+<thead>
+<tr>
+<th><strong>Codice</strong></th>
+<th><strong>Regione</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>Piemonte</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Valle d’Aosta/Vallée d’Aoste</td>
+</tr>
+<tr>
+<td>03</td>
+<td>Lombardia</td>
+</tr>
+<tr>
+<td>04</td>
+<td>Trentino-Alto Adige/Südtirol</td>
+</tr>
+<tr>
+<td>05</td>
+<td>Veneto</td>
+</tr>
+<tr>
+<td>06</td>
+<td>Friuli-Venezia Giulia</td>
+</tr>
+<tr>
+<td>07</td>
+<td>Liguria</td>
+</tr>
+<tr>
+<td>08</td>
+<td>Emilia-Romagna</td>
+</tr>
+<tr>
+<td>09</td>
+<td>Toscana</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Umbria</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Marche</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Lazio</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Abruzzo</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Molise</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Campania</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Puglia</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Basilicata</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Calabria</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Sicilia</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Sardegna</td>
+</tr>
+</tbody>
+</table>
+<p>La fonte della tabella precedente è <a href="https://www.istat.it/it/archivio/104317">questa</a>.</p>
+<h2 id="shared-data">Shared data</h2>
 <p>Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
 il loro codice. Questi campi sono stati definiti <code>SHARED_DATA</code> ed è possibile ottenerli scartando quelli che
 negli anni hanno cambiato codice. I campi condivisi sono i seguenti:</p>
