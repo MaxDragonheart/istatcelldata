@@ -16,33 +16,33 @@ logger.addHandler(console_handler)
 
 def download_raw_data(
         output_data_folder: Union[str, Path],
-        census_year: List = [],
-        target_area: List = [],
+        year_list: List = [],
+        region_list: List = [],
 ):
     """Download nel path di destinazione di tutti i dati grezzi sui censimenti. E' possibile
-    effettuare il download per singolo anno e per singola Regione ma anche per specifici anni e specifiche Regioni..
-    Quando i campi `census_year` e `target_area` restano vuoti vengono scaricati i dati di tutti gli anni censuari
+    effettuare il download per singolo anno e per singola Regione ma anche per specifici anni e specifiche Regioni.
+    Quando i campi `year_list` e `region_list` restano vuoti vengono scaricati i dati di tutti gli anni censuari
     e di tutte le Regioni.
 
     Args:
         output_data_folder: Union[str, Path]
-        census_year: List
-        target_area: List
+        year_list: List
+        region_list: List
     """
     time_start = datetime.datetime.now()
     logging.info(f'Start analysis at {time_start}')
 
-    if len(census_year) == 0:
+    if len(year_list) == 0:
         target = TARGET_YEARS
     else:
-        target = census_year
+        target = year_list
 
     for year in target:
         logging.info(f'Start download census data for year {year}')
         download_all_census_data(
             output_data_folder=output_data_folder,
             year=year,
-            targer_area=target_area
+            region_list=region_list
         )
 
     time_end = datetime.datetime.now() - time_start

@@ -16,7 +16,7 @@ def test_download_census_geodata(tmp_path: Path):
     download_census_geodata(
         output_data_folder=tmp_path,
         year=target_year,
-        target_area=[12]
+        region_list=[12]
     )
 
 

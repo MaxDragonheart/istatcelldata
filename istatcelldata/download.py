@@ -71,14 +71,14 @@ def download_census_data(
 def download_census_geodata(
         output_data_folder: Path,
         year: int = 2011,
-        target_area: List = []
+        region_list: List = []
 ) -> Path:
     """Download dei geodati censuari.
 
     Args:
         output_data_folder: Path
         year: Integer. Default 2011.
-        target_area: List
+        region_list: List
 
     Returns:
         Path
@@ -92,10 +92,10 @@ def download_census_geodata(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     year_folder = str(year)[2:]
-    if len(target_area) == 0:
+    if len(region_list) == 0:
         regions = tqdm(range(1, 21, 1))
     else:
-        regions = target_area
+        regions = region_list
 
     logging.info("Download census geodata")
     for region in regions:
@@ -153,14 +153,16 @@ def download_administrative_boundaries(
 def download_all_census_data(
         output_data_folder: Path,
         year: int = 2011,
-        targer_area: List = []
+        region_list: List = []
 ) -> None:
-    """Download di tutti i dati censuari per l'anno selezionato.
+    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
+    effettuare il download per singola Regione ma anche per specifiche Regioni.
+    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
 
     Args:
         output_data_folder: Path
         year: int
-        targer_area: List
+        region_list: List
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
@@ -173,7 +175,7 @@ def download_all_census_data(
 
     # Download geodata
     download_census_geodata(
-        output_data_folder=data_folder, year=year, target_area=targer_area
+        output_data_folder=data_folder, year=year, region_list=region_list
     )
 
     # Download administrative boundaries
