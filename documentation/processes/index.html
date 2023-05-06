@@ -21,7 +21,7 @@
         <link rel="next" href="../download/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.6">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.9">
     
     
       
@@ -29,10 +29,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.85bb2934.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.a6bdf11c.min.css">
       
       
 
@@ -71,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
   
     
     
@@ -122,6 +122,8 @@
         </div>
       </div>
     </div>
+    
+      
     
     
     
@@ -595,14 +597,17 @@
 
 
 <h2 id="istatcelldata.processes.download_raw_data" class="doc doc-heading">
-<code class="codehilite language-python"><span class="n">download_raw_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">download_raw_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">year_list</span><span class="o">=</span><span class="p">[],</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
 
   <div class="doc doc-contents ">
   
-      <p>Download nel path di destinazione di tutti i dati grezzi sui censimenti.</p>
+      <p>Download nel path di destinazione di tutti i dati grezzi sui censimenti. E' possibile
+effettuare il download per singolo anno e per singola Regione ma anche per specifici anni e specifiche Regioni.
+Quando i campi <code>year_list</code> e <code>region_list</code> restano vuoti vengono scaricati i dati di tutti gli anni censuari
+e di tutte le Regioni.</p>
 
   <table>
     <thead>
@@ -620,6 +625,38 @@
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
                     <code><span title="typing.Union">Union</span>[str, <span title="pathlib.Path">Path</span>]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>year_list</code></td>
+          <td class="doc-param-details">
+            <p>List</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.List">List</span></code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>[]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>region_list</code></td>
+          <td class="doc-param-details">
+            <p>List</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.List">List</span></code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>[]</code>
                 </span>
             </p>
           </td>
@@ -694,7 +731,7 @@ nel path di destinazione. Le cartelle di preprocessamento vengono eliminate di d
 
 
 <h2 id="istatcelldata.processes.process_raw_data" class="doc doc-heading">
-<code class="codehilite language-python"><span class="n">process_raw_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">)</span></code>
+<code class="codehilite language-python"><span class="n">process_raw_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
@@ -720,6 +757,22 @@ di un .csv ed un .gpkg per ogni anno censuario.</p>
                 <span class="doc-param-annotation">
                   <b>TYPE:</b>
                     <code><span title="typing.Union">Union</span>[str, <span title="pathlib.Path">Path</span>]</code>
+                </span>
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td><code>region_list</code></td>
+          <td class="doc-param-details">
+            <p>List</p>
+            <p>
+                <span class="doc-param-annotation">
+                  <b>TYPE:</b>
+                    <code><span title="typing.List">List</span></code>
+                </span>
+                <span class="doc-param-default">
+                  <b>DEFAULT:</b> 
+                    <code>[]</code>
                 </span>
             </p>
           </td>
@@ -778,7 +831,7 @@ di un .csv ed un .gpkg per ogni anno censuario.</p>
     <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="../../assets/javascripts/bundle.fac441b0.min.js"></script>
       
     
   </body>
