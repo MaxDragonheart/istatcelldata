@@ -1,7 +1,7 @@
 import logging
 import os
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 import pandas as pd
 import xlrd
@@ -209,6 +209,7 @@ def merge_data_1991_2001(
         year: int,
         separator: str = ';',
         output_path: Path = None,
+        region_list: List = []
 ) -> Union[Path, DataFrame]:
     """Generazione di un unico file con tutti i dati censuari dell'anno selezionato.
 
@@ -217,6 +218,7 @@ def merge_data_1991_2001(
         year: int
         separator: str
         output_path: Path
+        region_list: List
 
     Returns:
         Union[Path, DataFrame]
@@ -256,6 +258,9 @@ def merge_data_1991_2001(
     )
     join_data.rename(columns={'cod_com': 'codcom', 'pro_com': 'procom'}, inplace=True)
     join_data.drop(columns={'cod_pro', 'sezione'}, inplace=True)
+
+    if len(region_list) > 0:
+        join_data = join_data[join_data["codreg"].isin(region_list)]
 
     if output_path is None:
         # Pandas DataFrame to Dask DataFrame

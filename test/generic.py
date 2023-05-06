@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from istatcelldata.config import MAIN_PATH
 from istatcelldata.generic import check_encoding, csv_from_excel, census_folder
 
 csv_data = MAIN_PATH.joinpath('tmp/csv/R03_indicatori_2011_sezioni.csv')

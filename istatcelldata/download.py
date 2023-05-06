@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+from typing import List
 
 from tqdm.auto import tqdm
 
@@ -69,13 +70,15 @@ def download_census_data(
 
 def download_census_geodata(
         output_data_folder: Path,
-        year: int = 2011
+        year: int = 2011,
+        region_list: List = []
 ) -> Path:
     """Download dei geodati censuari.
 
     Args:
         output_data_folder: Path
         year: Integer. Default 2011.
+        region_list: List
 
     Returns:
         Path
@@ -89,7 +92,10 @@ def download_census_geodata(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     year_folder = str(year)[2:]
-    regions = tqdm(range(1, 21, 1))
+    if len(region_list) == 0:
+        regions = tqdm(range(1, 21, 1))
+    else:
+        regions = region_list
 
     logging.info("Download census geodata")
     for region in regions:
@@ -146,13 +152,17 @@ def download_administrative_boundaries(
 
 def download_all_census_data(
         output_data_folder: Path,
-        year: int = 2011
+        year: int = 2011,
+        region_list: List = []
 ) -> None:
-    """Download di tutti i dati censuari per l'anno selezionato.
+    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
+    effettuare il download per singola Regione ma anche per specifiche Regioni.
+    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
 
     Args:
         output_data_folder: Path
         year: int
+        region_list: List
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
@@ -165,7 +175,7 @@ def download_all_census_data(
 
     # Download geodata
     download_census_geodata(
-        output_data_folder=data_folder, year=year
+        output_data_folder=data_folder, year=year, region_list=region_list
     )
 
     # Download administrative boundaries
@@ -190,30 +200,28 @@ def _download_data(
 
     Returns:
         Path
+
+    Raises:
+        Link {data_link} return status code {data.status_code}.
     """
-    try:
-        # Download data
-        logging.info(f"Download census data | {data_link}")
-        data = get_legacy_session().get(data_link)
+    # Download data
+    logging.info(f"Download census data | {data_link}")
+    data = get_legacy_session().get(data_link)
 
-        if data.status_code == 200:
-            data_size = int(data.headers.get('Content-Length'))
-            # Progress bar via tqdm
-            with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
-                open(data_file_path_destination, 'wb').write(data.content)
-            logging.info("Download completed")
-        else:
-            raise Exception(f'Link {data_link} return status code {data.status_code}.')
+    if data.status_code == 200:
+        data_size = int(data.headers.get('Content-Length'))
+        # Progress bar via tqdm
+        with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
+            open(data_file_path_destination, 'wb').write(data.content)
+        logging.info("Download completed")
+    else:
+        raise Exception(f'Link {data_link} return status code {data.status_code}.')
 
-        logging.info("Unzip file")
-        unzip_data(data_file_path_destination, data_folder)
+    logging.info("Unzip file")
+    unzip_data(data_file_path_destination, data_folder)
 
-        logging.info(f"Deleting zip file | {data_file_path_destination}")
-        os.remove(data_file_path_destination)
-        logging.info("File deleted")
+    logging.info(f"Deleting zip file | {data_file_path_destination}")
+    os.remove(data_file_path_destination)
+    logging.info("File deleted")
 
-        return destination_folder
-
-    except:
-        logging.info("Something went wrong!!!")
-        #logging.info(f'Link {data_link} return status code {data.status_code}.')
+    return destination_folder
