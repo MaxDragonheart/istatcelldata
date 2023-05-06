@@ -6,5 +6,6 @@ main_path = Path("/home/max/Desktop")
 if __name__ == '__main__':
     download_raw_data(
         output_data_folder=main_path,
-        census_year=[1991]
+        census_year=[2001],
+        target_area=[15]
     )

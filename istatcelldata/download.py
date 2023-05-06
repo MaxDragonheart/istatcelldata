@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+from typing import List
 
 from tqdm.auto import tqdm
 
@@ -69,13 +70,15 @@ def download_census_data(
 
 def download_census_geodata(
         output_data_folder: Path,
-        year: int = 2011
+        year: int = 2011,
+        target_area: List = []
 ) -> Path:
     """Download dei geodati censuari.
 
     Args:
         output_data_folder: Path
         year: Integer. Default 2011.
+        target_area: List
 
     Returns:
         Path
@@ -89,7 +92,10 @@ def download_census_geodata(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     year_folder = str(year)[2:]
-    regions = tqdm(range(1, 21, 1))
+    if len(target_area) == 0:
+        regions = tqdm(range(1, 21, 1))
+    else:
+        regions = target_area
 
     logging.info("Download census geodata")
     for region in regions:
@@ -146,13 +152,15 @@ def download_administrative_boundaries(
 
 def download_all_census_data(
         output_data_folder: Path,
-        year: int = 2011
+        year: int = 2011,
+        targer_area: List = []
 ) -> None:
     """Download di tutti i dati censuari per l'anno selezionato.
 
     Args:
         output_data_folder: Path
         year: int
+        targer_area: List
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
@@ -165,7 +173,7 @@ def download_all_census_data(
 
     # Download geodata
     download_census_geodata(
-        output_data_folder=data_folder, year=year
+        output_data_folder=data_folder, year=year, target_area=targer_area
     )
 
     # Download administrative boundaries
