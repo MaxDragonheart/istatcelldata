@@ -84,7 +84,8 @@ def process_raw_data(output_data_folder: Union[str, Path], region_list: List = [
                 merge_data(
                     csv_path=csv_path,
                     year=year,
-                    output_path=output_data_path
+                    output_path=output_data_path,
+                    region_list=region_list
                 )
                 read_raw_census_geodata(
                     data_path=data_path,

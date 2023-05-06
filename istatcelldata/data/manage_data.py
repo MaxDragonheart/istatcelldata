@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path, PosixPath
-from typing import Union
+from typing import Union, List
 
 import pandas as pd
 # TODO Multithread processing with Dask #15
@@ -51,6 +51,7 @@ def merge_data(
         year: int,
         separator: str = ';',
         output_path: Union[Path, PosixPath] = None,
+        region_list: List = []
 ) -> Union[Path, PosixPath, DataFrame]:
     """Unione di tutti i dati censuari per l'anno selezionato
     in un unico DataFrame.
@@ -60,6 +61,7 @@ def merge_data(
         year: int
         separator: str
         output_path: Union[Path, PosixPath]
+        region_list: List
 
     Returns:
         Union[Path, PosixPath, DataFrame]
@@ -80,6 +82,9 @@ def merge_data(
     # ddf = dd.concat(data_list)
     ddf = pd.concat(data_list)
     ddf = ddf.sort_values(f'sez{year}')
+
+    if len(region_list) > 0:
+        ddf = ddf[ddf["codreg"].isin(region_list)]
 
     if output_path is None:
         return ddf
