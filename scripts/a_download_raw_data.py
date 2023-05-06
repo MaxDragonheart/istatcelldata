@@ -2,8 +2,8 @@ from pathlib import Path
 from istatcelldata.processes import download_raw_data
 
 main_path = Path("/home/max/Desktop")
-list_year = [1991]
-list_region = [15, 17]
+list_year = [2011]
+list_region = [14, 20]
 
 if __name__ == '__main__':
     download_raw_data(
