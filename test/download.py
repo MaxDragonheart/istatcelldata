@@ -3,7 +3,7 @@ from pathlib import Path
 from istatcelldata.download import download_census_data, download_census_geodata, download_administrative_boundaries, \
     download_all_census_data
 
-target_year = 2001
+target_year = 1991
 
 
 def test_download_census_data(tmp_path: Path):
@@ -16,7 +16,7 @@ def test_download_census_geodata(tmp_path: Path):
     download_census_geodata(
         output_data_folder=tmp_path,
         year=target_year,
-        region_list=[12]
+        region_list=[15, 17]
     )
 
 

@@ -49,12 +49,13 @@ def download_raw_data(
     logging.info(f'End analysis in {time_end}')
 
 
-def process_raw_data(output_data_folder: Union[str, Path]):
+def process_raw_data(output_data_folder: Union[str, Path], region_list: List = []):
     """Analisi dei dati grezzi e creazione nel path di destinazione
     di un .csv ed un .gpkg per ogni anno censuario.
 
     Args:
         output_data_folder: Union[str, Path]
+        region_list: List
     """
     time_start = datetime.datetime.now()
     logging.info(f'Start analysis at {time_start}')
@@ -64,30 +65,32 @@ def process_raw_data(output_data_folder: Union[str, Path]):
         logging.info(f'Process data {year}')
         csv_path = data_path.joinpath(f'census_{year}').joinpath(DATA_FOLDER).joinpath(CENSUS_DATA_FOLDER)
 
-        output_data_path = csv_path.parent.parent
+        if csv_path.exists():
+            output_data_path = csv_path.parent.parent
 
-        if year in [1991, 2001]:
-            merge_data_1991_2001(
-                csv_path=csv_path,
-                year=year,
-                output_path=output_data_path
-            )
-            read_raw_census_geodata(
-                data_path=data_path,
-                year=year,
-                output_path=output_data_path
-            )
-        else:
-            merge_data(
-                csv_path=csv_path,
-                year=year,
-                output_path=output_data_path
-            )
-            read_raw_census_geodata(
-                data_path=data_path,
-                year=year,
-                output_path=output_data_path
-            )
+            if year in [1991, 2001]:
+                merge_data_1991_2001(
+                    csv_path=csv_path,
+                    year=year,
+                    output_path=output_data_path,
+                    region_list=region_list
+                )
+                read_raw_census_geodata(
+                    data_path=data_path,
+                    year=year,
+                    output_path=output_data_path
+                )
+            else:
+                merge_data(
+                    csv_path=csv_path,
+                    year=year,
+                    output_path=output_data_path
+                )
+                read_raw_census_geodata(
+                    data_path=data_path,
+                    year=year,
+                    output_path=output_data_path
+                )
 
     time_end = datetime.datetime.now() - time_start
     logging.info(f'End analysis in {time_end}')
