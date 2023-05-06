@@ -2,7 +2,7 @@ import logging
 import datetime
 import shutil
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 from istatcelldata.config import logger, console_handler, TARGET_YEARS, PREPROCESSING_FOLDER, DATA_FOLDER, \
     CENSUS_DATA_FOLDER
@@ -14,16 +14,25 @@ from istatcelldata.geodata.manage_geodata import read_raw_census_geodata, join_y
 logger.addHandler(console_handler)
 
 
-def download_raw_data(output_data_folder: Union[str, Path]):
+def download_raw_data(
+        output_data_folder: Union[str, Path],
+        census_year: List = [],
+):
     """Download nel path di destinazione di tutti i dati grezzi sui censimenti.
 
     Args:
         output_data_folder: Union[str, Path]
+        census_year: List
     """
     time_start = datetime.datetime.now()
     logging.info(f'Start analysis at {time_start}')
 
-    for year in TARGET_YEARS:
+    if len(census_year) == 0:
+        target = TARGET_YEARS
+    else:
+        target = census_year
+
+    for year in target:
         logging.info(f'Start download census data for year {year}')
         download_all_census_data(
             output_data_folder=output_data_folder,

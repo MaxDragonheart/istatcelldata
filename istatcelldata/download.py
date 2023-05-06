@@ -190,30 +190,28 @@ def _download_data(
 
     Returns:
         Path
+
+    Raises:
+        Link {data_link} return status code {data.status_code}.
     """
-    try:
-        # Download data
-        logging.info(f"Download census data | {data_link}")
-        data = get_legacy_session().get(data_link)
+    # Download data
+    logging.info(f"Download census data | {data_link}")
+    data = get_legacy_session().get(data_link)
 
-        if data.status_code == 200:
-            data_size = int(data.headers.get('Content-Length'))
-            # Progress bar via tqdm
-            with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
-                open(data_file_path_destination, 'wb').write(data.content)
-            logging.info("Download completed")
-        else:
-            raise Exception(f'Link {data_link} return status code {data.status_code}.')
+    if data.status_code == 200:
+        data_size = int(data.headers.get('Content-Length'))
+        # Progress bar via tqdm
+        with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
+            open(data_file_path_destination, 'wb').write(data.content)
+        logging.info("Download completed")
+    else:
+        raise Exception(f'Link {data_link} return status code {data.status_code}.')
 
-        logging.info("Unzip file")
-        unzip_data(data_file_path_destination, data_folder)
+    logging.info("Unzip file")
+    unzip_data(data_file_path_destination, data_folder)
 
-        logging.info(f"Deleting zip file | {data_file_path_destination}")
-        os.remove(data_file_path_destination)
-        logging.info("File deleted")
+    logging.info(f"Deleting zip file | {data_file_path_destination}")
+    os.remove(data_file_path_destination)
+    logging.info("File deleted")
 
-        return destination_folder
-
-    except:
-        logging.info("Something went wrong!!!")
-        #logging.info(f'Link {data_link} return status code {data.status_code}.')
+    return destination_folder
