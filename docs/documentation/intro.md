@@ -3,6 +3,38 @@
 Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
 È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.
 
+## Codice Regione
+A partire dalla versione `0.6.0` è possibile elaborare i dati non per forza di tutta l'Italia ma anche solo di una o più 
+regioni, l'utente può scegliere. La scelta della o delle regioni da elaborare va fatta usado il codice della Regione di 
+interesse.
+
+| **Codice** | **Regione**                  |
+|------------|------------------------------|
+| 01         | Piemonte                     |
+| 02         | Valle d’Aosta/Vallée d’Aoste |
+| 03         | Lombardia                    |
+| 04         | Trentino-Alto Adige/Südtirol |
+| 05         | Veneto                       |
+| 06         | Friuli-Venezia Giulia        |
+| 07         | Liguria                      |
+| 08         | Emilia-Romagna               |
+| 09         | Toscana                      |
+| 10         | Umbria                       |
+| 11         | Marche                       |
+| 12         | Lazio                        |
+| 13         | Abruzzo                      |
+| 14         | Molise                       |
+| 15         | Campania                     |
+| 16         | Puglia                       |
+| 17         | Basilicata                   |
+| 18         | Calabria                     |
+| 19         | Sicilia                      |
+| 20         | Sardegna                     |
+
+La fonte della tabella precedente è [questa](https://www.istat.it/it/archivio/104317).
+
+
+## Shared data
 Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
 il loro codice. Questi campi sono stati definiti `SHARED_DATA` ed è possibile ottenerli scartando quelli che
 negli anni hanno cambiato codice. I campi condivisi sono i seguenti:
