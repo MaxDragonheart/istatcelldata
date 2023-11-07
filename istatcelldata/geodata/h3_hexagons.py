@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Union
 
 import h3
 import pandas as pd
@@ -18,7 +19,7 @@ def get_h3_hexagons(
         hex_lvl: int,
         geo_json_conformant: bool = True,
         output_path: Path = None,
-) -> GeoDataFrame:
+) -> Union[GeoDataFrame, Path]:
     """Get H3 hexagon from geometry and selected level.
 
     Args:
@@ -28,7 +29,7 @@ def get_h3_hexagons(
         output_path: Path
 
     Returns:
-        GeoDataFrame
+        Union[GeoDataFrame, Path]
     """
     # Because H3 library use EPSG:4326 geometry must be
     # reprojected if his crs isn't the same.
@@ -76,4 +77,4 @@ def get_h3_hexagons(
         output_data = output_path.joinpath('h3_hexagons.gpkg')
         layer_name = f'lvl_{hex_lvl}'
         logging.info(f'Save data to {output_data}')
-        hexagons_gdf.to_file(str(output_data), driver='GPKG', layer=layer_name)
+        hexagons_gdf.to_file(output_data, driver='GPKG', layer=layer_name)

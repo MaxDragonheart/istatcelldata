@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from geopandas import GeoDataFrame
+
 from istatcelldata.geodata.h3_hexagons import get_h3_hexagons
 from istatcelldata.geodata.manage_geodata import read_geodata
 
@@ -15,5 +17,6 @@ def test_get_h3_hexagons(tmp_path: Path) -> None:
         hex_lvl=10,
         output_path=tmp_path
     )
-    print(data)
+
+    assert isinstance(data, GeoDataFrame) or isinstance(data, Path)
 
