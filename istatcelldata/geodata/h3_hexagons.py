@@ -48,7 +48,7 @@ def get_h3_hexagons(
     logging.info('Make boundary GeoJSON')
     bbox_polygon = polygon_bbox(coordinates)
     bbox_df = pd.DataFrame([bbox_polygon], columns=['geometry'])
-    bbox_gdf = gpd.GeoDataFrame(bbox_df, geometry='geometry', crs=h3_epsg).buffer(0.005)
+    bbox_gdf = gpd.GeoDataFrame(bbox_df, geometry='geometry', crs=h3_epsg)  # .buffer(0.005)
     bbox_geojson = bbox_gdf.geometry[0].__geo_interface__
 
     # Get hexagons' id
