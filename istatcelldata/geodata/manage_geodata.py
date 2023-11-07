@@ -1,7 +1,7 @@
 import logging
 import shutil
 from pathlib import Path, PosixPath
-from typing import Union
+from typing import Union, Any
 
 import geopandas as gpd
 import pandas as pd
@@ -37,6 +37,45 @@ TIPO_LOC = {
 }
 
 
+def read_geodata(
+        input_data: Union[str, Path],
+        layer: str = None,
+        bbox: Any = None,
+        mask: Any = None,
+        rows: Any = None,
+) -> GeoDataFrame:
+    """Read vector data
+
+    Args:
+        input_data: Union[str, Path]
+        layer: str
+        bbox: Any
+        mask: Any
+        rows: Any
+
+    Returns:
+        GeoDataFrame
+    """
+    if isinstance(input_data, Path) or isinstance(input_data, str):
+        # TODO Waiting for solution
+        # https://gis.stackexchange.com/questions/435156/geopandas-doesnt-read-fid-column-from-geopackage
+        # https://github.com/geopandas/geopandas/issues/1035
+        data = gpd.read_file(
+            input_data,
+            engine='pyogrio',
+            fid_as_index=True,
+            layer=layer,
+            bbox=bbox,
+            mask=mask,
+            rows=rows
+        )
+
+    else:
+        raise Exception('Not accepted file format. Format must be `Path` or `str`')
+
+    return data
+
+
 def read_raw_geodata(
         data_path: Union[Path, PosixPath],
         year: int,
@@ -50,7 +89,7 @@ def read_raw_geodata(
     Returns:
         GeoDataFrame
     """
-    read_data = gpd.read_file(data_path)
+    read_data = read_geodata(data_path)
     read_data = read_data[[f'SEZ{year}', 'TIPO_LOC', 'geometry']]
 
     data_list = []
@@ -113,26 +152,6 @@ def read_raw_census_geodata(
         output_data = output_path.joinpath(f'geodata{year}.gpkg')
         logging.info(f'Save data to {output_data}')
         gdf.to_file(output_data, driver='GPKG')
-
-
-def read_geodata(
-        geodata_path: Union[Path, PosixPath],
-) -> GeoDataFrame:
-    """Lettura del geodato. La funzione incapsula la funzione di lettura di
-    GeoPandas ma andrà successivamente sviuppata per rendere più rapida la
-    lettura dei dati.
-
-
-    Args:
-        geodata_path: Union[Path, PosixPath]
-
-    Returns:
-        GeoDataFrame
-    """
-    logging.info('Read geodata')
-    gdf = gpd.read_file(geodata_path)
-
-    return gdf
 
 
 def join_year_census(

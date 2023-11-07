@@ -1,9 +1,21 @@
 from pathlib import Path
 
-from istatcelldata.geodata.manage_geodata import read_raw_geodata, read_raw_census_geodata, join_year_census
+from geopandas import GeoDataFrame
+
+from istatcelldata.geodata.manage_geodata import read_raw_geodata, read_raw_census_geodata, join_year_census, \
+    read_geodata
 
 test_file_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2001/geodata/R18_01_WGS84/R18_01_WGS84.shp')
 test_path = Path('/home/max/Desktop/census_istat/preprocessing/census_2001')
+
+demo_data = Path.cwd().parent.parent.joinpath('demo_data').joinpath('demo_data.gpkg')
+
+
+def test_read_geodata() -> None:
+    print("test_read_geodata")
+    data = read_geodata(input_data=demo_data, layer='com_napoli')
+
+    assert isinstance(data, GeoDataFrame)
 
 
 def test_read_raw_geodata(tmp_path: Path) -> None:

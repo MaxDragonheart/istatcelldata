@@ -16,6 +16,7 @@ openpyxl = "^3.1.2"
 xlrd = "^2.0.1"
 geopandas = "^0.14.0"
 h3 = "^3.7.6"
+pyogrio = "^0.7.2"
 
 
 [tool.poetry.group.dev.dependencies]
