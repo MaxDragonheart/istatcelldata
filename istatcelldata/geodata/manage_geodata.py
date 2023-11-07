@@ -1,12 +1,13 @@
 import logging
 import shutil
 from pathlib import Path, PosixPath
-from typing import Union, Any
+from typing import Union, Any, List
 
 import geopandas as gpd
 import pandas as pd
 
 from geopandas import GeoDataFrame
+from shapely import Polygon
 from shapely.validation import make_valid
 from tqdm import tqdm
 
@@ -209,3 +210,47 @@ def join_year_census(
         output_data = output_path.joinpath(f'census_{year}.gpkg')
         logging.info(f'Save data to {output_data}')
         gdf.to_file(output_data, driver='GPKG')
+
+
+def polygon_bbox(
+        coordinates_list: List,
+        crs: Union[str, int] = None,
+        output_path: Path = None
+) -> Union[Polygon, Path]:
+    """Make polygon bbox from list of coordinates.
+
+    Args:
+        coordinates_list: List
+        crs: Union[str, int]
+        output_path: Path
+
+    Returns:
+        Polygon
+
+    Raises:
+        The list must contain 4 objects. Your list has {len(coordinates_list)} objects.
+    """
+    if len(coordinates_list) == 4:
+        shape = Polygon(
+            [
+                (coordinates_list[0], coordinates_list[3]),
+                (coordinates_list[2], coordinates_list[3]),
+                (coordinates_list[2], coordinates_list[1]),
+                (coordinates_list[0], coordinates_list[1]),
+                (coordinates_list[0], coordinates_list[3]),
+            ]
+        )
+
+        if output_path is None:
+            return shape
+        else:
+            gdf = gpd.GeoDataFrame(index=[0], geometry=[shape], crs=crs)
+            file_path = output_path.joinpath("bbox.gpkg")
+            gdf.to_file(
+                file_path,
+                layer="bbox",
+                driver="GPKG"
+            )
+            return file_path
+    else:
+        raise Exception(f"The list must contain 4 objects. Your list has {len(coordinates_list)} objects.")

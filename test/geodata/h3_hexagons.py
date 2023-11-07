@@ -6,7 +6,7 @@ demo_data = Path.cwd().parent.parent.joinpath('demo_data').joinpath('demo_data.g
 target_area = read_geodata(input_data=demo_data, layer='com_napoli')
 
 
-def test_get_hexagons(tmp_path: Path) -> None:
-    print("get_hexagons")
+def test_get_h3_hexagons(tmp_path: Path) -> None:
+    print("get_h3_hexagons")
     print(target_area)
 
