@@ -78,3 +78,7 @@ def get_h3_hexagons(
         layer_name = f'lvl_{hex_lvl}'
         logging.info(f'Save data to {output_data}')
         hexagons_gdf.to_file(output_data, driver='GPKG', layer=layer_name)
+
+
+def select_hexagons():
+    pass
