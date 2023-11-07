@@ -15,6 +15,7 @@ fsspec = "^2023.4.0"
 openpyxl = "^3.1.2"
 xlrd = "^2.0.1"
 geopandas = "^0.14.0"
+h3 = "^3.7.6"
 
 
 [tool.poetry.group.dev.dependencies]
