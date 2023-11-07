@@ -4,6 +4,8 @@ import geopandas as gpd
 from geopandas import GeoDataFrame
 from shapely import Polygon
 
+from istatcelldata.geodata.manage_geodata import polygon_bbox
+
 
 def get_h3_hexagons(
         vector: GeoDataFrame,
