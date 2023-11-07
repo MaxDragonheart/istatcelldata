@@ -12,7 +12,8 @@ def test_get_h3_hexagons(tmp_path: Path) -> None:
     print(target_area)
     data = get_h3_hexagons(
         vector=target_area,
-        hex_lvl=10
+        hex_lvl=10,
+        output_path=tmp_path
     )
     print(data)
 
