@@ -2,6 +2,7 @@ from pathlib import Path
 
 from geopandas import GeoDataFrame
 from shapely import Polygon
+import geopandas as gpd
 
 from istatcelldata.geodata.manage_geodata import read_raw_geodata, read_raw_census_geodata, join_year_census, \
     read_geodata, polygon_bbox

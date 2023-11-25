@@ -80,5 +80,43 @@ def get_h3_hexagons(
         hexagons_gdf.to_file(output_data, driver='GPKG', layer=layer_name)
 
 
-def select_hexagons():
-    pass
+def select_hexagons(
+        aoi: GeoDataFrame,
+        hex_lvl: int,
+        geo_json_conformant: bool = True,
+        output_path: Path = None,
+) -> Union[GeoDataFrame, Path]:
+    """Select hexagons based on Area Of Interest.
+
+    Args:
+        aoi: GeoDataFrame
+        hex_lvl: int
+        geo_json_conformant: bool
+        output_path: Path
+
+    Returns:
+        Union[GeoDataFrame, Path]
+    """
+    # Create hexagons
+    logging.info('Create hexagons')
+    hexagons = get_h3_hexagons(
+        vector=aoi,
+        hex_lvl=hex_lvl,
+        geo_json_conformant=geo_json_conformant,
+    )
+
+    # Select hexagons
+    logging.info('Select hexagons')
+    selected_hexagons = hexagons.sjoin(aoi, how='left')
+    selected_hexagons = selected_hexagons[selected_hexagons['index_right'].notna()][['h3_index', 'geometry']]
+    selected_hexagons['hexagon_area'] = round(selected_hexagons.geometry.area, 0)
+
+    if output_path is None:
+        return selected_hexagons
+
+    else:
+
+        output_data = output_path.joinpath('h3_hexagons.gpkg')
+        layer_name = f'selected_hexagons_lvl_{hex_lvl}'
+        logging.info(f'Save data to {output_data}')
+        selected_hexagons.to_file(output_data, driver='GPKG', layer=layer_name)

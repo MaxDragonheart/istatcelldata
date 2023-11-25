@@ -7,7 +7,7 @@ import geopandas as gpd
 import pandas as pd
 
 from geopandas import GeoDataFrame
-from shapely import Polygon
+from shapely import Polygon, MultiPolygon
 from shapely.validation import make_valid
 from tqdm import tqdm
 
