@@ -65,7 +65,8 @@ def download_census_data(
             census_code=f'sez{year}',
             output_path=data_folder_1991_2001,
         )
-    logging.info("Download census data completed")
+    logging.info(f"Download census data completed and saved to {destination_folder}")
+    return destination_folder
 
 
 def download_census_geodata(
@@ -112,7 +113,8 @@ def download_census_geodata(
             destination_folder=destination_folder
         )
 
-    logging.info("Download census geodata completed")
+    logging.info(f"Download census geodata completed and saved to {data_folder}")
+    return data_folder
 
 
 def download_administrative_boundaries(
@@ -147,7 +149,8 @@ def download_administrative_boundaries(
         data_folder=data_folder,
         destination_folder=destination_folder
     )
-    logging.info("Download administrative boundaries completed")
+    logging.info(f"Download administrative boundaries completed and saved to {destination_folder}")
+    return destination_folder
 
 
 def download_all_census_data(
