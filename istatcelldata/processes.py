@@ -15,17 +15,17 @@ logger.addHandler(console_handler)
 
 
 def download_raw_data(
-        output_data_folder: Union[str, Path],
+        output_data_folder: Path,
         year_list: List = [],
         region_list: List = [],
-):
+) -> Path:
     """Download nel path di destinazione di tutti i dati grezzi sui censimenti. E' possibile
     effettuare il download per singolo anno e per singola Regione ma anche per specifici anni e specifiche Regioni.
     Quando i campi `year_list` e `region_list` restano vuoti vengono scaricati i dati di tutti gli anni censuari
     e di tutte le Regioni.
 
     Args:
-        output_data_folder: Union[str, Path]
+        output_data_folder: Path
         year_list: List
         region_list: List
     """
@@ -47,14 +47,16 @@ def download_raw_data(
 
     time_end = datetime.datetime.now() - time_start
     logging.info(f'End analysis in {time_end}')
+    logging.info(f'Census data downloaded to {output_data_folder}')
+    return output_data_folder
 
 
-def process_raw_data(output_data_folder: Union[str, Path], region_list: List = []):
+def process_raw_data(output_data_folder: Path, region_list: List = []):
     """Analisi dei dati grezzi e creazione nel path di destinazione
     di un .csv ed un .gpkg per ogni anno censuario.
 
     Args:
-        output_data_folder: Union[str, Path]
+        output_data_folder: Path
         region_list: List
     """
     time_start = datetime.datetime.now()
@@ -97,13 +99,23 @@ def process_raw_data(output_data_folder: Union[str, Path], region_list: List = [
     logging.info(f'End analysis in {time_end}')
 
 
-def process_data(output_data_folder: Union[str, Path], delete_process_folder: bool = True):
+def process_data(
+        output_data_folder: Path,
+        only_shared: bool = False,
+        delete_process_folder: bool = True
+) -> Path:
     """Unione del .csv e del .gpkg di ogni anno censuario in un unico .gpkg creato
     nel path di destinazione. Le cartelle di preprocessamento vengono eliminate di default.
+    Quando `only_shared` è settato su `True` solo i dati presenti in tutti i censimenti vengono
+    aggiunti in tabella attributi.
 
     Args:
-        output_data_folder: Union[str, Path]
+        output_data_folder: Path
+        only_shared: Boolean
         delete_process_folder: bool
+
+    Returns
+        Path
     """
     time_start = datetime.datetime.now()
     logging.info(f'Start analysis at {time_start}')
@@ -120,7 +132,7 @@ def process_data(output_data_folder: Union[str, Path], delete_process_folder: bo
                 year=year,
                 output_path=output_path,
                 remove_processed=delete_process_folder,
-                only_shared=True
+                only_shared=only_shared
             )
 
     if delete_process_folder:
@@ -129,3 +141,4 @@ def process_data(output_data_folder: Union[str, Path], delete_process_folder: bo
 
     time_end = datetime.datetime.now() - time_start
     logging.info(f'End analysis in {time_end}')
+    return output_path

@@ -2,8 +2,9 @@ from pathlib import Path
 
 from istatcelldata.generic import check_encoding, csv_from_excel, census_folder
 
-csv_data = Path.cwd().parent.joinpath('demo_data', 'R02_DatiCPA_1991.csv')
-xls_data = Path.cwd().parent.joinpath('demo_data', 'R02_DatiCPA_1991.xls')
+demo_data = Path.cwd().parent.joinpath('demo_data')
+csv_data = demo_data.joinpath('R02_DatiCPA_1991.csv')
+xls_data = demo_data.joinpath('R02_DatiCPA_1991.xls')
 
 
 def test_check_encoding():
