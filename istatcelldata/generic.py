@@ -9,7 +9,6 @@ import chardet
 import requests
 import urllib3
 import xlrd
-from fsspec import get_fs_token_paths
 from tqdm import tqdm
 
 from istatcelldata.config import logger, console_handler, GEODATA_FOLDER
@@ -17,11 +16,11 @@ from istatcelldata.config import logger, console_handler, GEODATA_FOLDER
 logger.addHandler(console_handler)
 
 
-def check_encoding(data: Union[Path, PosixPath]) -> str:
+def check_encoding(data: Path) -> str:
     """Verifica della codifica del dato.
 
     Args:
-        data: Union[Path, PosixPath]
+        data: Path
 
     Returns:
         str
@@ -37,19 +36,19 @@ def check_encoding(data: Union[Path, PosixPath]) -> str:
 
 
 def csv_from_excel(
-        data: Union[Path, PosixPath],
-        output_path: Union[Path, PosixPath],
+        data: Path,
+        output_path: Path,
         metadata: bool = False
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Conversione di un xls in csv.
 
     Args:
-        data: Union[Path, PosixPath]
-        output_path: Union[Path, PosixPath]
+        data: Path
+        output_path: Path
         metadata: bool
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     logging.info(f'Read data from {data}')
     read_data = xlrd.open_workbook(data)
@@ -71,46 +70,44 @@ def csv_from_excel(
         write_csv.writerow(get_sheet.row_values(row_id))
 
     output_data.close()
-
+    logging.info(f'Convert data saved to {output_path}')
     return output_path
 
 
 def census_folder(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int = 2011  # last official census at 2023 02 19
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Creazione delle cartelle per dati e geodati censuari
     dell'anno selezionato.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: int
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     logging.info(f"Make folder for {year}' census data and geodata.")
     download_folder_name = f"census_{year}"
-    fs, fs_token, paths = get_fs_token_paths(output_data_folder)
-
-    destination_folder = Path(paths[0]).joinpath(download_folder_name)
-    Path(destination_folder).mkdir(parents=True, exist_ok=True)
-
+    destination_folder = output_data_folder.joinpath(download_folder_name)
+    destination_folder.mkdir(parents=True, exist_ok=True)
+    logging.info(f"Folder created at {destination_folder}.")
     return destination_folder
 
 
 def census_geodata_folder(
-        output_data_folder: Union[Path, PosixPath],
+        output_data_folder: Path,
         year: int
-) -> Union[Path, PosixPath]:
+) -> Path:
     """Creazione della cartella dei geodati per l'anno censuario selezionato.
 
     Args:
-        output_data_folder: Union[Path, PosixPath]
+        output_data_folder: Path
         year: int
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     # Make folder for yearly census data
     destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
@@ -120,26 +117,26 @@ def census_geodata_folder(
     return folder
 
 
-def unzip_data(input_data: Union[Path, PosixPath], output_folder: Union[Path, PosixPath]) -> Union[Path, PosixPath]:
+def unzip_data(input_data: Path, output_folder: Path) -> Path:
     """Decompressione dei dati.
 
     Args:
-        input_data: Union[Path, PosixPath].
-        output_folder: Union[Path, PosixPath].
+        input_data: Path.
+        output_folder: Path.
 
     Returns:
-        Union[Path, PosixPath]
+        Path
     """
     with zipfile.ZipFile(input_data, "r") as zf:
         zf.extractall(output_folder)
 
 
-def get_metadata(input_path: Union[Path, PosixPath], output_path: Union[Path, PosixPath]) -> list:
+def get_metadata(input_path: Path, output_path: Path) -> list:
     """Lettura dei metadati.
 
     Args:
-        input_path: Union[Path, PosixPath]
-        output_path: Union[Path, PosixPath]
+        input_path: Path
+        output_path: Path
 
     Returns:
         list

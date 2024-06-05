@@ -1,6 +1,6 @@
 import logging
 import shutil
-from pathlib import Path, PosixPath
+from pathlib import Path
 from typing import Union
 
 import geopandas as gpd
@@ -38,13 +38,13 @@ TIPO_LOC = {
 
 
 def read_raw_geodata(
-        data_path: Union[Path, PosixPath],
+        data_path: Path,
         year: int,
 ) -> GeoDataFrame:
     """Lettura del singolo geodato censuario grezzo e pulizia topologica delle geometrie.
 
     Args:
-        data_path: Union[Path, PosixPath]
+        data_path: Path
         year: int
 
     Returns:
@@ -70,20 +70,20 @@ def read_raw_geodata(
 
 
 def read_raw_census_geodata(
-        data_path: Union[Path, PosixPath],
+        data_path: Path,
         year: int,
-        output_path: Union[Path, PosixPath] = None,
-) -> Union[Path, PosixPath, GeoDataFrame]:
+        output_path: Path = None,
+) -> Union[Path, GeoDataFrame]:
     """Lettura di tutti i geodati censuari grezzi per anno e
     creazione di un unico GeoDataFrame.
 
     Args:
-        data_path: Union[Path, PosixPath]
+        data_path: Path
         year: int
-        output_path: Union[Path, PosixPath]
+        output_path: Path
 
     Returns:
-        Union[Path, PosixPath, GeoDataFrame]
+        Union[Path, GeoDataFrame]
     """
     main_path = data_path.joinpath(f'census_{year}').joinpath(GEODATA_FOLDER)
     files_list = list(main_path.rglob('*.shp'))
@@ -112,11 +112,13 @@ def read_raw_census_geodata(
     else:
         output_data = output_path.joinpath(f'geodata{year}.gpkg')
         logging.info(f'Save data to {output_data}')
-        gdf.to_file(output_data, driver='GPKG')
+        gdf.to_file(str(output_data), driver='GPKG')
+        
+        return output_data
 
 
 def read_geodata(
-        geodata_path: Union[Path, PosixPath],
+        geodata_path: Path,
 ) -> GeoDataFrame:
     """Lettura del geodato. La funzione incapsula la funzione di lettura di
     GeoPandas ma andrà successivamente sviuppata per rendere più rapida la
@@ -124,7 +126,7 @@ def read_geodata(
 
 
     Args:
-        geodata_path: Union[Path, PosixPath]
+        geodata_path: Path
 
     Returns:
         GeoDataFrame
@@ -136,23 +138,23 @@ def read_geodata(
 
 
 def join_year_census(
-        data_path: Union[Path, PosixPath],
+        data_path: Path,
         year: int,
         remove_processed: bool = False,
         only_shared: bool = True,
-        output_path: Union[Path, PosixPath] = None,
-) -> Union[Path, PosixPath, GeoDataFrame]:
+        output_path: Path = None,
+) -> Union[Path, GeoDataFrame]:
     """Generazione di un unico GeoDataFrame che unisce dati e geodati censuari per l'anno selezionato.
 
     Args:
-        data_path: Union[Path, PosixPath]
+        data_path: Path
         year: int
         remove_processed: bool
         only_shared: bool
-        output_path: Union[Path, PosixPath]
+        output_path: Path
 
     Returns:
-        Union[Path, PosixPath, GeoDataFrame]
+        Union[Path, GeoDataFrame]
     """
     # Read data
     data = read_csv(csv_path=data_path.joinpath(f'data{year}.csv'))

@@ -1,34 +1,28 @@
 [tool.poetry]
 name = "istatcelldata"
-version = "0.6.1"
+version = "0.6.2"
 description = "Con ISTAT Cell Data puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie."
 authors = ["Massimiliano Moraca <info@massimilianomoraca.it>"]
 readme = "README.md"
+license = "LICENSE"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-geopandas = "^0.14.3"
-tqdm = "^4.66.2"
+geopandas = "^0.14.4"
+tqdm = "^4.66.4"
 chardet = "^5.2.0"
-requests = "^2.31.0"
-fsspec = "^2024.2.0"
-openpyxl = "^3.1.2"
+openpyxl = "^3.1.3"
 xlrd = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.1.1"
+pytest = "^8.2.1"
 jupyter = "^1.0.0"
-mkdocs = "^1.5.3"
-mkdocs-material = "^9.5.13"
+mkdocs = "^1.6.0"
+mkdocs-material = "^9.5.25"
 mknotebooks = "^0.8.0"
-pygments = "^2.17.2"
-mkdocstrings-python = "^1.8.0"
-
-
-[[tool.poetry.source]]
-name = "PyPI"
-priority = "primary"
+pygments = "^2.18.0"
+mkdocstrings-python = "^1.10.3"
 
 [build-system]
 requires = ["poetry-core"]
