@@ -51,7 +51,7 @@ def read_raw_geodata(
         GeoDataFrame
     """
     read_data = gpd.read_file(data_path)
-    read_data = read_data[[f'SEZ{year}', 'TIPO_LOC', 'geometry']]
+    read_data = read_data[[f'SEZ{year}', 'tipo_loc', 'geometry']]
 
     data_list = []
     for index, row in tqdm(read_data.iterrows()):
@@ -177,7 +177,7 @@ def join_year_census(
         on=f'sez{year}',
         how='right'
     )
-    df = df[df['comune'].notna()]
+    df = df[df['tipo_loc'].notna()]
     df.set_index(f'sez{year}', inplace=True)
     gdf = gpd.GeoDataFrame(df, crs=geodata.crs)
 
