@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from pandas import DataFrame
+
 from istatcelldata.data.census_1991_2001 import read_xls, remove_xls, census_trace, merge_data_1991_2001
 
 test_path = Path("/home/max/Desktop/preprocessing/census_2001/data")
@@ -8,12 +10,14 @@ sample_xls = test_path.joinpath("dati-cpa_2001\\R01_DatiCPA_2001.xls")
 
 def test_read_xls(tmp_path: Path):
     print('test_read_xls')
-    read_xls(
+    data = read_xls(
         file_path=sample_xls,
         census_code='sez2001',
         output_path=tmp_path,
         metadata=False
     )
+    print(data)
+    assert isinstance(data, DataFrame) or isinstance(data, Path)
 
 
 def test_remove_xls(tmp_path: Path):

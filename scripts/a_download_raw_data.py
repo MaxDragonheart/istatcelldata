@@ -2,7 +2,7 @@ from pathlib import Path
 from istatcelldata.processes import download_raw_data
 
 main_path = Path("/home/max/Desktop/census")
-list_year = [1991, 2001, 2011]
+list_year = [2011, 2021]
 list_region = [15]
 
 if __name__ == '__main__':

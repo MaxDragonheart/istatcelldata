@@ -13,7 +13,7 @@ logger.addHandler(console_handler)
 # PROJECT
 MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GLOBAL_CRS = 32632
-TARGET_YEARS = [1991, 2001, 2011]
+TARGET_YEARS = [1991, 2001, 2011, 2021]
 
 # PROJECT FOLDERS
 DATA_FOLDER = 'data'

@@ -17,7 +17,7 @@ logger.addHandler(console_handler)
 
 def read_xls(
         file_path: Path,
-        census_code: str = 'sez1991',
+        census_code: str,
         output_path: Path = None,
         metadata: bool = False
 ) -> Union[DataFrame, Path]:

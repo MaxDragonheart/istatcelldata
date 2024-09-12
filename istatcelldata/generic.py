@@ -76,7 +76,7 @@ def csv_from_excel(
 
 def census_folder(
         output_data_folder: Path,
-        year: int = 2011  # last official census at 2023 02 19
+        year: int
 ) -> Path:
     """Creazione delle cartelle per dati e geodati censuari
     dell'anno selezionato.

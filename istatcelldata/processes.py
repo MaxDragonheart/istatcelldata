@@ -2,7 +2,7 @@ import logging
 import datetime
 import shutil
 from pathlib import Path
-from typing import Union, List
+from typing import List
 
 from istatcelldata.config import logger, console_handler, TARGET_YEARS, PREPROCESSING_FOLDER, DATA_FOLDER, \
     CENSUS_DATA_FOLDER
