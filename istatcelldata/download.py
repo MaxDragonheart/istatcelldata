@@ -15,13 +15,13 @@ logger.addHandler(console_handler)
 
 def download_census_data(
         output_data_folder: Path,
-        year: int = 2011
+        year: int
 ) -> Path:
     """Download dei dati censuari.
 
     Args:
         output_data_folder: Path
-        year: Integer. Default 2011.
+        year: Integer.
 
     Returns
         Path
@@ -33,7 +33,10 @@ def download_census_data(
     data_folder = destination_folder.joinpath('data')
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
-    data_link = f"{MAIN_LINK}/variabili-censuarie/dati-cpa_{year}.zip"
+    if year == 2021:
+        data_link = "https://esploradati.censimentopopolazione.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
+    else:
+        data_link = f"{MAIN_LINK}/variabili-censuarie/dati-cpa_{year}.zip"
 
     data_file_name = Path(data_link).stem + Path(data_link).suffix
     data_file_path_dest = Path(data_folder).joinpath(data_file_name)
@@ -71,14 +74,14 @@ def download_census_data(
 
 def download_census_geodata(
         output_data_folder: Path,
-        year: int = 2011,
+        year: int,
         region_list: List = []
 ) -> Path:
     """Download dei geodati censuari.
 
     Args:
         output_data_folder: Path
-        year: Integer. Default 2011.
+        year: Integer.
         region_list: List
 
     Returns:
@@ -101,7 +104,10 @@ def download_census_geodata(
     logging.info("Download census geodata")
     for region in regions:
         region = str(region).zfill(2)
-        data_link = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{year}/R{region}_{year_folder}_WGS84.zip"
+        if year == 2021:
+            data_link = f"http://www.istat.it/storage/cartografia/basi_territoriali/{year}/R{region}_21.zip"
+        else:
+            data_link = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{year}/R{region}_{year_folder}_WGS84.zip"
 
         data_file_name = data_link.split('/')[-1]
         data_file_path_dest = Path(data_folder).joinpath(data_file_name)
@@ -119,7 +125,7 @@ def download_census_geodata(
 
 def download_administrative_boundaries(
         output_data_folder: Path,
-        year: int = 2011
+        year: int
 ) -> Path:
     """Download dei limiti amministrativi dell'anno cenusario selezionato.
 
@@ -155,7 +161,7 @@ def download_administrative_boundaries(
 
 def download_all_census_data(
         output_data_folder: Path,
-        year: int = 2011,
+        year: int,
         region_list: List = []
 ) -> None:
     """Download di tutti i dati censuari per l'anno selezionato. E' possibile
