@@ -1,13 +1,9 @@
 import logging
-import os
 from pathlib import Path
-from typing import List, Union
+from typing import List
 
-import pandas as pd
-import xlrd
-from tqdm import tqdm
-
-from istatcelldata.config import GEODATA_FOLDER, DATA_FOLDER, CENSUS_DATA_FOLDER
+from istatcelldata.census1991.utils import census_trace, remove_xls
+from istatcelldata.config import GEODATA_FOLDER, DATA_FOLDER, CENSUS_DATA_FOLDER, BOUNDARIES_DATA_FOLDER
 from istatcelldata.download import download_base
 from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import census_folder, get_region
@@ -24,199 +20,81 @@ CENSUS_CODE = f"sez{YEAR}"
 MAIN_LINK = "https://www.istat.it/storage/cartografia"
 GEODATA_LINK = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/1991/"
 DATA_LINK = f"{MAIN_LINK}/variabili-censuarie/dati-cpa_1991.zip"
-
-def read_xls(
-        file_path: Path,
-        output_path: Path = None,
-) -> Union[pd.DataFrame, Path]:
-    """Legge un file Excel (.xls) e restituisce un DataFrame pandas o salva i dati in CSV.
-
-    La funzione legge i dati da un file Excel e restituisce un DataFrame pandas
-    contenente i dati. Se viene fornito un percorso di output, i dati vengono
-    salvati anche in un file CSV.
-
-    Args:
-        file_path (Path): Il percorso del file Excel da leggere.
-        output_path (Path, optional): Il percorso in cui salvare il file CSV.
-            Se None, la funzione restituisce il DataFrame (default: None).
-
-    Returns:
-        Union[pd.DataFrame, Path]: Un DataFrame pandas contenente i dati letti,
-            o il percorso del file CSV salvato.
-
-    Raises:
-        FileNotFoundError: Se il file Excel non viene trovato.
-        xlrd.XLRDError: Se si verifica un errore durante la lettura del file Excel.
-        Exception: Per altri errori durante il processo di lettura o salvataggio.
-    """
-    try:
-        logging.info(f"Lettura del file Excel da {file_path}")
-
-        # Legge il file Excel
-        read_data = xlrd.open_workbook(file_path)
-
-        # Estrae il nome del foglio, ignorando 'Metadati'
-        sheet_list = read_data.sheet_names()
-        if 'Metadati' in sheet_list:
-            sheet_list.remove('Metadati')
-        sheet_name = sheet_list[0]
-        get_sheet = read_data.sheet_by_name(sheet_name)
-
-        # Estrae i dati dal foglio
-        dataset = []
-        for row_id in tqdm(range(get_sheet.nrows), desc="Lettura righe..."):
-            dataset.append(get_sheet.row_values(row_id))
-
-        # Crea il DataFrame
-        df_columns = [column_name.lower() for column_name in dataset[0]]
-        df_data = dataset[1:]
-        df = pd.DataFrame(data=df_data, columns=df_columns)
-
-        # Imposta il tipo di dati e l'indice
-        df = df.astype(int)
-        df.set_index(CENSUS_CODE, inplace=True)
-        df.sort_index(inplace=True)
-
-        # Se non viene fornito un percorso di output, restituisce il DataFrame
-        if output_path is None:
-            return df
-        else:
-            file_name = file_path.stem.split('\\')[1]
-            logging.info(f"Salvataggio dei dati in {output_path.joinpath(f'{file_name}.csv')}")
-            df.to_csv(path_or_buf=output_path.joinpath(f'{file_name}.csv'), sep=';')
-            return output_path.joinpath(f'{file_name}.csv')  # Restituisce il percorso del file CSV salvato
-
-    except FileNotFoundError as e:
-        logging.error(f"File Excel non trovato: {file_path}")
-        raise e
-    except xlrd.XLRDError as e:
-        logging.error(f"Errore nella lettura del file Excel: {str(e)}")
-        raise e
-    except Exception as e:
-        logging.error(f"Errore durante la lettura del file Excel o il salvataggio dei dati: {str(e)}")
-        raise e
-
-
-def census_trace(
-        file_path: Path,
-        output_path: Path = None
-) -> Path:
-    """Estrae i metadati da un file Excel e restituisce un DataFrame o salva i dati in CSV.
-
-    Questa funzione legge il foglio "Metadati" da un file Excel, estrae i dati
-    pertinenti e restituisce un DataFrame pandas. Se viene fornito un percorso di
-    output, i dati vengono anche salvati in un file CSV.
-
-    Args:
-        file_path (Path): Il percorso del file Excel da leggere.
-        output_path (Path, optional): Il percorso in cui salvare il file CSV.
-            Se None, la funzione restituisce il DataFrame (default: None).
-
-    Returns:
-        Path: Il percorso del file CSV salvato, o il DataFrame pandas se
-            output_path è None.
-
-    Raises:
-        FileNotFoundError: Se il file Excel non viene trovato.
-        xlrd.XLRDError: Se si verifica un errore durante la lettura del file Excel.
-        Exception: Per altri errori durante il processo di lettura o salvataggio.
-    """
-    try:
-        logging.info(f"Lettura dei dati da {file_path}")
-        read_data = xlrd.open_workbook(file_path)
-
-        get_sheet = read_data.sheet_by_name('Metadati')
-
-        dataset = []
-        for row_id in range(get_sheet.nrows):
-            dataset.append(get_sheet.row_values(row_id)[:2])
-        dataset = dataset[7:]  # Ignora le prime 7 righe
-
-        # Crea le colonne del DataFrame
-        df_columns = [column_name for column_name in dataset[0]]
-
-        # Crea i dati del DataFrame
-        df_data = dataset[1:]
-        df = pd.DataFrame(data=df_data, columns=df_columns)
-        df.set_index('NOME CAMPO', inplace=True)
-
-        logging.info("Dati letti con successo.")
-
-        if output_path is None:
-            return df
-        else:
-            file_name = f'tracciato_{YEAR}_sezioni.csv'
-            logging.info(f"Salvataggio dei dati in {output_path.joinpath(file_name)}")
-            df.to_csv(path_or_buf=output_path.joinpath(file_name), sep=';')
-            return output_path.joinpath(file_name)  # Restituisce il percorso del file CSV salvato
-
-    except FileNotFoundError as e:
-        logging.error(f"File Excel non trovato: {file_path}")
-        raise e
-    except xlrd.XLRDError as e:
-        logging.error(f"Errore nella lettura del file Excel: {str(e)}")
-        raise e
-    except Exception as e:
-        logging.error(f"Errore durante la lettura del file Excel o il salvataggio dei dati: {str(e)}")
-        raise e
-
-
-def remove_xls(
-        folder_path: Path,
-        output_path: Path
-) -> None:
-    files_path = list(folder_path.rglob("*.xls"))
-
-    # Convert xls to csv
-    for file_path in files_path:
-        read_xls(
-            file_path=file_path,
-            output_path=output_path
-        )
-
-    # Remove xls
-    for file_path in files_path:
-        os.remove(file_path)
+ADMIN_BOUNDARIES = f"{MAIN_LINK}/confini_amministrativi/non_generalizzati/Limiti1991.zip"
 
 
 def download_data(
     output_data_folder: Path,
 ) -> Path:
-    # Creazione della cartella di destinazione per i dati
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=YEAR)
-    Path(destination_folder).mkdir(parents=True, exist_ok=True)
+    """Scarica i dati censuari e li salva in una cartella di destinazione.
 
-    data_folder = destination_folder.joinpath(DATA_FOLDER)
-    Path(data_folder).mkdir(parents=True, exist_ok=True)
+    Questa funzione crea una cartella di destinazione per i dati,
+    scarica i file necessari, esegue il tracciamento dei dati dal file
+    Excel e rimuove i file XLS non necessari.
 
-    data_file_name = Path(DATA_LINK).stem + Path(DATA_LINK).suffix
-    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+    Args:
+        output_data_folder (Path): Il percorso della cartella in cui
+            salvare i dati scaricati.
 
-    download_base(
-        data_link=DATA_LINK,
-        data_file_path_destination=data_file_path_dest,
-        data_folder=data_folder,
-        destination_folder=destination_folder
-    )
+    Returns:
+        Path: Il percorso della cartella di destinazione contenente
+            i dati scaricati.
 
-    final_folder = data_folder.joinpath(CENSUS_DATA_FOLDER)
-    Path(final_folder).mkdir(parents=True, exist_ok=True)
+    Raises:
+        Exception: Se si verifica un errore durante il download o il
+            salvataggio dei dati.
+    """
+    try:
+        # Creazione della cartella di destinazione per i dati
+        logging.info(f"Creazione della cartella di destinazione per i dati in {output_data_folder}")
+        destination_folder = census_folder(output_data_folder=output_data_folder, year=YEAR)
+        Path(destination_folder).mkdir(parents=True, exist_ok=True)
 
-    files_list = list(data_folder.rglob("*.xls"))
-    first_element = files_list[0]
+        data_folder = destination_folder.joinpath(DATA_FOLDER)
+        Path(data_folder).mkdir(parents=True, exist_ok=True)
 
-    census_trace(
-        file_path=first_element,
-        output_path=final_folder
-    )
+        data_file_name = Path(DATA_LINK).stem + Path(DATA_LINK).suffix
+        data_file_path_dest = Path(data_folder).joinpath(data_file_name)
 
-    remove_xls(
-        folder_path=data_folder,
-        output_path=final_folder
-    )
+        logging.info(f"Download dei dati da {DATA_LINK}")
+        download_base(
+            data_link=DATA_LINK,
+            data_file_path_destination=data_file_path_dest,
+            data_folder=data_folder,
+            destination_folder=destination_folder
+        )
 
-    logging.info(f"Download census data completed and saved to {destination_folder}")
-    return destination_folder
+        final_folder = data_folder.joinpath(CENSUS_DATA_FOLDER)
+        Path(final_folder).mkdir(parents=True, exist_ok=True)
+
+        # Esegui il tracciamento dei dati dal primo file XLS trovato
+        files_list = list(data_folder.rglob("*.xls"))
+        if not files_list:
+            logging.error("Nessun file XLS trovato nella cartella dei dati.")
+            raise Exception("Nessun file XLS trovato per il tracciamento.")
+
+        first_element = files_list[0]
+        logging.info(f"Estrazione del tracciamento dei dati dal file {first_element}")
+        census_trace(
+            file_path=first_element,
+            year=YEAR,
+            output_path=final_folder
+        )
+
+        # Rimuovi i file XLS non necessari
+        logging.info(f"Rimozione dei file XLS dalla cartella {data_folder}")
+        remove_xls(
+            folder_path=data_folder,
+            census_code=CENSUS_CODE,
+            output_path=final_folder
+        )
+
+        logging.info(f"Download dei dati censuari completato e salvato in {destination_folder}")
+        return destination_folder
+
+    except Exception as e:
+        logging.error(f"Errore durante il download dei dati: {str(e)}")
+        raise e
 
 
 def download_geodata(
@@ -267,3 +145,27 @@ def download_geodata(
         )
 
     return data_folder
+
+
+def download_administrative_boundaries(
+        output_data_folder: Path,
+) -> Path:
+    # Make folder for yearly census data
+    destination_folder = census_folder(output_data_folder=output_data_folder, year=YEAR)
+
+    # Make data folder
+    data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
+    Path(data_folder).mkdir(parents=True, exist_ok=True)
+
+    data_file_name = ADMIN_BOUNDARIES.split('/')[-1]
+    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+
+    logging.info("Download administrative boundaries")
+    download_base(
+        data_link=ADMIN_BOUNDARIES,
+        data_file_path_destination=data_file_path_dest,
+        data_folder=data_folder,
+        destination_folder=destination_folder
+    )
+    logging.info(f"Download administrative boundaries completed and saved to {destination_folder}")
+    return destination_folder
