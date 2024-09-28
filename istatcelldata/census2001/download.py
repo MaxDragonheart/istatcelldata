@@ -13,7 +13,6 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 YEAR = 2001
-CENSUS_CODE = f"sez{YEAR}"
 
 GEODATA_LINK = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{YEAR}/"
 DATA_LINK = f"{MAIN_LINK}/variabili-censuarie/dati-cpa_{YEAR}.zip"
@@ -25,7 +24,7 @@ def download_all_census_data_2001(
         data_url: str,
         geodata_url: str,
         boudaries_url: str,
-        year: int,
+        census_year: int,
         region_list: List = []
 ) -> None:
     """Download di tutti i dati censuari per l'anno selezionato. E' possibile
@@ -41,12 +40,12 @@ def download_all_census_data_2001(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     # Download data
-    download_data(output_data_folder=data_folder, url=data_url, year=year)
+    download_data(output_data_folder=data_folder, url=data_url, census_year=census_year)
 
     # Download geodata
     download_geodata(
-        output_data_folder=data_folder, region_list=region_list, url=geodata_url, year=year
+        output_data_folder=data_folder, region_list=region_list, url=geodata_url, census_year=census_year
     )
 
     # Download administrative boundaries
-    download_administrative_boundaries(output_data_folder=data_folder, url=boudaries_url, year=year)
+    download_administrative_boundaries(output_data_folder=data_folder, url=boudaries_url, census_year=census_year)

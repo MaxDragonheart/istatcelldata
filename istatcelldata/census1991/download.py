@@ -26,7 +26,7 @@ ADMIN_BOUNDARIES = f"{MAIN_LINK}/confini_amministrativi/non_generalizzati/Limiti
 def download_data(
         output_data_folder: Path,
         url: str,
-        year: int
+        census_year: int
 ) -> Path:
     """Scarica i dati censuari e li salva in una cartella di destinazione.
 
@@ -49,7 +49,7 @@ def download_data(
     try:
         # Creazione della cartella di destinazione per i dati
         logging.info(f"Creazione della cartella di destinazione per i dati in {output_data_folder}")
-        destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+        destination_folder = census_folder(output_data_folder=output_data_folder, year=census_year)
         Path(destination_folder).mkdir(parents=True, exist_ok=True)
 
         data_folder = destination_folder.joinpath(DATA_FOLDER)
@@ -79,7 +79,7 @@ def download_data(
         logging.info(f"Estrazione del tracciamento dei dati dal file {first_element}")
         census_trace(
             file_path=first_element,
-            year=year,
+            year=census_year,
             output_path=final_folder
         )
 
@@ -87,7 +87,7 @@ def download_data(
         logging.info(f"Rimozione dei file XLS dalla cartella {data_folder}")
         remove_xls(
             folder_path=data_folder,
-            census_code=f"sez{year}",
+            census_code=f"sez{census_year}",
             output_path=final_folder
         )
 
@@ -102,7 +102,7 @@ def download_data(
 def download_geodata(
         output_data_folder: Path,
         url: str,
-        year: int,
+        census_year: int,
         region_list: List[int] = []
 ) -> Path:
     """Scarica i dati geocensuari per le regioni specificate.
@@ -120,13 +120,13 @@ def download_geodata(
         Path: La cartella contenente i dati geocensuari scaricati.
     """
     # Creazione della cartella di destinazione per i dati
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+    destination_folder = census_folder(output_data_folder=output_data_folder, year=census_year)
     Path(destination_folder).mkdir(parents=True, exist_ok=True)
 
     data_folder = destination_folder.joinpath(GEODATA_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
-    year_folder = str(year)[2:]  # Ultime due cifre dell'anno
+    year_folder = str(census_year)[2:]  # Ultime due cifre dell'anno
 
     # Imposta la lista delle regioni da scaricare
     regions = get_region(region_list=region_list)
@@ -154,7 +154,7 @@ def download_geodata(
 def download_administrative_boundaries(
         output_data_folder: Path,
         url: str,
-        year: int
+        census_year: int
 ) -> Path:
     """Scarica i confini amministrativi e li salva in una cartella di destinazione.
 
@@ -176,7 +176,7 @@ def download_administrative_boundaries(
     try:
         # Creazione della cartella per i dati del censimento annuale
         logging.info(f"Creazione della cartella per i dati del censimento in {output_data_folder}")
-        destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
+        destination_folder = census_folder(output_data_folder=output_data_folder, year=census_year)
 
         # Creazione della cartella per i confini amministrativi
         data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
@@ -206,7 +206,7 @@ def download_all_census_data_1991(
         data_url: str,
         geodata_url: str,
         boudaries_url: str,
-        year: int,
+        census_year: int,
         region_list: List = []
 ) -> None:
     """Download di tutti i dati censuari per l'anno selezionato. E' possibile
@@ -222,12 +222,12 @@ def download_all_census_data_1991(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     # Download data
-    download_data(output_data_folder=data_folder, url=data_url, year=year)
+    download_data(output_data_folder=data_folder, url=data_url, census_year=census_year)
 
     # Download geodata
     download_geodata(
-        output_data_folder=data_folder, region_list=region_list, url=geodata_url, year=year
+        output_data_folder=data_folder, region_list=region_list, url=geodata_url, census_year=census_year
     )
 
     # Download administrative boundaries
-    download_administrative_boundaries(output_data_folder=data_folder, url=boudaries_url, year=year)
+    download_administrative_boundaries(output_data_folder=data_folder, url=boudaries_url, census_year=census_year)
