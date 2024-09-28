@@ -274,4 +274,3 @@ def get_region(region_list: List[int] = []) -> List[int]:
         regions = region_list
 
     return regions
-
