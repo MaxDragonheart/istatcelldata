@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import List
 
 from istatcelldata.census1991.utils import census_trace, remove_xls
-from istatcelldata.config import GEODATA_FOLDER, DATA_FOLDER, CENSUS_DATA_FOLDER, BOUNDARIES_DATA_FOLDER
+from istatcelldata.config import GEODATA_FOLDER, DATA_FOLDER, CENSUS_DATA_FOLDER, BOUNDARIES_DATA_FOLDER, \
+    PREPROCESSING_FOLDER
 from istatcelldata.download import download_base
 from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import census_folder, get_region
@@ -150,22 +151,74 @@ def download_geodata(
 def download_administrative_boundaries(
         output_data_folder: Path,
 ) -> Path:
-    # Make folder for yearly census data
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=YEAR)
+    """Scarica i confini amministrativi e li salva in una cartella di destinazione.
 
+    Questa funzione crea una cartella di destinazione per i confini
+    amministrativi e scarica il file necessario nella cartella creata.
+
+    Args:
+        output_data_folder (Path): Il percorso della cartella in cui
+            salvare i confini amministrativi scaricati.
+
+    Returns:
+        Path: Il percorso della cartella di destinazione contenente
+            i confini amministrativi scaricati.
+
+    Raises:
+        Exception: Se si verifica un errore durante il download dei
+            confini amministrativi.
+    """
+    try:
+        # Creazione della cartella per i dati del censimento annuale
+        logging.info(f"Creazione della cartella per i dati del censimento in {output_data_folder}")
+        destination_folder = census_folder(output_data_folder=output_data_folder, year=YEAR)
+
+        # Creazione della cartella per i confini amministrativi
+        data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
+        Path(data_folder).mkdir(parents=True, exist_ok=True)
+
+        data_file_name = ADMIN_BOUNDARIES.split('/')[-1]
+        data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+
+        logging.info(f"Scaricamento dei confini amministrativi da {ADMIN_BOUNDARIES}")
+        download_base(
+            data_link=ADMIN_BOUNDARIES,
+            data_file_path_destination=data_file_path_dest,
+            data_folder=data_folder,
+            destination_folder=destination_folder
+        )
+
+        logging.info(f"Download dei confini amministrativi completato e salvato in {destination_folder}")
+        return destination_folder
+
+    except Exception as e:
+        logging.error(f"Errore durante il download dei confini amministrativi: {str(e)}")
+        raise e
+
+
+def download_all_census_data_1991(
+        output_data_folder: Path,
+        region_list: List = []
+) -> None:
+    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
+    effettuare il download per singola Regione ma anche per specifiche Regioni.
+    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
+
+    Args:
+        output_data_folder: Path
+        region_list: List
+    """
     # Make data folder
-    data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
+    data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
-    data_file_name = ADMIN_BOUNDARIES.split('/')[-1]
-    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
+    # Download data
+    download_data(output_data_folder=data_folder)
 
-    logging.info("Download administrative boundaries")
-    download_base(
-        data_link=ADMIN_BOUNDARIES,
-        data_file_path_destination=data_file_path_dest,
-        data_folder=data_folder,
-        destination_folder=destination_folder
+    # Download geodata
+    download_geodata(
+        output_data_folder=data_folder, region_list=region_list
     )
-    logging.info(f"Download administrative boundaries completed and saved to {destination_folder}")
-    return destination_folder
+
+    # Download administrative boundaries
+    download_administrative_boundaries(output_data_folder=data_folder)

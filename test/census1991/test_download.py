@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from istatcelldata.census1991.download import download_geodata, download_data, download_administrative_boundaries
+from istatcelldata.census1991.download import download_geodata, download_data, download_administrative_boundaries, \
+    download_all_census_data_1991
 
 
 def test_download_data(tmp_path: Path):
@@ -29,3 +30,12 @@ def test_download_administrative_boundaries(tmp_path: Path):
     )
     print(data)
     assert isinstance(data, Path)
+
+
+def test_download_all_census_data_1991(tmp_path: Path):
+    print("test_download_all_census_data_1991")
+    download_all_census_data_1991(
+        output_data_folder=tmp_path,
+        region_list=[2, 15]
+    )
+
