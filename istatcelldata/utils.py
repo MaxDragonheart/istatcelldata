@@ -3,6 +3,7 @@ import logging
 import ssl
 import zipfile
 from pathlib import Path
+from typing import List
 
 import chardet
 import requests
@@ -199,7 +200,7 @@ def unzip_data(input_data: Path, output_folder: Path) -> Path:
         raise e
 
 
-class CustomHttpAdapter (requests.adapters.HTTPAdapter):
+class CustomHttpAdapter(requests.adapters.HTTPAdapter):
     """Adattatore HTTP personalizzato che consente l'uso di un contesto SSL custom.
 
     Questa classe permette di utilizzare un contesto SSL personalizzato durante
@@ -264,3 +265,13 @@ def get_legacy_session():
     except Exception as e:
         logging.error(f"Errore nella creazione della sessione legacy: {str(e)}")
         raise e
+
+
+def get_region(region_list: List[int] = []) -> List[int]:
+    if len(region_list) == 0:
+        regions = list(range(1, 21, 1))
+    else:
+        regions = region_list
+
+    return regions
+

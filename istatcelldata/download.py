@@ -7,7 +7,7 @@ import requests
 from tqdm import tqdm
 
 from istatcelldata.logger_config import configure_logging
-from istatcelldata.utils import get_legacy_session, unzip_data
+from istatcelldata.utils import unzip_data
 
 # Configure logging at the start of the script
 configure_logging()
@@ -15,7 +15,7 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def download(
+def download_base(
         data_link: str,
         data_file_path_destination: Path,
         data_folder: Path,
@@ -43,12 +43,11 @@ def download(
     try:
         logging.info(f"Inizio download dei dati dal link: {data_link}")
         data = requests.get(data_link, stream=True)
-        print(data)
 
         # Controlla lo stato del download
         if data.status_code == 200:
             data_size = int(data.headers.get('Content-Length', 0))
-            print(data_size)
+
             # Barra di avanzamento tramite tqdm
             with open(data_file_path_destination, 'wb') as output_file:
                 # Usa tqdm per la barra di avanzamento

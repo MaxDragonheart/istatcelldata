@@ -1,12 +1,10 @@
 from pathlib import Path
 
-from mkdocs.utils.cache import download_url
-
-from istatcelldata.download import download
+from istatcelldata.download import download_base
 
 
-def test_download(tmp_path: Path):
-    print("test_download")
+def test_download_base(tmp_path: Path):
+    print("test_download_base")
     download_folder = tmp_path.joinpath("download")
     download_folder.mkdir(parents=True, exist_ok=True)
 
@@ -20,7 +18,7 @@ def test_download(tmp_path: Path):
     data_file_name = Path(download_url).stem + Path(download_url).suffix
     print(data_file_name)
 
-    data = download(
+    data = download_base(
         data_link=download_url,
         data_file_path_destination=download_folder.joinpath(data_file_name),
         data_folder=extract_folder,
