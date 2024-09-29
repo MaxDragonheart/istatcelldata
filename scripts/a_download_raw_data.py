@@ -1,13 +1,30 @@
+import logging
 from pathlib import Path
-from istatcelldata.processes import download_raw_data
+
+from istatcelldata.executor.download import download_census
+from istatcelldata.logger_config import configure_logging
+
 
 main_path = Path("/home/max/Desktop/census")
-list_year = [2011, 2021]
-list_region = [15]
+list_year = []
+list_region = []
+
+
+# Configure logging at the start of the script
+def setup_logging(log_dir: Path):
+    configure_logging(
+        log_dir=log_dir,
+        log_name="download_census",
+    )
+
+# Define the logger as a global variable
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    download_raw_data(
+    setup_logging(log_dir=main_path)
+
+    download_census(
+        years=list_year,
         output_data_folder=main_path,
-        year_list=list_year,
-        region_list=list_region
+        region_list=list_region,
     )
