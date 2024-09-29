@@ -1,14 +1,11 @@
 import csv
 import logging
 import os
-import ssl
 import zipfile
 from pathlib import Path
 from typing import List
 
 import chardet
-import requests
-import urllib3
 import xlrd
 from tqdm import tqdm
 
@@ -198,73 +195,6 @@ def unzip_data(input_data: Path, output_folder: Path) -> Path:
         raise e
     except Exception as e:
         logging.error(f"Errore durante la decompressione: {str(e)}")
-        raise e
-
-
-class CustomHttpAdapter(requests.adapters.HTTPAdapter):
-    """Adattatore HTTP personalizzato che consente l'uso di un contesto SSL custom.
-
-    Questa classe permette di utilizzare un contesto SSL personalizzato durante
-    la gestione delle connessioni HTTP. Estende l'adattatore predefinito di `requests`.
-    Soluzione adottata grazie a https://stackoverflow.com/questions/71603314/ssl-error-unsafe-legacy-renegotiation-disabled/73519818#73519818
-
-    Args:
-        ssl_context (ssl.SSLContext, optional): Un contesto SSL personalizzato da utilizzare.
-        **kwargs: Altri parametri passati alla classe madre `HTTPAdapter`.
-    """
-
-    def __init__(self, ssl_context=None, **kwargs):
-        """Inizializza l'adattatore HTTP con un contesto SSL personalizzato."""
-        self.ssl_context = ssl_context
-        logging.info("Inizializzazione di CustomHttpAdapter con un contesto SSL personalizzato.")
-        super().__init__(**kwargs)
-
-    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
-        """Inizializza il gestore della connessione con un contesto SSL personalizzato.
-
-        Args:
-            connections (int): Numero di connessioni nel pool.
-            maxsize (int): Numero massimo di connessioni nel pool.
-            block (bool, optional): Se bloccare quando il pool è pieno.
-            **pool_kwargs: Altri parametri passati al PoolManager.
-        """
-        logging.info("Inizializzazione del PoolManager con contesto SSL personalizzato.")
-        self.poolmanager = urllib3.poolmanager.PoolManager(
-            num_pools=connections,
-            maxsize=maxsize,
-            block=block,
-            ssl_context=self.ssl_context,
-            **pool_kwargs
-        )
-
-
-def get_legacy_session():
-    """Crea una sessione HTTP compatibile con server legacy.
-
-    La funzione crea un contesto SSL personalizzato che abilita il supporto per
-    la connessione a server legacy tramite l'opzione `OP_LEGACY_SERVER_CONNECT`.
-    La sessione utilizza un adattatore personalizzato `CustomHttpAdapter` con il contesto SSL.
-    Soluzione adottata grazie a https://stackoverflow.com/questions/71603314/ssl-error-unsafe-legacy-renegotiation-disabled/73519818#73519818
-
-    Returns:
-        requests.Session: Una sessione HTTP con un contesto SSL configurato per server legacy.
-    """
-    try:
-        logging.info("Creazione di un contesto SSL con supporto per server legacy.")
-
-        # Crea il contesto SSL con l'opzione legacy
-        ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-        ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
-
-        # Crea una sessione HTTP e monta l'adattatore con il contesto SSL personalizzato
-        session = requests.session()
-        session.mount('https://', CustomHttpAdapter(ctx))
-
-        logging.info("Sessione creata con adattatore SSL legacy.")
-        return session
-
-    except Exception as e:
-        logging.error(f"Errore nella creazione della sessione legacy: {str(e)}")
         raise e
 
 

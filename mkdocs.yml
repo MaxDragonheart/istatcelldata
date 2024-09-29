@@ -9,11 +9,11 @@ nav:
   - Documentazione:
       - Intro: ./documentation/intro.md
       - References:
-        - Processes: ./documentation/processes.md
-        - Download: ./documentation/download.md
         - Data: ./documentation/data.md
-        - GeoData: ./documentation/geodata.md
+        - Download: ./documentation/download.md
         - Generic: ./documentation/utils.md
+        - GeoData: ./documentation/geodata.md
+        - Processes: ./documentation/processes.md
       - Tutorial: ./tutorial/intro.md
   - Licenza: ./LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istatcelldata/issues

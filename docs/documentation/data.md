@@ -10,8 +10,8 @@ censuari pubblicati come `csv`, [formato](https://en.wikipedia.org/wiki/Comma-se
 
 ## Anni 1991-2001
 
-::: istatcelldata.data.census_1991_2001
+# istatcelldata.data.census_1991_2001
 
 ## Anno 2011
 
-::: istatcelldata.data.manage_data
+# istatcelldata.data.manage_data
