@@ -5,7 +5,7 @@ from typing import List
 from istatcelldata.config import DATA_FOLDER, GEODATA_FOLDER, BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.download import download_base
 from istatcelldata.logger_config import configure_logging
-from istatcelldata.utils import census_folder, get_census_dictionary, get_region
+from istatcelldata.utils import census_folder, get_census_dictionary
 
 # Configure logging at the start of the script
 configure_logging()
@@ -87,8 +87,8 @@ def download_geodata(
     Returns:
         Path: La cartella contenente i dati geocensuari scaricati.
     """
-    link_dict = get_census_dictionary(census_year=census_year)
-    data_url = link_dict[f"census{census_year}"]["geodata_url"]
+    link_dict = get_census_dictionary(census_year=census_year, region_list=region_list)
+    geodata_urls = link_dict[f"census{census_year}"]["geodata_urls"]
 
     # Creazione della cartella di destinazione per i dati
     destination_folder = census_folder(output_data_folder=output_data_folder, year=census_year)
@@ -97,23 +97,14 @@ def download_geodata(
     data_folder = destination_folder.joinpath(GEODATA_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
-    year_folder = str(census_year)[2:]  # Ultime due cifre dell'anno
-
-    # Imposta la lista delle regioni da scaricare
-    regions = get_region(region_list=region_list)
-
-    for region in regions:
-        region_str = str(region).zfill(2)
-        data_link = f"{data_url}/R{region_str}_{year_folder}_WGS84.zip"
-        logging.info(f"Link dei dati: {data_link}")
-
-        data_file_name = data_link.split('/')[-1]
+    for url in geodata_urls:
+        data_file_name = url.split('/')[-1]
         data_file_path_dest = Path(data_folder).joinpath(data_file_name)
         logging.info(f"Percorso del file di destinazione: {data_file_path_dest}")
 
         # Scarica i dati
         download_base(
-            data_link=data_link,
+            data_link=url,
             data_file_path_destination=data_file_path_dest,
             data_folder=data_folder,
             destination_folder=destination_folder

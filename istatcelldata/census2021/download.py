@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
+from typing import List
 
-from istatcelldata.census1991.utils import census_trace
-from istatcelldata.census2011.download import download_data as dwn
+from istatcelldata.census2011.download import download_data as dwn, download_geodata, download_administrative_boundaries
 from istatcelldata.census2021.utils import read_xlsx
-from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER
+from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import get_census_dictionary, remove_files
 
@@ -51,3 +51,36 @@ def download_data(
 
     logging.info(f"Download dei dati censuari completato e salvato in {data_folder}")
     return data_folder
+
+
+def download_all_census_data_2021(
+        output_data_folder: Path,
+        region_list: List = []
+) -> Path:
+    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
+    effettuare il download per singola Regione ma anche per specifiche Regioni.
+    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
+
+    Args:
+        output_data_folder: Path
+        region_list: List
+
+    Returns:
+        Path di destinazione.
+    """
+    # Make data folder
+    data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
+    Path(data_folder).mkdir(parents=True, exist_ok=True)
+
+    # Download data
+    download_data(output_data_folder=data_folder, census_year=YEAR)
+
+    # Download geodata
+    download_geodata(
+        output_data_folder=data_folder, region_list=region_list, census_year=YEAR
+    )
+
+    # Download administrative boundaries
+    download_administrative_boundaries(output_data_folder=data_folder, census_year=YEAR)
+
+    return output_data_folder

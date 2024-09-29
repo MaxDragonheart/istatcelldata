@@ -277,7 +277,7 @@ def get_region(region_list: List[int] = []) -> List[int]:
     return regions
 
 
-def get_census_dictionary(census_year: int) -> dict:
+def get_census_dictionary(census_year: int, region_list: List[int] = []) -> dict:
     """Genera i link per il download dei dati censuari, geodati e confini amministrativi
     in base all'anno del censimento fornito.
 
@@ -294,45 +294,45 @@ def get_census_dictionary(census_year: int) -> dict:
     main_link = "https://www.istat.it/storage/cartografia"
     census = [1991, 2001, 2011, 2021]
     if census_year in census:
+        year_code = str(census_year)[2:]
+
+        regions = get_region(region_list=region_list)
+
+        geodata_urls = []
+
+        for region in regions:
+            region_str = str(region).zfill(2)
+
+            if census_year in [1991, 2001, 2011]:
+                geodata_file = f"R{region_str}_{year_code}_WGS84.zip"
+                geodata_url = f"{main_link}/basi_territoriali/WGS_84_UTM/{census_year}/{geodata_file}"
+            else:
+                geodata_file = f"R{region_str}_{year_code}.zip"
+                geodata_url = f"{main_link}/basi_territoriali/{census_year}/{geodata_file}"
+            geodata_urls.append(geodata_url)
 
         if census_year in [1991, 2001, 2011]:
+            data_url = f"{main_link}/variabili-censuarie/dati-cpa_{census_year}.zip"
             census_code = f"sez{census_year}"
+
         else:
+            data_url = "https://esploradati.censimentopopolazione.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
             census_code = "sez21_id"
 
-        # Determina il link dei confini amministrativi in base all'anno del censimento
         if census_year == 2011:
             boundaries_folder = f"{census_year}/Limiti_{census_year}_WGS84.zip"
         else:
             boundaries_folder = f"Limiti{census_year}.zip"
 
-        logging.info(f"Generazione dei link per il censimento {census_year}")
-
-        # Gestisce il caso del censimento del 2021
-        if census_year == 2021:
-            logging.info(f"Link specifici per il censimento {census_year}")
-            data_url = "https://esploradati.censimentopopolazione.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
-            geodata_url = f"{main_link}/basi_territoriali/{census_year}/"
-        else:
-            # Gestisce gli altri anni di censimento
-            data_url = f"{main_link}/variabili-censuarie/dati-cpa_{census_year}.zip"
-            geodata_url = f"{main_link}/basi_territoriali/WGS_84_UTM/{census_year}/"
-
-        logging.info(f"Link dati: {data_url}")
-        logging.info(f"Link geodati: {geodata_url}")
-        logging.info(f"Link confini amministrativi: {main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}")
-
-        # Crea un dizionario con i link generati
         links_dict = {
             f"census{census_year}": {
                 "data_url": data_url,
-                "geodata_url": geodata_url,
+                "geodata_urls": geodata_urls,
                 "admin_boundaries_url": f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}",
                 "census_code": census_code
             }
         }
 
-        logging.info(f"Link generati con successo per il censimento {census_year}")
         return links_dict
 
     else:

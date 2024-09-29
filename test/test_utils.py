@@ -50,7 +50,10 @@ def test_get_region():
 
 def test_get_census_dictionary():
     print("test_get_census_dictionary")
-    data = get_census_dictionary(census_year=2021)
+    data = get_census_dictionary(
+        census_year=1991,
+        region_list=[3, 5]
+    )
     print(data)
     assert isinstance(data, dict)
 
