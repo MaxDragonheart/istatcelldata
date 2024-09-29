@@ -1,5 +1,4 @@
 import logging
-import os
 from pathlib import Path
 from typing import Union
 
@@ -144,23 +143,3 @@ def census_trace(
     except Exception as e:
         logging.error(f"Errore durante la lettura del file Excel o il salvataggio dei dati: {str(e)}")
         raise e
-
-
-def remove_xls(
-        folder_path: Path,
-        census_code: str,
-        output_path: Path
-) -> None:
-    files_path = list(folder_path.rglob("*.xls"))
-
-    # Convert xls to csv
-    for file_path in files_path:
-        read_xls(
-            file_path=file_path,
-            census_code=census_code,
-            output_path=output_path
-        )
-
-    # Remove xls
-    for file_path in files_path:
-        os.remove(file_path)

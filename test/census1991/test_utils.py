@@ -25,12 +25,3 @@ def test_census_trace(tmp_path: Path):
     )
     print(data)
     assert isinstance(data, Path) or isinstance(data, pd.DataFrame)
-
-
-def test_remove_xls(tmp_path: Path):
-    print("test_remove_xls")
-    data = DEMO_DATA_FOLDER.joinpath("dati-cpa_1991\R05_DatiCPA_1991.xls")
-
-    shutil.copy(src=data, dst=tmp_path)
-
-    remove_xls(folder_path=tmp_path, output_path=tmp_path)

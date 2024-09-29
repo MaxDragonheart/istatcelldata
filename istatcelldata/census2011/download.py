@@ -5,7 +5,7 @@ from typing import List
 from istatcelldata.config import DATA_FOLDER, GEODATA_FOLDER, BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.download import download_base
 from istatcelldata.logger_config import configure_logging
-from istatcelldata.utils import census_folder, get_links, get_region
+from istatcelldata.utils import census_folder, get_census_dictionary, get_region
 
 # Configure logging at the start of the script
 configure_logging()
@@ -37,7 +37,7 @@ def download_data(
         Exception: Se si verifica un errore durante il download o il
             salvataggio dei dati.
     """
-    link_dict = get_links(census_year=census_year)
+    link_dict = get_census_dictionary(census_year=census_year)
     data_url = link_dict[f"census{census_year}"]["data_url"]
 
     try:
@@ -87,7 +87,7 @@ def download_geodata(
     Returns:
         Path: La cartella contenente i dati geocensuari scaricati.
     """
-    link_dict = get_links(census_year=census_year)
+    link_dict = get_census_dictionary(census_year=census_year)
     data_url = link_dict[f"census{census_year}"]["geodata_url"]
 
     # Creazione della cartella di destinazione per i dati
@@ -143,7 +143,7 @@ def download_administrative_boundaries(
         Exception: Se si verifica un errore durante il download dei
             confini amministrativi.
     """
-    link_dict = get_links(census_year=census_year)
+    link_dict = get_census_dictionary(census_year=census_year)
     data_url = link_dict[f"census{census_year}"]["admin_boundaries_url"]
 
     try:

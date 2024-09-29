@@ -1,5 +1,6 @@
 import csv
 import logging
+import os
 import ssl
 import zipfile
 from pathlib import Path
@@ -276,7 +277,7 @@ def get_region(region_list: List[int] = []) -> List[int]:
     return regions
 
 
-def get_links(census_year: int) -> dict:
+def get_census_dictionary(census_year: int) -> dict:
     """Genera i link per il download dei dati censuari, geodati e confini amministrativi
     in base all'anno del censimento fornito.
 
@@ -293,6 +294,11 @@ def get_links(census_year: int) -> dict:
     main_link = "https://www.istat.it/storage/cartografia"
     census = [1991, 2001, 2011, 2021]
     if census_year in census:
+
+        if census_year in [1991, 2001, 2011]:
+            census_code = f"sez{census_year}"
+        else:
+            census_code = "sez21_id"
 
         # Determina il link dei confini amministrativi in base all'anno del censimento
         if census_year == 2011:
@@ -321,7 +327,8 @@ def get_links(census_year: int) -> dict:
             f"census{census_year}": {
                 "data_url": data_url,
                 "geodata_url": geodata_url,
-                "admin_boundaries_url": f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}"
+                "admin_boundaries_url": f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}",
+                "census_code": census_code
             }
         }
 
@@ -330,3 +337,9 @@ def get_links(census_year: int) -> dict:
 
     else:
         raise ValueError(f"L'anno di censimento scelto non è supportato. Puo scegliere tra {census}.")
+
+
+def remove_files(files_path: list) -> None:
+    # Remove xls
+    for file_path in files_path:
+        os.remove(file_path)
