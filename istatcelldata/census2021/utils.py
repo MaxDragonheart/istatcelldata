@@ -33,7 +33,6 @@ def read_xlsx(
         ValueError: Se il file Excel non può essere letto correttamente.
     """
     try:
-        print(file_path.stem[:1])
         logging.info(f"Lettura del file Excel da {file_path}")
         # Lettura del file Excel utilizzando il motore 'openpyxl'
         df = pd.read_excel(file_path, engine='openpyxl')
