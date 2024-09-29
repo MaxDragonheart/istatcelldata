@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from istatcelldata.config import DEMO_DATA_FOLDER
-from istatcelldata.utils import check_encoding, csv_from_excel, census_folder, unzip_data, get_region
+from istatcelldata.utils import check_encoding, csv_from_excel, census_folder, unzip_data, get_region, get_links
 
 
 def test_check_encoding():
@@ -47,4 +47,10 @@ def test_get_region():
     print(data)
     assert isinstance(data, list)
 
+
+def test_get_links():
+    print("test_get_links")
+    data = get_links(census_year=2021)
+    print(data)
+    assert isinstance(data, dict)
 

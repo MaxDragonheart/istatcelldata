@@ -274,3 +274,59 @@ def get_region(region_list: List[int] = []) -> List[int]:
         regions = region_list
 
     return regions
+
+
+def get_links(census_year: int) -> dict:
+    """Genera i link per il download dei dati censuari, geodati e confini amministrativi
+    in base all'anno del censimento fornito.
+
+    Args:
+        census_year (int): L'anno del censimento per cui generare i link.
+
+    Returns:
+        dict: Un dizionario contenente i link per il download dei dati,
+        geodati e confini amministrativi.
+
+    Raises:
+        ValueError: Se l'anno del censimento non è supportato.
+    """
+    main_link = "https://www.istat.it/storage/cartografia"
+    census = [1991, 2001, 2011, 2021]
+    if census_year in census:
+
+        # Determina il link dei confini amministrativi in base all'anno del censimento
+        if census_year == 2011:
+            boundaries_folder = f"{census_year}/Limiti_{census_year}_WGS84.zip"
+        else:
+            boundaries_folder = f"Limiti{census_year}.zip"
+
+        logging.info(f"Generazione dei link per il censimento {census_year}")
+
+        # Gestisce il caso del censimento del 2021
+        if census_year == 2021:
+            logging.info(f"Link specifici per il censimento {census_year}")
+            data_url = "https://esploradati.censimentopopolazione.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
+            geodata_url = f"{main_link}/basi_territoriali/{census_year}/"
+        else:
+            # Gestisce gli altri anni di censimento
+            data_url = f"{main_link}/variabili-censuarie/dati-cpa_{census_year}.zip"
+            geodata_url = f"{main_link}/basi_territoriali/WGS_84_UTM/{census_year}/"
+
+        logging.info(f"Link dati: {data_url}")
+        logging.info(f"Link geodati: {geodata_url}")
+        logging.info(f"Link confini amministrativi: {main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}")
+
+        # Crea un dizionario con i link generati
+        links_dict = {
+            f"census{census_year}": {
+                "data_url": data_url,
+                "geodata_url": geodata_url,
+                "admin_boundaries_url": f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}"
+            }
+        }
+
+        logging.info(f"Link generati con successo per il censimento {census_year}")
+        return links_dict
+
+    else:
+        raise ValueError(f"L'anno di censimento scelto non è supportato. Puo scegliere tra {census}.")
