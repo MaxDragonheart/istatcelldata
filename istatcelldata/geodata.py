@@ -13,10 +13,11 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def read_major_boundaries(
+def read_administrative_boundaries(
         file_path: Path,
         target_columns: list,
-        index_column: str
+        index_column: str,
+        column_remapping: dict = None,
 ) -> pd.DataFrame:
     """Legge i confini amministrativi principali da un file e restituisce un DataFrame filtrato.
 
@@ -42,6 +43,8 @@ def read_major_boundaries(
     # Selezione delle colonne di interesse
     data_target = data[target_columns]
     logging.info(f"Colonne selezionate: {target_columns}")
+    if column_remapping is not None:
+        data_target.rename(columns=column_remapping, inplace=True)
 
     # Imposta la colonna indice e ordina i dati
     data_target.set_index(index_column, inplace=True)

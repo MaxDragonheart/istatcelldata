@@ -2,6 +2,8 @@ from pathlib import Path
 
 DEMO_DATA_FOLDER = Path(__file__).parent.parent.joinpath('demo_data')
 
+GEOMETRY_COLUMN_NAME = 'geometry'
+
 # PROJECT FOLDERS
 DATA_FOLDER = 'data'
 GEODATA_FOLDER = 'geodata'

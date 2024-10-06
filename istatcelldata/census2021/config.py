@@ -5,6 +5,7 @@ REGIONS_COLUMN = ['COD_REG', 'DEN_REG']
 
 PROVINCES_ROOT = "census_2021", "administrative_boundaries", "Limiti2021", "ProvCM2021", "ProvCM2021.shp"
 PROVINCES_COLUMN = ['COD_PROV', 'DEN_UTS', 'SIGLA', 'TIPO_UTS']
+PROVINCES_COLUMN_REMAPPING = {'DEN_UTS': 'DEN_PROV'}
 
 MUNICIPALITIES_ROOT = "census_2021", "administrative_boundaries", "Limiti2021", "Com2021", "Com2021.shp"
 MUNICIPALITIES_COLUMN = ['PRO_COM', 'COMUNE', 'COD_REG']
