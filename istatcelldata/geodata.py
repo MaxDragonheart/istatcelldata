@@ -146,10 +146,17 @@ def read_census(
 
         # Iterazione sulle righe del DataFrame per costruire le celle del censimento
         for index, row in tqdm(census_data.iterrows(), total=census_data.shape[0]):
-            census_geometry = make_valid(row[GEOMETRY_COLUMN_NAME])  # Corregge la geometria se necessario
-            tipo_loc = tipo_loc_mapping.get(row[1], None)  # Mappa il codice di località
-            census_row = [row[0], row[1], tipo_loc, census_geometry]
-            census_cells.append(census_row)
+            census_geometry = row[GEOMETRY_COLUMN_NAME]
+
+            # Verifica se la geometria è presente
+            if census_geometry is not None:
+                census_geometry = make_valid(census_geometry)  # Corregge la geometria se necessario
+                tipo_loc = tipo_loc_mapping.get(row[1], None)  # Mappa il codice di località
+                census_row = [row[0], row[1], tipo_loc, census_geometry]
+                census_cells.append(census_row)
+            else:
+                logging.warning(f"Per la sezione {row[0]} la geometria è `None` o irreparabilmente danneggiata.")
+                pass
 
     df_columns = columns_list[0]  # Recupera i nomi delle colonne
     df_columns.insert(df_columns.index(GEOMETRY_COLUMN_NAME), 'DEN_LOC')  # Aggiunge 'DEN_LOC' come colonna
