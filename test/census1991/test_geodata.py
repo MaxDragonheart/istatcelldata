@@ -1,10 +1,11 @@
 from pathlib import Path
 
 import pandas as pd
+import geopandas as gpd
 
 from istatcelldata.census1991.config import REGIONS_ROOT, REGIONS_COLUMN, PROVINCES_ROOT, PROVINCES_COLUMN, \
-    MUNICIPALITIES_ROOT, MUNICIPALITIES_COLUMN
-from istatcelldata.geodata import read_administrative_boundaries
+    MUNICIPALITIES_ROOT, MUNICIPALITIES_COLUMN, CENSUS_SHP_ROOT, CENSUS_SHP_COLUMN, TIPO_LOC_MAPPING
+from istatcelldata.geodata import read_administrative_boundaries, read_census
 
 main_folder = Path("/home/max/Desktop/census/preprocessing")
 
@@ -112,3 +113,16 @@ def test_make_admin_boundaries_gpkg(tmp_path: Path):
         layer_name="confini_comunali",
     )
     print(municipalities)
+
+
+def test_read_census(tmp_path: Path):
+    print("test_read_census")
+    data = read_census(
+        shp_folder=main_folder.joinpath(*CENSUS_SHP_ROOT),
+        target_columns=CENSUS_SHP_COLUMN,
+        tipo_loc_mapping=TIPO_LOC_MAPPING,
+        output_folder=tmp_path
+    )
+    print(data)
+    assert isinstance(data, gpd.GeoDataFrame) or isinstance(data, Path)
+

@@ -1,13 +1,24 @@
+from istatcelldata.config import GEOMETRY_COLUMN_NAME, GEODATA_FOLDER, BOUNDARIES_DATA_FOLDER
+
 YEAR = 2011
 
-REGIONS_ROOT = "census_2011", "administrative_boundaries", "Limiti_2011_WGS84", "Reg2011_WGS84", "Reg2011_WGS84.shp"
+REGIONS_ROOT = f"census_{YEAR}", BOUNDARIES_DATA_FOLDER, f"Limiti_{YEAR}_WGS84", f"Reg{YEAR}_WGS84", f"Reg{YEAR}_WGS84.shp"
 REGIONS_COLUMN = ['COD_REG', 'REGIONE']
 REGIONS_COLUMN_REMAPPING = {'REGIONE': 'DEN_REG'}
 
-PROVINCES_ROOT = "census_2011", "administrative_boundaries", "Limiti_2011_WGS84", "Prov2011_WGS84", "Prov2011_WGS84.shp"
+PROVINCES_ROOT = f"census_{YEAR}", BOUNDARIES_DATA_FOLDER, f"Limiti_{YEAR}_WGS84", f"Prov{YEAR}_WGS84", f"Prov{YEAR}_WGS84.shp"
 PROVINCES_COLUMN = ['COD_PRO', 'PROVINCIA', 'SIGLA']
 PROVINCES_COLUMN_REMAPPING = {'PROVINCIA': 'DEN_PROV'}
 
-MUNICIPALITIES_ROOT = "census_2011", "administrative_boundaries", "Limiti_2011_WGS84", "Com2011_WGS84", "Com2011_WGS84.shp"
+MUNICIPALITIES_ROOT = f"census_{YEAR}", BOUNDARIES_DATA_FOLDER, f"Limiti_{YEAR}_WGS84", f"Com{YEAR}_WGS84", f"Com{YEAR}_WGS84.shp"
 MUNICIPALITIES_COLUMN = ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PRO']
 MUNICIPALITIES_COLUMN_REMAPPING = {'COD_PRO': 'COD_PROV'}
+
+CENSUS_SHP_ROOT = f"census_{YEAR}", GEODATA_FOLDER
+CENSUS_SHP_COLUMN = [f'SEZ{YEAR}', 'TIPO_LOC', GEOMETRY_COLUMN_NAME]
+TIPO_LOC_MAPPING = {
+        1: 'centro abitato',
+        2: 'nucleo abitato',
+        3: 'località produttiva',
+        4: 'case sparse'
+    }
