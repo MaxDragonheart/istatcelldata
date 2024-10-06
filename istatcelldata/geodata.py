@@ -37,7 +37,6 @@ def read_major_boundaries(
 
     # Lettura del file shapefile con la codifica appropriata
     data = gpd.read_file(filename=file_path, encoding=encoding)
-    print(data.columns)
     logging.info(f"File {file_path} letto con successo")
 
     # Selezione delle colonne di interesse
