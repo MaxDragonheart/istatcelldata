@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from istatcelldata.census1991.utils import read_xls, census_trace, remove_xls
+from istatcelldata.census1991.utils import read_xls, census_trace
 from istatcelldata.config import DEMO_DATA_FOLDER
 
 
