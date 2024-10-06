@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List
 
 from istatcelldata.census2011.download import download_data as dwn, download_geodata, download_administrative_boundaries
+from istatcelldata.census2021.config import YEAR
 from istatcelldata.census2021.utils import read_xlsx
 from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging
@@ -13,7 +14,6 @@ configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
-YEAR = 2021
 
 def download_data(
         output_data_folder: Path,

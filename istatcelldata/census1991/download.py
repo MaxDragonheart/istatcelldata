@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from typing import List
 
+from istatcelldata.census1991.config import YEAR
 from istatcelldata.census1991.utils import census_trace, read_xls
 from istatcelldata.census2011.download import download_data as dwn, download_geodata, download_administrative_boundaries
 from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
@@ -12,9 +13,6 @@ from istatcelldata.utils import get_census_dictionary, remove_files
 configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
-
-
-YEAR = 1991
 
 
 def download_data(

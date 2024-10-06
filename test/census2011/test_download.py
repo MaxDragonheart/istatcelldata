@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from istatcelldata.census2011.download import download_data, YEAR, download_geodata, download_administrative_boundaries, \
+from istatcelldata.census2011.download import download_data, download_geodata, download_administrative_boundaries, \
     download_all_census_data_2011
+from istatcelldata.census2011.config import YEAR
 
 
 def test_download_data(tmp_path: Path):

@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from istatcelldata.census1991.download import download_data, download_all_census_data_1991, YEAR
+from istatcelldata.census1991.download import download_data, download_all_census_data_1991
+from istatcelldata.census1991.config import YEAR
 from istatcelldata.census2011.download import download_geodata, download_administrative_boundaries
 
 
