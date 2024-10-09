@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import List
 
 from istatcelldata.census1991.download import download_data
-from istatcelldata.census2001.config import YEAR
 from istatcelldata.census2011.download import download_geodata, download_administrative_boundaries
 from istatcelldata.config import PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging

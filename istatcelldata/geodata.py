@@ -7,7 +7,7 @@ import geopandas as gpd
 from shapely.validation import make_valid
 from tqdm import tqdm
 
-from istatcelldata.config import GEOMETRY_COLUMN_NAME, BOUNDARIES_DATA_FOLDER, GLOBAL_ENCODING
+from istatcelldata.config import GEOMETRY_COLUMN_NAME, GLOBAL_ENCODING, YEAR_GEODATA_NAME
 from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import check_encoding
 
@@ -81,7 +81,7 @@ def read_administrative_boundaries(
     # Gestione con geometria
     if with_geometry:
         gdf = gpd.GeoDataFrame(data_target, crs=data.crs)
-        geopackage_path = output_folder.joinpath(f"{BOUNDARIES_DATA_FOLDER}.gpkg")
+        geopackage_path = output_folder.joinpath(f"{YEAR_GEODATA_NAME}.gpkg")
         gdf.to_file(filename=str(geopackage_path), driver="GPKG", layer=layer_name, encoding=GLOBAL_ENCODING)
         logging.info(f"GeoPackage salvato in {geopackage_path} con il layer {layer_name}")
         return geopackage_path
@@ -97,6 +97,7 @@ def read_census(
         tipo_loc_mapping: dict,
         column_remapping: dict = None,
         output_folder: Path = None,
+        layer_name: str = None
 ) -> Union[gpd.GeoDataFrame, Path]:
     """Legge i dati del censimento da una cartella contenente file shapefile e li restituisce come GeoDataFrame o
     salva in un GeoPackage.
@@ -171,8 +172,8 @@ def read_census(
 
     # Se viene fornito un percorso di output, salva il GeoDataFrame in un GeoPackage
     if output_folder is not None:
-        geopackage_path = output_folder.joinpath("census_cells.gpkg")
-        gdf.to_file(filename=str(geopackage_path), driver="GPKG", encoding=GLOBAL_ENCODING)
+        geopackage_path = output_folder.joinpath(f"{YEAR_GEODATA_NAME}.gpkg")
+        gdf.to_file(filename=str(geopackage_path), driver="GPKG", encoding=GLOBAL_ENCODING, layer=layer_name)
         logging.info(f"GeoPackage salvato in {geopackage_path}")
         return geopackage_path
 
@@ -204,22 +205,54 @@ def preprocess_geodata(
         municipalities_index_column: str = None,
         municipalities_column_remapping: dict = None
 ) -> Path:
+    """Preprocessa e salva i dati geografici del censimento e, opzionalmente, i confini amministrativi.
+
+    Args:
+        census_shp_folder (Path): Cartella contenente i file shapefile del censimento.
+        census_target_columns (list): Colonne da selezionare dai dati del censimento.
+        census_tipo_loc_mapping (dict): Mappatura del tipo di località per il censimento.
+        output_folder (Path): Cartella di output per salvare i risultati.
+        census_layer_name (str): Nome del layer per il GeoPackage del censimento.
+        census_column_remapping (dict, opzionale): Mappatura per rinominare le colonne del censimento. Default: None.
+        regions (bool, opzionale): Indica se processare i confini regionali. Default: False.
+        regions_file_path (Path, opzionale): Percorso del file dei confini regionali. Default: None.
+        regions_target_columns (list, opzionale): Colonne da selezionare dai dati regionali. Default: None.
+        regions_index_column (str, opzionale): Colonna da usare come indice per i dati regionali. Default: None.
+        regions_column_remapping (dict, opzionale): Mappatura per rinominare le colonne regionali. Default: None.
+        provinces (bool, opzionale): Indica se processare i confini provinciali. Default: False.
+        provinces_file_path (Path, opzionale): Percorso del file dei confini provinciali. Default: None.
+        provinces_target_columns (list, opzionale): Colonne da selezionare dai dati provinciali. Default: None.
+        provinces_index_column (str, opzionale): Colonna da usare come indice per i dati provinciali. Default: None.
+        provinces_column_remapping (dict, opzionale): Mappatura per rinominare le colonne provinciali. Default: None.
+        municipalities (bool, opzionale): Indica se processare i confini comunali. Default: False.
+        municipalities_file_path (Path, opzionale): Percorso del file dei confini comunali. Default: None.
+        municipalities_target_columns (list, opzionale): Colonne da selezionare dai dati comunali. Default: None.
+        municipalities_index_column (str, opzionale): Colonna da usare come indice per i dati comunali. Default: None.
+        municipalities_column_remapping (dict, opzionale): Mappatura per rinominare le colonne comunali. Default: None.
+
+    Returns:
+        Path: Il percorso della cartella di output con i dati elaborati.
+    """
+    logging.info(f"Avvio del preprocessing dei dati del censimento dalla cartella {census_shp_folder}")
+
+    # Lettura e salvataggio dei dati del censimento
     census_geodata = read_census(
         shp_folder=census_shp_folder,
         target_columns=census_target_columns,
         tipo_loc_mapping=census_tipo_loc_mapping,
-        column_remapping=census_column_remapping
+        column_remapping=census_column_remapping,
+        output_folder=output_folder,
+        layer_name=census_layer_name
     )
-    geopackage_path = output_folder.joinpath(f"{census_layer_name}.gpkg")
-    census_geodata.to_file(
-        filename=str(geopackage_path),
-        driver="GPKG",
-        encoding=GLOBAL_ENCODING,
-        layer=census_layer_name
-    )
-    census_year = census_layer_name[6:]
 
+    logging.info(f"Salvataggio del GeoPackage del censimento in {census_geodata}")
+
+    census_year = census_layer_name[6:]
+    logging.info(f"Anno del censimento rilevato: {census_year}")
+
+    # Lettura e salvataggio dei confini regionali
     if regions:
+        logging.info("Inizio elaborazione dei confini regionali")
         read_administrative_boundaries(
             file_path=regions_file_path,
             target_columns=regions_target_columns,
@@ -230,7 +263,9 @@ def preprocess_geodata(
             layer_name=f"confini_regionali{census_year}"
         )
 
+    # Lettura e salvataggio dei confini provinciali
     if provinces:
+        logging.info("Inizio elaborazione dei confini provinciali")
         read_administrative_boundaries(
             file_path=provinces_file_path,
             target_columns=provinces_target_columns,
@@ -241,7 +276,9 @@ def preprocess_geodata(
             layer_name=f"confini_provinciali{census_year}"
         )
 
+    # Lettura e salvataggio dei confini comunali
     if municipalities:
+        logging.info("Inizio elaborazione dei confini comunali")
         read_administrative_boundaries(
             file_path=municipalities_file_path,
             target_columns=municipalities_target_columns,
@@ -252,4 +289,5 @@ def preprocess_geodata(
             layer_name=f"confini_comunali{census_year}"
         )
 
-    return output_folder
+    logging.info(f"Preprocessing completato. Dati salvati in {output_folder}")
+    return census_geodata

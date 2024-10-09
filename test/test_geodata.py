@@ -3,10 +3,22 @@ from pathlib import Path
 import pandas as pd
 import geopandas as gpd
 
-from istatcelldata.census2021.config import REGIONS_ROOT, REGIONS_COLUMN, PROVINCES_ROOT, PROVINCES_COLUMN, \
-    PROVINCES_COLUMN_REMAPPING, MUNICIPALITIES_ROOT, MUNICIPALITIES_COLUMN, CENSUS_SHP_ROOT, CENSUS_SHP_COLUMN, \
-    CENSUS_SHP_COLUMN_REMAPPING, TIPO_LOC_MAPPING
+from istatcelldata.config import census_data
 from istatcelldata.geodata import read_administrative_boundaries, read_census, preprocess_geodata
+
+year = 2021
+
+REGIONS_ROOT = census_data[year]['regions_root']
+REGIONS_COLUMN = census_data[year]['regions_column']
+PROVINCES_ROOT = census_data[year]['provinces_root']
+PROVINCES_COLUMN = census_data[year]['provinces_column']
+PROVINCES_COLUMN_REMAPPING = census_data[year]['provinces_column_remapping']
+MUNICIPALITIES_ROOT = census_data[year]['municipalities_root']
+MUNICIPALITIES_COLUMN = census_data[year]['municipalities_column']
+CENSUS_SHP_ROOT = census_data[year]['census_shp_root']
+CENSUS_SHP_COLUMN = census_data[year]['census_shp_column']
+CENSUS_SHP_COLUMN_REMAPPING = census_data[year]['census_shp_column_remapping']
+TIPO_LOC_MAPPING = census_data[year]['tipo_loc_mapping']
 
 main_folder = Path("/home/max/Desktop/census/preprocessing")
 

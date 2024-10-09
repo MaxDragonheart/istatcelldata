@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 from typing import List
 
-from istatcelldata.census2011.config import YEAR
 from istatcelldata.config import DATA_FOLDER, GEODATA_FOLDER, BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.download import download_base
 from istatcelldata.logger_config import configure_logging
