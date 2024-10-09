@@ -179,3 +179,77 @@ def read_census(
     # Se nessun percorso di output è fornito, restituisce il GeoDataFrame
     else:
         return gdf
+
+
+def preprocess_geodata(
+        census_shp_folder: Path,
+        census_target_columns: list,
+        census_tipo_loc_mapping: dict,
+        output_folder: Path,
+        census_layer_name: str,
+        census_column_remapping: dict = None,
+        regions: bool = False,
+        regions_file_path: Path = None,
+        regions_target_columns: list = None,
+        regions_index_column: str = None,
+        regions_column_remapping: dict = None,
+        provinces: bool = False,
+        provinces_file_path: Path = None,
+        provinces_target_columns: list = None,
+        provinces_index_column: str = None,
+        provinces_column_remapping: dict = None,
+        municipalities: bool = False,
+        municipalities_file_path: Path = None,
+        municipalities_target_columns: list = None,
+        municipalities_index_column: str = None,
+        municipalities_column_remapping: dict = None
+) -> Path:
+    census_geodata = read_census(
+        shp_folder=census_shp_folder,
+        target_columns=census_target_columns,
+        tipo_loc_mapping=census_tipo_loc_mapping,
+        column_remapping=census_column_remapping
+    )
+    geopackage_path = output_folder.joinpath(f"{census_layer_name}.gpkg")
+    census_geodata.to_file(
+        filename=str(geopackage_path),
+        driver="GPKG",
+        encoding=GLOBAL_ENCODING,
+        layer=census_layer_name
+    )
+    census_year = census_layer_name[6:]
+
+    if regions:
+        read_administrative_boundaries(
+            file_path=regions_file_path,
+            target_columns=regions_target_columns,
+            index_column=regions_index_column,
+            column_remapping=regions_column_remapping,
+            with_geometry=True,
+            output_folder=output_folder,
+            layer_name=f"confini_regionali{census_year}"
+        )
+
+    if provinces:
+        read_administrative_boundaries(
+            file_path=provinces_file_path,
+            target_columns=provinces_target_columns,
+            index_column=provinces_index_column,
+            column_remapping=provinces_column_remapping,
+            with_geometry=True,
+            output_folder=output_folder,
+            layer_name=f"confini_provinciali{census_year}"
+        )
+
+    if municipalities:
+        read_administrative_boundaries(
+            file_path=municipalities_file_path,
+            target_columns=municipalities_target_columns,
+            index_column=municipalities_index_column,
+            column_remapping=municipalities_column_remapping,
+            with_geometry=True,
+            output_folder=output_folder,
+            layer_name=f"confini_comunali{census_year}"
+        )
+
+    return output_folder
