@@ -20,7 +20,7 @@ if __name__ == '__main__':
     setup_logging(log_dir=main_path)
 
     preprocess_census(
-        processed_data_folder=main_path,
+        processed_data_folder=main_path.parent,
         years=[1991, 2001, 2011, 2021],
         regions=True,
         provinces=True,
