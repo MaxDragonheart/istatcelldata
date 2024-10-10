@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 def preprocess_data(
         data_folder: Path,
+        data_column_remapping: dict = None,
         add_administrative_informations: bool = None,
         regions_data_path: Path = None,
         regions_target_columns: list = None,
@@ -30,6 +31,7 @@ def preprocess_data(
 
     Args:
         data_folder (Path): Cartella contenente i file CSV da processare.
+        data_column_remapping (dict, opzionale): Mappatura per rinominare le colonne del censimento. Default: None.
         add_administrative_informations (bool, opzionale): Se True, aggiunge le informazioni amministrative ai dati.
         regions_data_path (Path, opzionale): Percorso del file contenente i dati delle regioni.
         regions_target_columns (list, opzionale): Lista delle colonne target per i dati delle regioni.
@@ -72,6 +74,8 @@ def preprocess_data(
 
     # Concatena tutti i dati letti in un unico DataFrame
     df = pd.concat(data_list, ignore_index=True)
+    if data_column_remapping is not None:
+        df.rename(columns=data_column_remapping, inplace=True)
 
     if add_administrative_informations:
         df = add_administrative_info(

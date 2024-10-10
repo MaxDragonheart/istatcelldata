@@ -8,7 +8,7 @@ def test_preprocess_census(tmp_path: Path):
     print("test_preprocess_census")
     data = preprocess_census(
         processed_data_folder=main_folder,
-        years=[1991],
+        years=[2021],
         regions=True,
         provinces=True,
         municipalities=True,

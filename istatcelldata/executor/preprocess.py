@@ -105,6 +105,7 @@ def preprocess_census(
         logging.info(f"Preprocessamento dei dati non geografici.")
         get_census_data = preprocess_data(
             data_folder=processed_data_folder.joinpath(*data_root),
+            data_column_remapping=census_shp_column_remapping,
             add_administrative_informations=add_administrative_informations,
             regions_data_path=processed_data_folder.joinpath(*regions_root),
             regions_target_columns=regions_column,
