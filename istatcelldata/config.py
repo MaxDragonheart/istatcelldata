@@ -1,19 +1,9 @@
-import logging
-# from multiprocessing import cpu_count
+from pathlib import Path
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-log_format = '%(asctime)s | %(process)d - %(message)s'
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(logging.Formatter(log_format))
-logger.addHandler(console_handler)
+DEMO_DATA_FOLDER = Path(__file__).parent.parent.joinpath('demo_data')
 
-# N_CORES = cpu_count()
-
-# PROJECT
-MAIN_LINK = "https://www.istat.it/storage/cartografia"
-GLOBAL_CRS = 32632
-TARGET_YEARS = [1991, 2001, 2011]
+GEOMETRY_COLUMN_NAME = 'geometry'
+GLOBAL_ENCODING = 'utf-8'
 
 # PROJECT FOLDERS
 DATA_FOLDER = 'data'
@@ -21,194 +11,82 @@ GEODATA_FOLDER = 'geodata'
 PREPROCESSING_FOLDER = 'preprocessing'
 CENSUS_DATA_FOLDER = 'Sezioni di Censimento'
 BOUNDARIES_DATA_FOLDER = 'administrative_boundaries'
+YEAR_GEODATA_NAME = "census"
 
-SHARED_DATA = {
-    'pop_tot': {
-        'descrizione': 'Popolazione residente - TOTALE',
-        'codice': 'P1'
+
+census_data = {
+    1991: {
+        'data_root': ("census_1991", DATA_FOLDER, CENSUS_DATA_FOLDER),
+        'regions_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Reg1991", "Reg1991_WGS84.shp"),
+        'regions_column': ['COD_REG', 'DEN_REG'],
+        'provinces_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Prov1991", "Prov1991_WGS84.shp"),
+        'provinces_column': ['COD_PROV', 'DEN_PROV', 'SIGLA'],
+        'municipalities_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Com1991", "Com1991_WGS84.shp"),
+        'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
+        'census_shp_root': ("census_1991", GEODATA_FOLDER),
+        'census_shp_column': ['SEZ1991', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'tipo_loc_mapping': {
+            1: 'centro abitato',
+            2: 'nucleo abitato',
+            3: 'case sparse'
+        },
+        'add_administrative_informations': True
     },
-    'pop_tot_m': {
-        'descrizione': 'Popolazione residente - Maschi',
-        'codice': 'P2'
+    2001: {
+        'data_root': ("census_2001", DATA_FOLDER, CENSUS_DATA_FOLDER),
+        'regions_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Reg2001", "Reg2001_WGS84.shp"),
+        'regions_column': ['COD_REG', 'DEN_REG'],
+        'provinces_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Prov2001", "Prov2001_WGS84.shp"),
+        'provinces_column': ['COD_PROV', 'DEN_PROV', 'SIGLA'],
+        'municipalities_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Com2001", "Com2001_WGS84.shp"),
+        'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
+        'census_shp_root': ("census_2001", GEODATA_FOLDER),
+        'census_shp_column': ['SEZ2001', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'tipo_loc_mapping': {
+            1: 'centro abitato',
+            2: 'nucleo abitato',
+            3: 'località produttiva',
+            4: 'case sparse'
+        },
+        'add_administrative_informations': True
     },
-    'pop_tot_f': {
-        'descrizione': 'Popolazione residente - Femmine',
-        'codice': 'P3'
+    2011: {
+        'data_root': ("census_2011", DATA_FOLDER, CENSUS_DATA_FOLDER),
+        'regions_root': ("census_2011", BOUNDARIES_DATA_FOLDER, "Limiti_2011_WGS84", "Reg2011_WGS84", "Reg2011_WGS84.shp"),
+        'regions_column': ['COD_REG', 'REGIONE'],
+        'regions_column_remapping': {'REGIONE': 'DEN_REG'},
+        'provinces_root': ("census_2011", BOUNDARIES_DATA_FOLDER, "Limiti_2011_WGS84", "Prov2011_WGS84", "Prov2011_WGS84.shp"),
+        'provinces_column': ['COD_PRO', 'PROVINCIA', 'SIGLA'],
+        'provinces_column_remapping': {'PROVINCIA': 'DEN_PROV'},
+        'municipalities_root': ("census_2011", BOUNDARIES_DATA_FOLDER, "Limiti_2011_WGS84", "Com2011_WGS84", "Com2011_WGS84.shp"),
+        'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PRO'],
+        'municipalities_column_remapping': {'COD_PRO': 'COD_PROV'},
+        'census_shp_root': ("census_2011", GEODATA_FOLDER),
+        'census_shp_column': ['SEZ2011', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'tipo_loc_mapping': {
+            1: 'centro abitato',
+            2: 'nucleo abitato',
+            3: 'località produttiva',
+            4: 'case sparse'
+        }
     },
-    'pop_meno_5_anni': {
-        'descrizione': 'Popolazione residente - età < 5 anni',
-        'codice': 'P14'
-    },
-    'pop_5_9_anni': {
-        'descrizione': 'Popolazione residente - età 5 - 9 anni',
-        'codice': 'P15'
-    },
-    'pop_10_14_anni': {
-        'descrizione': 'Popolazione residente - età 10 - 14 anni',
-        'codice': 'P16'
-    },
-    'pop_15_19_anni': {
-        'descrizione': 'Popolazione residente - età 15 - 19 anni',
-        'codice': 'P17'
-    },
-    'pop_20_24_anni': {
-        'descrizione': 'Popolazione residente - età 20 - 24 anni',
-        'codice': 'P18'
-    },
-    'pop_25_29_anni': {
-        'descrizione': 'Popolazione residente - età 25 - 29 anni',
-        'codice': 'P19'
-    },
-    'pop_30_34_anni': {
-        'descrizione': 'Popolazione residente - età 30 - 34 anni',
-        'codice': 'P20'
-    },
-    'pop_35_39_anni': {
-        'descrizione': 'Popolazione residente - età 35 - 39 anni',
-        'codice': 'P21'
-    },
-    'pop_40_44_anni': {
-        'descrizione': 'Popolazione residente - età 40 - 44 anni',
-        'codice': 'P22'
-    },
-    'pop_45_49_anni': {
-        'descrizione': 'Popolazione residente - età 15 - 19 anni',
-        'codice': 'P23'
-    },
-    'pop_50_54_anni': {
-        'descrizione': 'Popolazione residente - età 20 - 24 anni',
-        'codice': 'P24'
-    },
-    'pop_55_59_anni': {
-        'descrizione': 'Popolazione residente - età 25 - 29 anni',
-        'codice': 'P25'
-    },
-    'pop_60_64_anni': {
-        'descrizione': 'Popolazione residente - età 30 - 34 anni',
-        'codice': 'P26'
-    },
-    'pop_65_69_anni': {
-        'descrizione': 'Popolazione residente - età 35 - 39 anni',
-        'codice': 'P27'
-    },
-    'pop_70_74_anni': {
-        'descrizione': 'Popolazione residente - età 40 - 44 anni',
-        'codice': 'P28'
-    },
-    'pop_maggiore_74_anni': {
-        'descrizione': 'Popolazione residente - età > 74 anni',
-        'codice': 'P29'
-    },
-    'pop_meno_5_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età < 5 anni',
-        'codice': 'P30'
-    },
-    'pop_5_9_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 5 - 9 anni',
-        'codice': 'P31'
-    },
-    'pop_10_14_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 10 - 14 anni',
-        'codice': 'P32'
-    },
-    'pop_15_19_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
-        'codice': 'P33'
-    },
-    'pop_20_24_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
-        'codice': 'P34'
-    },
-    'pop_25_29_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
-        'codice': 'P35'
-    },
-    'pop_30_34_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
-        'codice': 'P36'
-    },
-    'pop_35_39_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
-        'codice': 'P37'
-    },
-    'pop_40_44_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
-        'codice': 'P38'
-    },
-    'pop_45_49_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
-        'codice': 'P39'
-    },
-    'pop_50_54_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
-        'codice': 'P40'
-    },
-    'pop_55_59_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
-        'codice': 'P41'
-    },
-    'pop_60_64_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
-        'codice': 'P42'
-    },
-    'pop_65_69_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
-        'codice': 'P43'
-    },
-    'pop_70_74_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
-        'codice': 'P44'
-    },
-    'pop_maggiore_74_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età > 74 anni',
-        'codice': 'P45'
-    },
-    'lavoratori_tot': {
-        'descrizione': 'Forze lavoro - TOTALE',
-        'codice': 'P60'
-    },
-    'lavoratori_occupati': {
-        'descrizione': 'Forze lavoro - Occupati',
-        'codice': 'P61'
-    },
-    'lavoratori_disoccupati': {
-        'descrizione': 'Forze lavoro - Disoccupati e altre persone in cerca di occupazione',
-        'codice': 'P62'
-    },
-    'famiglie_tot': {
-        'descrizione': 'Famiglie totale',
-        'codice': 'PF1'
-    },
-    'famiglie_componenti_tot': {
-        'descrizione': 'Totale componenti delle famiglie',
-        'codice': 'PF2'
-    },
-    'famiglie_1_componente': {
-        'descrizione': 'Famiglie 1 componente',
-        'codice': 'PF3'
-    },
-    'famiglie_2_componenti': {
-        'descrizione': 'Famiglie 2 componenti',
-        'codice': 'PF4'
-    },
-    'famiglie_3_componenti': {
-        'descrizione': 'Famiglie 3 componenti',
-        'codice': 'PF5'
-    },
-    'famiglie_4_componenti': {
-        'descrizione': 'Famiglie 4 componenti',
-        'codice': 'PF6'
-    },
-    'famiglie_5_componenti': {
-        'descrizione': 'Famiglie 5 componenti',
-        'codice': 'PF7'
-    },
-    'famiglie_6_componenti_e_oltre': {
-        'descrizione': 'Famiglie 6 e oltre componenti',
-        'codice': 'PF8'
-    },
-    'famiglie_residenti_oltre_6_componenti': {
-        'descrizione': 'Componenti delle famiglie residenti di 6 e oltre componenti',
-        'codice': 'PF9'
-    },
+    2021: {
+        'data_root': ("census_2021", DATA_FOLDER, CENSUS_DATA_FOLDER),
+        'regions_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Reg2021", "Reg2021.shp"),
+        'regions_column': ['COD_REG', 'DEN_REG'],
+        'provinces_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "ProvCM2021", "ProvCM2021.shp"),
+        'provinces_column': ['COD_PROV', 'DEN_UTS', 'SIGLA', 'TIPO_UTS'],
+        'provinces_column_remapping': {'DEN_UTS': 'DEN_PROV'},
+        'municipalities_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Com2021", "Com2021.shp"),
+        'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG'],
+        'census_shp_root': ("census_2021", GEODATA_FOLDER),
+        'census_shp_column': ['SEZ21_ID', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'census_shp_column_remapping': {'SEZ21_ID': 'SEZ2021'},
+        'tipo_loc_mapping': {
+            1: 'centro abitato',
+            2: 'nucleo abitato',
+            3: 'località produttiva',
+            4: 'case sparse'
+        }
+    }
 }

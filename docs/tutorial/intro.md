@@ -10,4 +10,5 @@
 
 ## Raggruppamento
     
-  Viene mostrato come ottenere un unico [GeoPackage](https://massimilianomoraca.it/blog/gis/il-geopackage-una-valida-alternativa-al-formato-shape/) per anno censuario. E' possibile mantenere i dati grezzi e preprocessati, oppure eliminarli. [link](https://github.com/MaxDragonheart/istatcelldata/blob/main/notebooks/tutorial/c_processamento.ipynb)
+  Viene mostrato come ottenere un unico [GeoPackage](https://massimilianomoraca.it/blog/gis/il-geopackage-una-valida-alternativa-al-formato-shape/) per anno censuario. E' possibile mantenere i dati grezzi e 
+  preprocessati, oppure eliminarli. [link](https://github.com/MaxDragonheart/istatcelldata/blob/main/notebooks/tutorial/c_processamento.ipynb)

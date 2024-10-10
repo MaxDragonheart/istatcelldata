@@ -1,36 +1,28 @@
 from pathlib import Path
 
-from istatcelldata.download import download_census_data, download_census_geodata, download_administrative_boundaries, \
-    download_all_census_data
-
-target_year = 2001
+from istatcelldata.download import download_base
 
 
-def test_download_census_data(tmp_path: Path):
-    print('test_download_census_data')
-    data = download_census_data(output_data_folder=tmp_path, year=target_year)
-    print(data)
-    assert isinstance(data, Path)
+def test_download_base(tmp_path: Path):
+    print("test_download_base")
+    download_folder = tmp_path.joinpath("download")
+    download_folder.mkdir(parents=True, exist_ok=True)
 
+    extract_folder = tmp_path.joinpath("extract")
+    extract_folder.mkdir(parents=True, exist_ok=True)
 
-def test_download_census_geodata(tmp_path: Path):
-    print('test_download_census_geodata')
-    data = download_census_geodata(
-        output_data_folder=tmp_path,
-        year=target_year,
-        region_list=[15, 17]
+    destination_folder = tmp_path.joinpath("destination")
+    destination_folder.mkdir(parents=True, exist_ok=True)
+
+    download_url = "https://www.istat.it/storage/cartografia/basi_territoriali/WGS_84_UTM/1991/R15_91_WGS84.zip"
+    data_file_name = Path(download_url).stem + Path(download_url).suffix
+    print(data_file_name)
+
+    data = download_base(
+        data_link=download_url,
+        data_file_path_destination=download_folder.joinpath(data_file_name),
+        data_folder=extract_folder,
+        destination_folder=destination_folder
     )
     print(data)
     assert isinstance(data, Path)
-
-
-def test_download_administrative_boundaries(tmp_path: Path):
-    print('test_download_administrative_boundaries')
-    data = download_administrative_boundaries(output_data_folder=tmp_path, year=target_year)
-    print(data)
-    assert isinstance(data, Path)
-
-
-def test_download_all_census_data(tmp_path: Path):
-    print('test_download_all_census_data')
-    download_all_census_data(output_data_folder=tmp_path, year=target_year)

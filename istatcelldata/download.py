@@ -1,230 +1,78 @@
 import logging
 import os
+import time
 from pathlib import Path
-from typing import List
 
-from tqdm.auto import tqdm
+import requests
+from tqdm import tqdm
 
-from istatcelldata.config import logger, console_handler, MAIN_LINK, CENSUS_DATA_FOLDER, GEODATA_FOLDER, \
-    BOUNDARIES_DATA_FOLDER, PREPROCESSING_FOLDER
-from istatcelldata.data.census_1991_2001 import census_trace, remove_xls
-from istatcelldata.generic import census_folder, unzip_data, get_legacy_session
+from istatcelldata.logger_config import configure_logging
+from istatcelldata.utils import unzip_data
 
-logger.addHandler(console_handler)
-
-
-def download_census_data(
-        output_data_folder: Path,
-        year: int = 2011
-) -> Path:
-    """Download dei dati censuari.
-
-    Args:
-        output_data_folder: Path
-        year: Integer. Default 2011.
-
-    Returns
-        Path
-    """
-    # Make folder for yearly census data
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
-
-    # Make data folder
-    data_folder = destination_folder.joinpath('data')
-    Path(data_folder).mkdir(parents=True, exist_ok=True)
-
-    data_link = f"{MAIN_LINK}/variabili-censuarie/dati-cpa_{year}.zip"
-
-    data_file_name = Path(data_link).stem + Path(data_link).suffix
-    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
-
-    logging.info("Download census data")
-    _download_data(
-        data_link=data_link,
-        data_file_path_destination=data_file_path_dest,
-        data_folder=data_folder,
-        destination_folder=destination_folder
-    )
-
-    if year in [1991, 2001]:
-        logging.info(f'Convert xls to csv for {year}')
-        files_list = list(data_folder.rglob("*.xls"))
-        first_element = files_list[0]
-
-        # Make data folder
-        data_folder_1991_2001 = data_folder.joinpath(CENSUS_DATA_FOLDER)
-        Path(data_folder_1991_2001).mkdir(parents=True, exist_ok=True)
-
-        census_trace(
-            file_path=first_element,
-            year=year,
-            output_path=data_folder_1991_2001
-        )
-        remove_xls(
-            folder_path=data_folder,
-            census_code=f'sez{year}',
-            output_path=data_folder_1991_2001,
-        )
-    logging.info(f"Download census data completed and saved to {destination_folder}")
-    return destination_folder
+# Configure logging at the start of the script
+configure_logging()
+# Define the logger as a global variable
+logger = logging.getLogger(__name__)
 
 
-def download_census_geodata(
-        output_data_folder: Path,
-        year: int = 2011,
-        region_list: List = []
-) -> Path:
-    """Download dei geodati censuari.
-
-    Args:
-        output_data_folder: Path
-        year: Integer. Default 2011.
-        region_list: List
-
-    Returns:
-        Path
-    """
-    # Make folder for yearly census data
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
-    Path(destination_folder).mkdir(parents=True, exist_ok=True)
-
-    # Make data folder
-    data_folder = destination_folder.joinpath(GEODATA_FOLDER)
-    Path(data_folder).mkdir(parents=True, exist_ok=True)
-
-    year_folder = str(year)[2:]
-    if len(region_list) == 0:
-        regions = tqdm(range(1, 21, 1))
-    else:
-        regions = region_list
-
-    logging.info("Download census geodata")
-    for region in regions:
-        region = str(region).zfill(2)
-        data_link = f"{MAIN_LINK}/basi_territoriali/WGS_84_UTM/{year}/R{region}_{year_folder}_WGS84.zip"
-
-        data_file_name = data_link.split('/')[-1]
-        data_file_path_dest = Path(data_folder).joinpath(data_file_name)
-
-        _download_data(
-            data_link=data_link,
-            data_file_path_destination=data_file_path_dest,
-            data_folder=data_folder,
-            destination_folder=destination_folder
-        )
-
-    logging.info(f"Download census geodata completed and saved to {data_folder}")
-    return data_folder
-
-
-def download_administrative_boundaries(
-        output_data_folder: Path,
-        year: int = 2011
-) -> Path:
-    """Download dei limiti amministrativi dell'anno cenusario selezionato.
-
-    Args:
-        output_data_folder: Path
-        year: int
-
-    Returns:
-        Path
-    """
-    # Make folder for yearly census data
-    destination_folder = census_folder(output_data_folder=output_data_folder, year=year)
-
-    # Make data folder
-    data_folder = destination_folder.joinpath(BOUNDARIES_DATA_FOLDER)
-    Path(data_folder).mkdir(parents=True, exist_ok=True)
-
-    data_link = f"{MAIN_LINK}/confini_amministrativi/non_generalizzati/Limiti{year}.zip"
-
-    data_file_name = data_link.split('/')[-1]
-    data_file_path_dest = Path(data_folder).joinpath(data_file_name)
-
-    logging.info("Download administrative boundaries")
-    _download_data(
-        data_link=data_link,
-        data_file_path_destination=data_file_path_dest,
-        data_folder=data_folder,
-        destination_folder=destination_folder
-    )
-    logging.info(f"Download administrative boundaries completed and saved to {destination_folder}")
-    return destination_folder
-
-
-def download_all_census_data(
-        output_data_folder: Path,
-        year: int = 2011,
-        region_list: List = []
-) -> None:
-    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
-    effettuare il download per singola Regione ma anche per specifiche Regioni.
-    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
-
-    Args:
-        output_data_folder: Path
-        year: int
-        region_list: List
-    """
-    # Make data folder
-    data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
-    Path(data_folder).mkdir(parents=True, exist_ok=True)
-
-    # Download data
-    download_census_data(
-        output_data_folder=data_folder, year=year
-    )
-
-    # Download geodata
-    download_census_geodata(
-        output_data_folder=data_folder, year=year, region_list=region_list
-    )
-
-    # Download administrative boundaries
-    download_administrative_boundaries(
-        output_data_folder=data_folder, year=year
-    )
-
-
-def _download_data(
+def download_base(
         data_link: str,
         data_file_path_destination: Path,
         data_folder: Path,
         destination_folder: Path,
 ) -> Path:
-    """Funzione di download base.
+    """Funzione di download base per scaricare dati da un link.
+
+    La funzione si occupa di scaricare i dati dal link fornito e salvarli nel percorso
+    specificato. Se il download ha successo, il file ZIP scaricato viene estratto e
+    il file ZIP originale viene eliminato.
 
     Args:
-        data_link: Path
-        data_file_path_destination: Path
-        data_folder: Path
-        destination_folder: Path
+        data_link (str): L'URL da cui scaricare i dati.
+        data_file_path_destination (Path): Il percorso dove salvare il file scaricato.
+        data_folder (Path): La cartella dove estrarre i dati.
+        destination_folder (Path): La cartella di destinazione.
 
     Returns:
-        Path
+        Path: Il percorso della cartella di destinazione.
 
     Raises:
-        Link {data_link} return status code {data.status_code}.
+        Exception: Se il download fallisce, restituisce il codice di stato HTTP.
     """
-    # Download data
-    logging.info(f"Download census data | {data_link}")
-    data = get_legacy_session().get(data_link)
+    start_time = time.time()
+    try:
+        logging.info(f"Inizio download dei dati dal link: {data_link}")
+        data = requests.get(data_link, stream=True)
 
-    if data.status_code == 200:
-        data_size = int(data.headers.get('Content-Length'))
-        # Progress bar via tqdm
-        with tqdm.wrapattr(data.raw, "read", total=data_size, desc="Downloading..."):
-            open(data_file_path_destination, 'wb').write(data.content)
-        logging.info("Download completed")
-    else:
-        raise Exception(f'Link {data_link} return status code {data.status_code}.')
+        # Controlla lo stato del download
+        if data.status_code == 200:
+            data_size = int(data.headers.get('Content-Length', 0))
 
-    logging.info("Unzip file")
-    unzip_data(data_file_path_destination, data_folder)
+            # Barra di avanzamento tramite tqdm
+            with open(data_file_path_destination, 'wb') as output_file:
+                # Usa tqdm per la barra di avanzamento
+                with tqdm(total=data_size, desc="In download...", unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+                    for chunk in data.iter_content(chunk_size=1024):  # Scarica il file in chunk
+                        if chunk:  # Evita chunk vuoti
+                            output_file.write(chunk)
+                            pbar.update(len(chunk))  # Aggiorna la barra di avanzamento
 
-    logging.info(f"Deleting zip file | {data_file_path_destination}")
-    os.remove(data_file_path_destination)
-    logging.info("File deleted")
+            end_time = time.time()  # Tempo di fine
+            elapsed_time = end_time - start_time  # Calcola il tempo trascorso
+            logging.info(f"Download completato con successo in {elapsed_time:.2f} secondi.")
+        else:
+            logging.error(f"Download fallito. Codice di stato: {data.status_code}")
+            raise Exception(f"Link {data_link} restituisce codice di stato {data.status_code}.")
+
+        logging.info("Inizio estrazione del file ZIP.")
+        unzip_data(data_file_path_destination, data_folder)
+
+        logging.info(f"Eliminazione del file ZIP | {data_file_path_destination}")
+        os.remove(data_file_path_destination)
+        logging.info("File ZIP eliminato con successo.")
+
+    except Exception as e:
+        logging.error(f"Errore durante il download: {str(e)}")
+        raise e
 
     return destination_folder
