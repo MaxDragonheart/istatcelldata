@@ -16,6 +16,7 @@ YEAR_GEODATA_NAME = "census"
 
 census_data = {
     1991: {
+        'data_root': ("census_1991", DATA_FOLDER, CENSUS_DATA_FOLDER),
         'regions_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Reg1991", "Reg1991_WGS84.shp"),
         'regions_column': ['COD_REG', 'DEN_REG'],
         'provinces_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Prov1991", "Prov1991_WGS84.shp"),
@@ -31,6 +32,7 @@ census_data = {
         }
     },
     2001: {
+        'data_root': ("census_2001", DATA_FOLDER, CENSUS_DATA_FOLDER),
         'regions_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Reg2001", "Reg2001_WGS84.shp"),
         'regions_column': ['COD_REG', 'DEN_REG'],
         'provinces_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Prov2001", "Prov2001_WGS84.shp"),
@@ -47,6 +49,7 @@ census_data = {
         }
     },
     2011: {
+        'data_root': ("census_2011", DATA_FOLDER, CENSUS_DATA_FOLDER),
         'regions_root': ("census_2011", BOUNDARIES_DATA_FOLDER, "Limiti_2011_WGS84", "Reg2011_WGS84", "Reg2011_WGS84.shp"),
         'regions_column': ['COD_REG', 'REGIONE'],
         'regions_column_remapping': {'REGIONE': 'DEN_REG'},
@@ -66,6 +69,7 @@ census_data = {
         }
     },
     2021: {
+        'data_root': ("census_2021", DATA_FOLDER, CENSUS_DATA_FOLDER),
         'regions_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Reg2021", "Reg2021.shp"),
         'regions_column': ['COD_REG', 'DEN_REG'],
         'provinces_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "ProvCM2021", "ProvCM2021.shp"),
