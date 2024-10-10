@@ -17,13 +17,13 @@ def setup_logging(log_dir: Path):
 logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
-    setup_logging(log_dir=main_path)
+    setup_logging(log_dir=main_path.parent)
 
     preprocess_census(
-        processed_data_folder=main_path.parent,
-        years=[1991, 2001, 2011, 2021],
+        processed_data_folder=main_path,
+        years=[1991],
         regions=True,
         provinces=True,
         municipalities=True,
-        delete_download_folder=True
+        #delete_download_folder=True
     )

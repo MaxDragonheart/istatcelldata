@@ -29,7 +29,8 @@ census_data = {
             1: 'centro abitato',
             2: 'nucleo abitato',
             3: 'case sparse'
-        }
+        },
+        'add_administrative_informations': True
     },
     2001: {
         'data_root': ("census_2001", DATA_FOLDER, CENSUS_DATA_FOLDER),
@@ -46,7 +47,8 @@ census_data = {
             2: 'nucleo abitato',
             3: 'località produttiva',
             4: 'case sparse'
-        }
+        },
+        'add_administrative_informations': True
     },
     2011: {
         'data_root': ("census_2011", DATA_FOLDER, CENSUS_DATA_FOLDER),
