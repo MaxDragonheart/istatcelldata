@@ -6,18 +6,18 @@ import geopandas as gpd
 from istatcelldata.config import census_data
 from istatcelldata.geodata import read_administrative_boundaries, read_census, preprocess_geodata
 
-year = 2021
+year = 1991
 
 REGIONS_ROOT = census_data[year]['regions_root']
 REGIONS_COLUMN = census_data[year]['regions_column']
 PROVINCES_ROOT = census_data[year]['provinces_root']
 PROVINCES_COLUMN = census_data[year]['provinces_column']
-PROVINCES_COLUMN_REMAPPING = census_data[year]['provinces_column_remapping']
+PROVINCES_COLUMN_REMAPPING = census_data[year].get('provinces_column_remapping', None)
 MUNICIPALITIES_ROOT = census_data[year]['municipalities_root']
 MUNICIPALITIES_COLUMN = census_data[year]['municipalities_column']
 CENSUS_SHP_ROOT = census_data[year]['census_shp_root']
 CENSUS_SHP_COLUMN = census_data[year]['census_shp_column']
-CENSUS_SHP_COLUMN_REMAPPING = census_data[year]['census_shp_column_remapping']
+CENSUS_SHP_COLUMN_REMAPPING = census_data[year].get('census_shp_column_remapping', None)
 TIPO_LOC_MAPPING = census_data[year]['tipo_loc_mapping']
 
 main_folder = Path("/home/max/Desktop/census/preprocessing")

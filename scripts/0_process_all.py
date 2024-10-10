@@ -2,6 +2,7 @@ import datetime
 import logging
 from pathlib import Path
 
+from istatcelldata.config import PREPROCESSING_FOLDER
 from istatcelldata.executor.download import download_census
 from istatcelldata.executor.preprocess import preprocess_census
 from istatcelldata.executor.process import finalize_census_data
@@ -55,7 +56,7 @@ def run(
     # Fase di preprocessing dei dati del censimento
     logging.info("Avvio del preprocessing dei dati del censimento.")
     preprocess_census(
-        processed_data_folder=data_dir,
+        processed_data_folder=data_dir.joinpath(PREPROCESSING_FOLDER),
         years=years,
         # regions=True,
         # provinces=True,
