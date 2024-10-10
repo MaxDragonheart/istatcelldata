@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 from typing import List
 
-from istatcelldata.census1991.config import YEAR
 from istatcelldata.census1991.utils import census_trace, read_xls
 from istatcelldata.census2011.download import download_data as dwn, download_geodata, download_administrative_boundaries
 from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
@@ -81,14 +80,14 @@ def download_all_census_data_1991(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     # Download data
-    download_data(output_data_folder=data_folder, census_year=YEAR)
+    download_data(output_data_folder=data_folder, census_year=1991)
 
     # Download geodata
     download_geodata(
-        output_data_folder=data_folder, region_list=region_list, census_year=YEAR
+        output_data_folder=data_folder, region_list=region_list, census_year=1991
     )
 
     # Download administrative boundaries
-    download_administrative_boundaries(output_data_folder=data_folder, census_year=YEAR)
+    download_administrative_boundaries(output_data_folder=data_folder, census_year=1991)
 
     return output_data_folder

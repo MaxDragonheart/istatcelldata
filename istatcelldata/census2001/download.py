@@ -33,14 +33,14 @@ def download_all_census_data_2001(
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 
     # Download data
-    download_data(output_data_folder=data_folder, census_year=YEAR)
+    download_data(output_data_folder=data_folder, census_year=2001)
 
     # Download geodata
     download_geodata(
-        output_data_folder=data_folder, region_list=region_list, census_year=YEAR
+        output_data_folder=data_folder, region_list=region_list, census_year=2001
     )
 
     # Download administrative boundaries
-    download_administrative_boundaries(output_data_folder=data_folder, census_year=YEAR)
+    download_administrative_boundaries(output_data_folder=data_folder, census_year=2001)
 
     return output_data_folder
