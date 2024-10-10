@@ -132,7 +132,7 @@ def test_read_census(tmp_path: Path):
         shp_folder=main_folder.joinpath(*CENSUS_SHP_ROOT),
         target_columns=CENSUS_SHP_COLUMN,
         tipo_loc_mapping=TIPO_LOC_MAPPING,
-        output_folder=tmp_path
+        #output_folder=tmp_path
     )
     print(data)
     assert isinstance(data, gpd.GeoDataFrame) or isinstance(data, Path)

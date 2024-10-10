@@ -8,7 +8,7 @@ from istatcelldata.executor.process import finalize_census_data
 from istatcelldata.logger_config import configure_logging
 
 main_path = Path("/home/max/Desktop/census")
-list_year = [1991, 2001, 2011, 2021]
+list_year = [1991]
 list_region = [15]
 
 # Configure logging at the start of the script
