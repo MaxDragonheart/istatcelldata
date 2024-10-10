@@ -9,8 +9,8 @@ from istatcelldata.executor.process import finalize_census_data
 from istatcelldata.logger_config import configure_logging
 
 main_path = Path("/home/max/Desktop/census")
-list_year = [1991]
-list_region = [15]
+list_year = [1991, 2001, 2011, 2021]
+list_region = []
 
 # Configure logging at the start of the script
 def setup_logging(log_dir: Path):
@@ -42,10 +42,10 @@ def run(
         None
     """
     time_start = datetime.datetime.now()
-    logging.info(f"Inizio analisi alle {time_start} per gli anni: {years} e regioni: {regions}.")
+    logging.info(f"Inizio analisi alle {time_start} per gli anni: {years}.")
 
     # Fase di download dei dati del censimento
-    logging.info(f"Download dei dati del censimento per gli anni {years} e regioni {regions}")
+    logging.info(f"Download dei dati del censimento per gli anni {years}.")
     download_census(
         years=years,
         output_data_folder=data_dir,
