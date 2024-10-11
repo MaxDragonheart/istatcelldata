@@ -3,6 +3,16 @@
 Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
 È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.
 
+## Il dato sulle celle censuarie negli anni
+
+I dati censuari risultano essere differenti tra anno ed anno non solo per il loro contenuto ma anche e soprattutto 
+per la struttura dati con cui sono stati condivisi da ISTAT stessa.
+
+In particolare gli anni 1991 e 2001 risultano avere una struttura dati uguale ma differente rispetto a quella degli 
+anni 2011 e 2021 che a loro volta sono simili tra loro.
+
+Per il 2021 inoltre c'è un totale cambio di nomenclatura dei file oltre che di url per il download dei soli dati.
+
 ## Codice Regione
 A partire dalla versione `0.6.0` è possibile elaborare i dati non per forza di tutta l'Italia ma anche solo di una o più 
 regioni, l'utente può scegliere. La scelta della o delle regioni da elaborare va fatta usado il codice della Regione di 
@@ -35,7 +45,8 @@ La fonte della tabella precedente è [questa](https://www.istat.it/it/archivio/1
 
 
 ## Shared data
-*DA RIVEDERE PER I DATI 2021*
+*[DA RIVEDERE PER I DATI 2021](https://github.com/MaxDragonheart/istatcelldata/issues/42)*
+
 Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
 il loro codice. Questi campi sono stati definiti `SHARED_DATA` ed è possibile ottenerli scartando quelli che
 negli anni hanno cambiato codice. I campi condivisi sono i seguenti:

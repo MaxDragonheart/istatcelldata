@@ -105,7 +105,7 @@ def add_administrative_info(
         columns={'COD_COM': 'CODCOM', 'COD_PROV': 'CODPRO', 'COD_REG': 'CODREG', 'DEN_PROV': 'PROVINCIA', 'DEN_REG': 'REGIONE'},
         inplace=True
     )
-    print(list(add_municipalities.columns))
+
     logging.info("Aggiunta delle informazioni amministrative completata con successo.")
 
     return add_municipalities

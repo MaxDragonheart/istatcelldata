@@ -11,9 +11,9 @@ nav:
       - References:
         - Data: ./documentation/data.md
         - Download: ./documentation/download.md
-        - Generic: ./documentation/utils.md
         - GeoData: ./documentation/geodata.md
-        - Processes: ./documentation/process.md
+        - Process: ./documentation/process.md
+        - Utils: ./documentation/utils.md
       - Tutorial: ./tutorial/intro.md
   - Licenza: ./LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istatcelldata/issues
