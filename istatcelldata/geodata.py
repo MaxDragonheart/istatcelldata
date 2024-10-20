@@ -153,14 +153,14 @@ def read_census(
             if census_geometry is not None:
                 census_geometry = make_valid(census_geometry)  # Corregge la geometria se necessario
                 tipo_loc = tipo_loc_mapping.get(row[1], None)  # Mappa il codice di località
-                census_row = [row[0], row[1], tipo_loc, census_geometry]
+                census_row = [row[0], row[1], tipo_loc, row[2], census_geometry]
                 census_cells.append(census_row)
             else:
                 logging.warning(f"Per la sezione {row[0]} la geometria è `None` o irreparabilmente danneggiata.")
                 pass
 
     df_columns = columns_list[0]  # Recupera i nomi delle colonne
-    df_columns.insert(df_columns.index(GEOMETRY_COLUMN_NAME), 'DEN_LOC')  # Aggiunge 'DEN_LOC' come colonna
+    df_columns.insert(df_columns.index('PRO_COM'), 'DEN_LOC')  # Aggiunge 'DEN_LOC' come colonna
     logging.info(f"Colonne finali: {df_columns}")
 
     # Creazione del DataFrame e GeoDataFrame
