@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "istatcelldata"
-version = "1.0.0"
+version = "1.0.1"
 description = "Con ISTAT Cell Data puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie."
 authors = ["Massimiliano Moraca <info@massimilianomoraca.it>"]
 readme = "README.md"
