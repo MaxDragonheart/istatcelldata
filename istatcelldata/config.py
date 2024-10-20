@@ -24,7 +24,7 @@ census_data = {
         'municipalities_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Com1991", "Com1991_WGS84.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
         'census_shp_root': ("census_1991", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ1991', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': ['SEZ1991', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -41,7 +41,7 @@ census_data = {
         'municipalities_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Com2001", "Com2001_WGS84.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
         'census_shp_root': ("census_2001", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ2001', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': ['SEZ2001', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -62,7 +62,7 @@ census_data = {
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PRO'],
         'municipalities_column_remapping': {'COD_PRO': 'COD_PROV'},
         'census_shp_root': ("census_2011", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ2011', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': ['SEZ2011', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -80,7 +80,7 @@ census_data = {
         'municipalities_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Com2021", "Com2021.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG'],
         'census_shp_root': ("census_2021", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ21_ID', 'TIPO_LOC', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': ['SEZ21_ID', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
         'census_shp_column_remapping': {'SEZ21_ID': 'SEZ2021'},
         'tipo_loc_mapping': {
             1: 'centro abitato',
