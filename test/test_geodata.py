@@ -10,11 +10,15 @@ year = 1991
 
 REGIONS_ROOT = census_data[year]['regions_root']
 REGIONS_COLUMN = census_data[year]['regions_column']
+REGIONS_INDEX = census_data[year]['regions_index']
 PROVINCES_ROOT = census_data[year]['provinces_root']
 PROVINCES_COLUMN = census_data[year]['provinces_column']
 PROVINCES_COLUMN_REMAPPING = census_data[year].get('provinces_column_remapping', None)
+PROVINCES_INDEX = census_data[year]['provinces_index']
 MUNICIPALITIES_ROOT = census_data[year]['municipalities_root']
 MUNICIPALITIES_COLUMN = census_data[year]['municipalities_column']
+MUNICIPALITIES_COLUMN_REMAPPING = census_data[year].get('municipalities_column_remapping', None)
+MUNICIPALITIES_INDEX = census_data[year]['municipalities_index']
 CENSUS_SHP_ROOT = census_data[year]['census_shp_root']
 CENSUS_SHP_COLUMN = census_data[year]['census_shp_column']
 CENSUS_SHP_COLUMN_REMAPPING = census_data[year].get('census_shp_column_remapping', None)
@@ -26,8 +30,7 @@ def test_read_regions(tmp_path: Path):
     data = read_administrative_boundaries(
         file_path=DOWNLOAD_RAW_DATA.joinpath(*REGIONS_ROOT),
         target_columns=REGIONS_COLUMN,
-        index_column=REGIONS_COLUMN[0],
-        with_geometry=True,
+        index_column=REGIONS_INDEX,
         output_folder=tmp_path,
         layer_name='test'
     )
@@ -40,7 +43,7 @@ def test_read_provinces():
     data = read_administrative_boundaries(
         file_path=DOWNLOAD_RAW_DATA.joinpath(*PROVINCES_ROOT),
         target_columns=PROVINCES_COLUMN,
-        index_column=PROVINCES_COLUMN[0],
+        index_column=PROVINCES_INDEX,
         column_remapping=PROVINCES_COLUMN_REMAPPING
     )
     print(data)
@@ -52,7 +55,8 @@ def test_read_municipalities():
     data = read_administrative_boundaries(
         file_path=DOWNLOAD_RAW_DATA.joinpath(*MUNICIPALITIES_ROOT),
         target_columns=MUNICIPALITIES_COLUMN,
-        index_column=MUNICIPALITIES_COLUMN[0]
+        index_column=MUNICIPALITIES_INDEX,
+        column_remapping=MUNICIPALITIES_COLUMN_REMAPPING
     )
     print(data)
     assert isinstance(data, pd.DataFrame)
@@ -77,21 +81,19 @@ def test_preprocess_geodata(tmp_path: Path):
         census_shp_folder=DOWNLOAD_RAW_DATA.joinpath(*CENSUS_SHP_ROOT),
         census_target_columns=CENSUS_SHP_COLUMN,
         census_tipo_loc_mapping=TIPO_LOC_MAPPING,
-        census_layer_name="census2021",
+        census_layer_name=f"census{year}",
         census_column_remapping=CENSUS_SHP_COLUMN_REMAPPING,
-        regions=True,
         regions_file_path=DOWNLOAD_RAW_DATA.joinpath(*REGIONS_ROOT),
         regions_target_columns=REGIONS_COLUMN,
-        regions_index_column=REGIONS_COLUMN[0],
-        provinces=True,
+        regions_index_column=REGIONS_INDEX,
         provinces_file_path=DOWNLOAD_RAW_DATA.joinpath(*PROVINCES_ROOT),
         provinces_target_columns=PROVINCES_COLUMN,
-        provinces_index_column=PROVINCES_COLUMN[0],
+        provinces_index_column=PROVINCES_INDEX,
         provinces_column_remapping=PROVINCES_COLUMN_REMAPPING,
-        municipalities=True,
         municipalities_file_path=DOWNLOAD_RAW_DATA.joinpath(*MUNICIPALITIES_ROOT),
         municipalities_target_columns=MUNICIPALITIES_COLUMN,
-        municipalities_index_column=MUNICIPALITIES_COLUMN[0],
+        municipalities_index_column=MUNICIPALITIES_INDEX,
+        municipalities_column_remapping=MUNICIPALITIES_COLUMN_REMAPPING,
         output_folder=tmp_path
     )
     print(data)

@@ -22,7 +22,6 @@ def read_administrative_boundaries(
         target_columns: list,
         index_column: str,
         column_remapping: dict = None,
-        with_geometry: bool = False,
         output_folder: Path = None,
         layer_name: str = None,
 ) -> Union[pd.DataFrame, Path]:
@@ -33,9 +32,7 @@ def read_administrative_boundaries(
         target_columns (list): Lista delle colonne da selezionare dal file.
         index_column (str): Nome della colonna da utilizzare come indice per il DataFrame.
         column_remapping (dict, opzionale): Mappa di rinominazione per le colonne. Default: None.
-        with_geometry (bool, opzionale): Se True, include la geometria nel GeoDataFrame. Default: False.
         output_folder (Path, opzionale): Percorso della cartella di output per salvare il GeoPackage.
-        Obbligatorio se `with_geometry` è True.
         layer_name (str, opzionale): Nome del layer per il GeoPackage. Obbligatorio se `with_geometry` è True.
 
     Returns:
@@ -55,15 +52,8 @@ def read_administrative_boundaries(
     data = gpd.read_file(filename=file_path, encoding=encoding)
     logging.info(f"File {file_path} letto con successo")
 
-    # Aggiunta della geometria se richiesto
-    if with_geometry:
-        target_columns.append(GEOMETRY_COLUMN_NAME)
-
-        # Controlla che output_folder e layer_name siano specificati
-        if output_folder is None or layer_name is None:
-            raise ValueError("Quando 'with_geometry' è True, 'output_folder' e 'layer_name' devono essere forniti.")
-
     # Selezione delle colonne di interesse
+    target_columns.extend([GEOMETRY_COLUMN_NAME])
     data_target = data[target_columns]
     logging.info(f"Colonne selezionate: {target_columns}")
 
@@ -78,17 +68,20 @@ def read_administrative_boundaries(
     data_target.sort_index(inplace=True)
     logging.info(f"Dati ordinati in base alla colonna {index_column}")
 
-    # Gestione con geometria
-    if with_geometry:
-        gdf = gpd.GeoDataFrame(data_target, crs=data.crs)
+    if output_folder is None:
+        data_target.drop(columns=[GEOMETRY_COLUMN_NAME], inplace=True)
+        data_target = pd.DataFrame(data_target)
+
+        return data_target
+
+    else:
+        # Gestione con geometria
+        gdf = gpd.GeoDataFrame(data=data_target, crs=data.crs)
+
         geopackage_path = output_folder.joinpath(f"{YEAR_GEODATA_NAME}.gpkg")
         gdf.to_file(filename=str(geopackage_path), driver="GPKG", layer=layer_name, encoding=GLOBAL_ENCODING)
         logging.info(f"GeoPackage salvato in {geopackage_path} con il layer {layer_name}")
         return geopackage_path
-
-    # Ritorna il DataFrame senza geometria
-    else:
-        return data_target
 
 
 def read_census(
@@ -191,17 +184,14 @@ def preprocess_geodata(
         output_folder: Path,
         census_layer_name: str,
         census_column_remapping: dict = None,
-        regions: bool = False,
         regions_file_path: Path = None,
         regions_target_columns: list = None,
         regions_index_column: str = None,
         regions_column_remapping: dict = None,
-        provinces: bool = False,
         provinces_file_path: Path = None,
         provinces_target_columns: list = None,
         provinces_index_column: str = None,
         provinces_column_remapping: dict = None,
-        municipalities: bool = False,
         municipalities_file_path: Path = None,
         municipalities_target_columns: list = None,
         municipalities_index_column: str = None,
@@ -235,61 +225,74 @@ def preprocess_geodata(
     Returns:
         Path: Il percorso della cartella di output con i dati elaborati.
     """
-    logging.info(f"Avvio del preprocessing dei dati del censimento dalla cartella {census_shp_folder}")
+    census_year = census_layer_name[6:]
+    logging.info(f"Anno del censimento rilevato: {census_year}")
 
+    # Lettura e salvataggio dei confini regionali
+    logging.info("Inizio elaborazione dei confini regionali")
+    region = read_administrative_boundaries(
+        file_path=regions_file_path,
+        target_columns=regions_target_columns,
+        index_column=regions_index_column,
+        column_remapping=regions_column_remapping
+    )
+
+    # Lettura e salvataggio dei confini provinciali
+    logging.info("Inizio elaborazione dei confini provinciali")
+    province = read_administrative_boundaries(
+        file_path=provinces_file_path,
+        target_columns=provinces_target_columns,
+        index_column=provinces_index_column,
+        column_remapping=provinces_column_remapping
+    )
+
+    # Lettura e salvataggio dei confini comunali
+    logging.info("Inizio elaborazione dei confini comunali")
+    municipality = read_administrative_boundaries(
+        file_path=municipalities_file_path,
+        target_columns=municipalities_target_columns,
+        index_column=municipalities_index_column,
+        column_remapping=municipalities_column_remapping
+    )
+    municipality.reset_index(inplace=True)
+    # Poichè i confini comunali 2021 non hanno la colonna 'COD_PROV' la aggiungo manualmente.
+    # TODO https://github.com/MaxDragonheart/istatcelldata/issues/47
+    if census_year == '2021':
+        municipality['COD_PROV'] = 0
+
+    # Aggiunta del dettaglio delle provincie ai comuni
+    mun_prov = pd.merge(
+        left=municipality,
+        right=province,
+        how='left',
+        on='COD_PROV'
+    )
+
+    # Aggiunta del dettaglio delle regioni ai comuni
+    mun_reg = pd.merge(
+        left=mun_prov,
+        right=region,
+        how='left',
+        on='COD_REG'
+    )
+
+    logging.info(f"Avvio del preprocessing dei dati del censimento dalla cartella {census_shp_folder}")
     # Lettura e salvataggio dei dati del censimento
     census_geodata = read_census(
         shp_folder=census_shp_folder,
         target_columns=census_target_columns,
         tipo_loc_mapping=census_tipo_loc_mapping,
         column_remapping=census_column_remapping,
-        output_folder=output_folder,
-        layer_name=census_layer_name
+    )
+    census_geodata_full = pd.merge(
+        left=census_geodata,
+        right=mun_reg,
+        how='left',
+        on='PRO_COM'
     )
 
-    logging.info(f"Salvataggio del GeoPackage del censimento in {census_geodata}")
-
-    census_year = census_layer_name[6:]
-    logging.info(f"Anno del censimento rilevato: {census_year}")
-
-    # Lettura e salvataggio dei confini regionali
-    if regions:
-        logging.info("Inizio elaborazione dei confini regionali")
-        read_administrative_boundaries(
-            file_path=regions_file_path,
-            target_columns=regions_target_columns,
-            index_column=regions_index_column,
-            column_remapping=regions_column_remapping,
-            with_geometry=True,
-            output_folder=output_folder,
-            layer_name=f"confini_regionali{census_year}"
-        )
-
-    # Lettura e salvataggio dei confini provinciali
-    if provinces:
-        logging.info("Inizio elaborazione dei confini provinciali")
-        read_administrative_boundaries(
-            file_path=provinces_file_path,
-            target_columns=provinces_target_columns,
-            index_column=provinces_index_column,
-            column_remapping=provinces_column_remapping,
-            with_geometry=True,
-            output_folder=output_folder,
-            layer_name=f"confini_provinciali{census_year}"
-        )
-
-    # Lettura e salvataggio dei confini comunali
-    if municipalities:
-        logging.info("Inizio elaborazione dei confini comunali")
-        read_administrative_boundaries(
-            file_path=municipalities_file_path,
-            target_columns=municipalities_target_columns,
-            index_column=municipalities_index_column,
-            column_remapping=municipalities_column_remapping,
-            with_geometry=True,
-            output_folder=output_folder,
-            layer_name=f"confini_comunali{census_year}"
-        )
-
-    logging.info(f"Preprocessing completato. Dati salvati in {output_folder}")
-    return census_geodata
+    gdf = gpd.GeoDataFrame(data=census_geodata_full, geometry=GEOMETRY_COLUMN_NAME, crs=census_geodata.crs)
+    geopackage_path = output_folder.joinpath(f"{YEAR_GEODATA_NAME}.gpkg")
+    gdf.to_file(filename=str(geopackage_path), driver="GPKG", encoding=GLOBAL_ENCODING, layer=f"{YEAR_GEODATA_NAME}{census_year}")
+    logging.info(f"Salvataggio del GeoPackage del censimento in {geopackage_path}")
+    return geopackage_path
