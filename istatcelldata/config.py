@@ -24,7 +24,10 @@ census_data = {
         'municipalities_root': ("census_1991", BOUNDARIES_DATA_FOLDER, "Limiti1991", "Com1991", "Com1991_WGS84.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
         'census_shp_root': ("census_1991", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ1991', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': [
+            'COD_ISTAT', 'PRO_COM', 'SEZ1991', 'SEZ', 'ISOLATO', 'COD_IS_AMM', 'COD_ZONA_C', 'COD_AREA', 'LOC1991',
+            'COD_LOC', 'TIPO_LOC', GEOMETRY_COLUMN_NAME
+        ],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -41,7 +44,11 @@ census_data = {
         'municipalities_root': ("census_2001", BOUNDARIES_DATA_FOLDER, "Limiti2001", "Limiti2001", "Com2001", "Com2001_WGS84.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
         'census_shp_root': ("census_2001", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ2001', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': [
+            'COD_ISTAT', 'PRO_COM', 'SEZ2001', 'SEZ', 'COD_TIPO', 'COD_STAGNO', 'COD_FIUME', 'COD_LAGO', 'COD_LAGUNA',
+            'COD_VAL_P', 'COD_ZONA_C', 'COD_IS_AMM', 'COD_IS_LAC', 'COD_IS_MAR', 'COD_AREA_S', 'COD_MONT_D', 'LOC2001',
+            'COD_LOC', 'TIPO_LOC', GEOMETRY_COLUMN_NAME
+        ],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -62,7 +69,11 @@ census_data = {
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PRO'],
         'municipalities_column_remapping': {'COD_PRO': 'COD_PROV'},
         'census_shp_root': ("census_2011", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ2011', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': [
+            'COD_REG', 'COD_ISTAT', 'PRO_COM', 'SEZ2011', 'SEZ', 'COD_STAGNO', 'COD_FIUME', 'COD_LAGO', 'COD_LAGUNA',
+            'COD_VAL_P', 'COD_ZONA_C', 'COD_IS_AMM', 'COD_IS_LAC', 'COD_IS_MAR', 'COD_AREA_S', 'COD_MONT_D', 'LOC2011',
+            'COD_LOC', 'TIPO_LOC', 'COM_ASC', 'COD_ASC', 'ACE', GEOMETRY_COLUMN_NAME
+        ],
         'tipo_loc_mapping': {
             1: 'centro abitato',
             2: 'nucleo abitato',
@@ -80,7 +91,11 @@ census_data = {
         'municipalities_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Com2021", "Com2021.shp"),
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG'],
         'census_shp_root': ("census_2021", GEODATA_FOLDER),
-        'census_shp_column': ['SEZ21_ID', 'TIPO_LOC', 'PRO_COM', GEOMETRY_COLUMN_NAME],
+        'census_shp_column': [
+            'COD_REG', 'COD_UTS', 'PRO_COM', 'SEZ21', 'SEZ21_ID', 'COD_TIPO_S', 'TIPO_LOC', 'COD21_ID', 'COD_ZIC',
+            'COD_ISAM', 'COD_ACQUE', 'COD_ISOLE', 'COD_MONT_D', 'COD_AREA_S', 'COM_ASC1', 'COM_ASC2', 'COM_ASC3',
+            GEOMETRY_COLUMN_NAME
+        ],
         'census_shp_column_remapping': {'SEZ21_ID': 'SEZ2021'},
         'tipo_loc_mapping': {
             1: 'centro abitato',
