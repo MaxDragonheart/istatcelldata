@@ -5,6 +5,10 @@ DEMO_DATA_FOLDER = Path(__file__).parent.parent.joinpath('demo_data')
 GEOMETRY_COLUMN_NAME = 'geometry'
 GLOBAL_ENCODING = 'utf-8'
 
+# TEST FOLDERS
+DOWNLOAD_RAW_DATA = DEMO_DATA_FOLDER.joinpath('download')
+
+
 # PROJECT FOLDERS
 DATA_FOLDER = 'data'
 GEODATA_FOLDER = 'geodata'
@@ -25,8 +29,9 @@ census_data = {
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG', 'COD_PROV'],
         'census_shp_root': ("census_1991", GEODATA_FOLDER),
         'census_shp_column': [
-            'COD_ISTAT', 'PRO_COM', 'SEZ1991', 'SEZ', 'ISOLATO', 'COD_IS_AMM', 'COD_ZONA_C', 'COD_AREA', 'LOC1991',
-            'COD_LOC', 'TIPO_LOC', GEOMETRY_COLUMN_NAME
+            'COD_ISTAT', 'PRO_COM', 'SEZ1991', 'SEZ', 'ISOLATO',
+            'COD_IS_AMM', 'COD_ZONA_C', 'COD_AREA', 'LOC1991', 'COD_LOC',
+            'TIPO_LOC', GEOMETRY_COLUMN_NAME
         ],
         'tipo_loc_mapping': {
             1: 'centro abitato',
@@ -92,7 +97,7 @@ census_data = {
         'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG'],
         'census_shp_root': ("census_2021", GEODATA_FOLDER),
         'census_shp_column': [
-            'COD_REG', 'COD_UTS', 'PRO_COM', 'SEZ21', 'SEZ21_ID', 'COD_TIPO_S', 'TIPO_LOC', 'COD21_ID', 'COD_ZIC',
+            'COD_REG', 'COD_UTS', 'PRO_COM', 'SEZ21', 'SEZ21_ID', 'COD_TIPO_S', 'TIPO_LOC', 'LOC21_ID', 'COD_ZIC',
             'COD_ISAM', 'COD_ACQUE', 'COD_ISOLE', 'COD_MONT_D', 'COD_AREA_S', 'COM_ASC1', 'COM_ASC2', 'COM_ASC3',
             GEOMETRY_COLUMN_NAME
         ],
