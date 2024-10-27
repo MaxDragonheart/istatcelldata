@@ -105,7 +105,7 @@ census_data = {
         'provinces_column_remapping': {'DEN_UTS': 'DEN_PROV'},
         'provinces_index': 'COD_PROV',
         'municipalities_root': ("census_2021", BOUNDARIES_DATA_FOLDER, "Limiti2021", "Com2021", "Com2021.shp"),
-        'municipalities_column': ['PRO_COM', 'COMUNE', 'COD_REG'],
+        'municipalities_column': ['PRO_COM', 'PRO_COM_T', 'COMUNE', 'COD_REG'],
         'municipalities_index': 'PRO_COM',
         'census_shp_root': ("census_2021", GEODATA_FOLDER),
         'census_shp_column': [

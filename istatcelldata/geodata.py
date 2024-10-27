@@ -206,17 +206,14 @@ def preprocess_geodata(
         output_folder (Path): Cartella di output per salvare i risultati.
         census_layer_name (str): Nome del layer per il GeoPackage del censimento.
         census_column_remapping (dict, opzionale): Mappatura per rinominare le colonne del censimento. Default: None.
-        regions (bool, opzionale): Indica se processare i confini regionali. Default: False.
         regions_file_path (Path, opzionale): Percorso del file dei confini regionali. Default: None.
         regions_target_columns (list, opzionale): Colonne da selezionare dai dati regionali. Default: None.
         regions_index_column (str, opzionale): Colonna da usare come indice per i dati regionali. Default: None.
         regions_column_remapping (dict, opzionale): Mappatura per rinominare le colonne regionali. Default: None.
-        provinces (bool, opzionale): Indica se processare i confini provinciali. Default: False.
         provinces_file_path (Path, opzionale): Percorso del file dei confini provinciali. Default: None.
         provinces_target_columns (list, opzionale): Colonne da selezionare dai dati provinciali. Default: None.
         provinces_index_column (str, opzionale): Colonna da usare come indice per i dati provinciali. Default: None.
         provinces_column_remapping (dict, opzionale): Mappatura per rinominare le colonne provinciali. Default: None.
-        municipalities (bool, opzionale): Indica se processare i confini comunali. Default: False.
         municipalities_file_path (Path, opzionale): Percorso del file dei confini comunali. Default: None.
         municipalities_target_columns (list, opzionale): Colonne da selezionare dai dati comunali. Default: None.
         municipalities_index_column (str, opzionale): Colonna da usare come indice per i dati comunali. Default: None.
@@ -257,8 +254,11 @@ def preprocess_geodata(
     municipality.reset_index(inplace=True)
     # Poichè i confini comunali 2021 non hanno la colonna 'COD_PROV' la aggiungo manualmente.
     # TODO https://github.com/MaxDragonheart/istatcelldata/issues/47
+    logging.info("Poichè i confini comunali 2021 non hanno la colonna 'COD_PROV' la aggiungo manualmente. https://github.com/MaxDragonheart/istatcelldata/issues/47")
     if census_year == '2021':
-        municipality['COD_PROV'] = 0
+        municipality['COD_PROV'] = municipality['PRO_COM_T'].str[:3]
+        municipality['COD_PROV'] = municipality['COD_PROV'].astype(int)
+        municipality.drop(columns=['PRO_COM_T'], inplace=True)
 
     # Aggiunta del dettaglio delle provincie ai comuni
     mun_prov = pd.merge(

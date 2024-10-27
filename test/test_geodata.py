@@ -6,10 +6,11 @@ import geopandas as gpd
 from istatcelldata.config import census_data, DOWNLOAD_RAW_DATA
 from istatcelldata.geodata import read_administrative_boundaries, read_census, preprocess_geodata
 
-year = 1991
+year = 2011
 
 REGIONS_ROOT = census_data[year]['regions_root']
 REGIONS_COLUMN = census_data[year]['regions_column']
+REGIONS_COLUMN_REMAPPING = census_data[year].get('regions_column_remapping', None)
 REGIONS_INDEX = census_data[year]['regions_index']
 PROVINCES_ROOT = census_data[year]['provinces_root']
 PROVINCES_COLUMN = census_data[year]['provinces_column']
