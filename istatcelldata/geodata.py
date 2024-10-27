@@ -195,7 +195,8 @@ def preprocess_geodata(
         municipalities_file_path: Path = None,
         municipalities_target_columns: list = None,
         municipalities_index_column: str = None,
-        municipalities_column_remapping: dict = None
+        municipalities_column_remapping: dict = None,
+        municipalities_code: list[int] = [],
 ) -> Path:
     """Preprocessa e salva i dati geografici del censimento e, opzionalmente, i confini amministrativi.
 
@@ -218,6 +219,7 @@ def preprocess_geodata(
         municipalities_target_columns (list, opzionale): Colonne da selezionare dai dati comunali. Default: None.
         municipalities_index_column (str, opzionale): Colonna da usare come indice per i dati comunali. Default: None.
         municipalities_column_remapping (dict, opzionale): Mappatura per rinominare le colonne comunali. Default: None.
+        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
 
     Returns:
         Path: Il percorso della cartella di output con i dati elaborati.
@@ -284,6 +286,10 @@ def preprocess_geodata(
         tipo_loc_mapping=census_tipo_loc_mapping,
         column_remapping=census_column_remapping,
     )
+    if len(municipalities_code) > 0:
+        logging.info(f"Comuni da estrarre: {municipalities_code}")
+        mun_reg = mun_reg[mun_reg['PRO_COM'].isin(municipalities_code)]
+        census_geodata = census_geodata[census_geodata['PRO_COM'].isin(municipalities_code)]
     census_geodata_full = pd.merge(
         left=census_geodata,
         right=mun_reg,

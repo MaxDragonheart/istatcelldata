@@ -20,6 +20,7 @@ def preprocess_census(
         years: List[int],
         output_data_folder: Path = None,
         delete_download_folder: bool = False,
+        municipalities_code: list[int] = []
 ):
     """Preprocessa i dati del censimento per più anni, includendo l'opzione di processare anche
     i confini amministrativi.
@@ -30,6 +31,7 @@ def preprocess_census(
         output_data_folder (Path, opzionale): Cartella di destinazione per i dati elaborati. Default: None.
         delete_download_folder (bool, opzionale): Se True, elimina la cartella di dati pre-processati dopo
         il completamento del download. Default: False.
+        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
 
     Returns:
         Path: Percorso della cartella con i dati elaborati.
@@ -89,7 +91,8 @@ def preprocess_census(
             municipalities_file_path=processed_data_folder.joinpath(*municipalities_root),
             municipalities_target_columns=municipalities_column,
             municipalities_index_column=municipalities_index,
-            municipalities_column_remapping=municipalities_column_remapping
+            municipalities_column_remapping=municipalities_column_remapping,
+            municipalities_code=municipalities_code
         )
 
         # Connessione al GeoPackage

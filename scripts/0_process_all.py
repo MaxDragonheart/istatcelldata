@@ -27,7 +27,8 @@ def run(
         regions: list,
         data_dir: Path,
         delete_download_folder: bool,
-        delete_preprocessed_data: bool
+        delete_preprocessed_data: bool,
+        municipalities_code: list[int]
 ):
     """Esegue il processo di download, preprocessing e finalizzazione dei dati del censimento per gli anni specificati.
 
@@ -37,6 +38,7 @@ def run(
         data_dir (Path): Cartella di destinazione per i dati scaricati ed elaborati.
         delete_download_folder (bool): Se True, elimina la cartella dei dati scaricati dopo il preprocessing.
         delete_preprocessed_data (bool): Se True, elimina i dati pre-processati dopo la finalizzazione.
+        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
 
     Returns:
         None
@@ -58,10 +60,8 @@ def run(
     preprocess_census(
         processed_data_folder=data_dir.joinpath(PREPROCESSING_FOLDER),
         years=years,
-        # regions=True,
-        # provinces=True,
-        # municipalities=True,
-        delete_download_folder=delete_download_folder
+        delete_download_folder=delete_download_folder,
+        municipalities_code=municipalities_code
     )
     logging.info("Preprocessing completato con successo.")
 
@@ -89,5 +89,6 @@ if __name__ == '__main__':
         regions=list_region,
         data_dir=main_path,
         delete_download_folder=True,
-        delete_preprocessed_data=True
+        delete_preprocessed_data=True,
+        # municipalities_code=[1136, 2088, 85007]
     )
