@@ -95,7 +95,8 @@ def test_preprocess_geodata(tmp_path: Path):
         municipalities_target_columns=MUNICIPALITIES_COLUMN,
         municipalities_index_column=MUNICIPALITIES_INDEX,
         municipalities_column_remapping=MUNICIPALITIES_COLUMN_REMAPPING,
-        output_folder=tmp_path
+        output_folder=tmp_path,
+        municipalities_code=[63049]
     )
     print(data)
     assert isinstance(data, Path)

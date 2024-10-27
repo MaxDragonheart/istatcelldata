@@ -22,5 +22,6 @@ if __name__ == '__main__':
     preprocess_census(
         processed_data_folder=main_path,
         years=[1991, 2001, 2011, 2021],
-        delete_download_folder=True
+        delete_download_folder=True,
+        # municipalities_code=[63049]
     )
