@@ -25,5 +25,5 @@ if __name__ == '__main__':
         # regions=True,
         # provinces=True,
         # municipalities=True,
-        delete_download_folder=False
+        delete_download_folder=True
     )
