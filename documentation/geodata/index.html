@@ -713,7 +713,7 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
 
 
 <h2 id="istatcelldata.geodata.preprocess_geodata" class="doc doc-heading">
-            <code class=" language-python"><span class="n">preprocess_geodata</span><span class="p">(</span><span class="n">census_shp_folder</span><span class="p">,</span> <span class="n">census_target_columns</span><span class="p">,</span> <span class="n">census_tipo_loc_mapping</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">,</span> <span class="n">census_layer_name</span><span class="p">,</span> <span class="n">census_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">regions_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">provinces_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">municipalities_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class=" language-python"><span class="n">preprocess_geodata</span><span class="p">(</span><span class="n">census_shp_folder</span><span class="p">,</span> <span class="n">census_target_columns</span><span class="p">,</span> <span class="n">census_tipo_loc_mapping</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">,</span> <span class="n">census_layer_name</span><span class="p">,</span> <span class="n">census_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">regions_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">provinces_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_target_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_index_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">municipalities_code</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
@@ -820,24 +820,6 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code>regions</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Indica se processare i confini regionali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
             <td><code>regions_file_path</code></td>
             <td class="doc-param-details">
               <div class="doc-md-description">
@@ -905,24 +887,6 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
                       <code>None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code>provinces</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Indica se processare i confini provinciali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
                   </span>
               </p>
             </td>
@@ -1000,24 +964,6 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code>municipalities</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Indica se processare i confini comunali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
             <td><code>municipalities_file_path</code></td>
             <td class="doc-param-details">
               <div class="doc-md-description">
@@ -1089,6 +1035,24 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
               </p>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code>municipalities_code</code></td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Lista di comuni da estrarre. Usare i dati presenti in <code>PRO_COM</code></p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code>(list, opzionale)</code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -1128,7 +1092,7 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
 
 
 <h2 id="istatcelldata.geodata.read_administrative_boundaries" class="doc doc-heading">
-            <code class=" language-python"><span class="n">read_administrative_boundaries</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">target_columns</span><span class="p">,</span> <span class="n">index_column</span><span class="p">,</span> <span class="n">column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_geometry</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class=" language-python"><span class="n">read_administrative_boundaries</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">target_columns</span><span class="p">,</span> <span class="n">index_column</span><span class="p">,</span> <span class="n">column_remapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">layer_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1202,24 +1166,6 @@ dei dati in formati utilizzabili per l'analisi geografica, come GeoDataFrame e G
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
                       <code>None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code>with_geometry</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Se True, include la geometria nel GeoDataFrame. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
                   </span>
               </p>
             </td>

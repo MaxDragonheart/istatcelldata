@@ -712,7 +712,7 @@ integrando informazioni amministrative e combinando dati geografici e tabellari 
 
 
 <h2 id="istatcelldata.executor.process.finalize_census_data" class="doc doc-heading">
-            <code class=" language-python"><span class="n">finalize_census_data</span><span class="p">(</span><span class="n">census_data</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">output_data_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_preprocessed_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class=" language-python"><span class="n">finalize_census_data</span><span class="p">(</span><span class="n">census_data_path</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">output_data_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_preprocessed_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h2>
 
@@ -731,7 +731,7 @@ integrando informazioni amministrative e combinando dati geografici e tabellari 
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code>census_data</code></td>
+            <td><code>census_data_path</code></td>
             <td class="doc-param-details">
               <div class="doc-md-description">
                 <p>Cartella contenente i dati pre-processati del censimento.</p>
@@ -869,7 +869,7 @@ Default: False.</p>
 
 
 <h2 id="istatcelldata.executor.preprocess.preprocess_census" class="doc doc-heading">
-            <code class=" language-python"><span class="n">preprocess_census</span><span class="p">(</span><span class="n">processed_data_folder</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">regions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">provinces</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">municipalities</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_data_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_download_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class=" language-python"><span class="n">preprocess_census</span><span class="p">(</span><span class="n">processed_data_folder</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">output_data_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delete_download_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">municipalities_code</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
@@ -912,60 +912,6 @@ i confini amministrativi.</p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code><span title="typing.List">List</span>[int]</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code>regions</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Se True, processa i confini regionali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code>provinces</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Se True, processa i confini provinciali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code>municipalities</code></td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Se True, processa i confini comunali. Default: False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code>(bool, opzionale)</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
                   </span>
               </p>
             </td>
@@ -1016,6 +962,24 @@ i confini amministrativi.</p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code>completamento del download. Default</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code>municipalities_code</code></td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Lista di comuni da estrarre. Usare i dati presenti in <code>PRO_COM</code></p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code>(list, opzionale)</code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
                   </span>
               </p>
             </td>
