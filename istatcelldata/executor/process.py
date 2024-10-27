@@ -6,6 +6,7 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
+from istatcelldata.config import census_data
 from istatcelldata.logger_config import configure_logging
 
 # Configure logging at the start of the script
@@ -14,7 +15,7 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 def finalize_census_data(
-        census_data: Path,
+        census_data_path: Path,
         years: list,
         output_data_folder: Path = None,
         delete_preprocessed_data: bool = False,
@@ -22,7 +23,7 @@ def finalize_census_data(
     """Finalizza i dati del censimento unendo i dati geografici con i dati tabellari e salva il risultato.
 
     Args:
-        census_data (Path): Cartella contenente i dati pre-processati del censimento.
+        census_data_path (Path): Cartella contenente i dati pre-processati del censimento.
         years (List[int]): Lista degli anni del censimento da processare.
         output_data_folder (Path, opzionale): Cartella di destinazione per i dati finali. Default: None.
         delete_preprocessed_data (bool, opzionale): Se True, elimina i dati pre-processati dopo il completamento.
@@ -36,7 +37,7 @@ def finalize_census_data(
     logging.info(f"Inizio preprocessing del censimento alle {time_start} per gli anni: {years}")
 
     # Percorso del file GeoPackage principale
-    main_data = census_data.joinpath("census.gpkg")
+    main_data = census_data_path.joinpath("census.gpkg")
 
     for year in years:
         logging.info(f"Inizio finalizzazione dei dati del censimento per l'anno {year}")
@@ -57,6 +58,8 @@ def finalize_census_data(
             filename=main_data,
             layer=f"data{year}"
         )
+        columns_to_remove = census_data[year]['data_columns_to_remove']
+        data.drop(columns=columns_to_remove, inplace=True)
 
         # Unione dei dati geografici con i dati tabellari
         join_key = f"SEZ{year}"
@@ -73,6 +76,7 @@ def finalize_census_data(
             how="left",
             on=join_key,
         )
+        join_data.fillna(value=0, inplace=True)
 
         # Rimozione della colonna "index" e ordinamento dei dati
         if "index" in join_data.columns:
@@ -87,7 +91,7 @@ def finalize_census_data(
 
         # Definizione del percorso del file di output
         filename = "census_data.gpkg"
-        file_path = output_data_folder.joinpath(filename) if output_data_folder else census_data.joinpath(filename)
+        file_path = output_data_folder.joinpath(filename) if output_data_folder else census_data_path.joinpath(filename)
 
         # Salvataggio del file finale come GeoPackage
         logging.info(f"Salvataggio dei dati finali nel file {file_path}")

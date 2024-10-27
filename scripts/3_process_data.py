@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     finalize_census_data(
-        census_data=main_path,
+        census_data_path=main_path,
         years=[1991, 2001, 2011, 2021],
         delete_preprocessed_data=True
     )
