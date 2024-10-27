@@ -2,19 +2,18 @@ from pathlib import Path
 
 import pandas as pd
 
-from istatcelldata.config import census_data
+from istatcelldata.config import census_data, DOWNLOAD_RAW_DATA
 from istatcelldata.data import preprocess_data
 
 year = 1991
 
 DATA_ROOT = census_data[year]['data_root']
 
-main_folder = Path("/home/max/Desktop/census/preprocessing")
 
 def test_preprocess_data(tmp_path: Path):
     print("test_preprocess_data")
     data = preprocess_data(
-        data_folder=main_folder.joinpath(*DATA_ROOT)
+        data_folder=DOWNLOAD_RAW_DATA.joinpath(*DATA_ROOT)
     )
     print(data)
     assert isinstance(data, dict)

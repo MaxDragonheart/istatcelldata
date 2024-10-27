@@ -68,7 +68,7 @@ def run(
     # Fase di finalizzazione dei dati del censimento
     logging.info("Avvio della finalizzazione dei dati del censimento.")
     finalize_census_data(
-        census_data=data_dir,
+        census_data_path=data_dir,
         years=years,
         delete_preprocessed_data=delete_preprocessed_data
     )
