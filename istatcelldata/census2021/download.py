@@ -6,7 +6,7 @@ from istatcelldata.census2011.download import download_data as dwn, download_geo
 from istatcelldata.census2021.utils import read_xlsx
 from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging
-from istatcelldata.utils import get_census_dictionary, remove_files
+from istatcelldata.utils import remove_files
 
 # Configure logging at the start of the script
 configure_logging()
@@ -18,9 +18,6 @@ def download_data(
         output_data_folder: Path,
         census_year: int
 ) -> Path:
-    link_dict = get_census_dictionary(census_year=census_year)
-    census_code = link_dict[f"census{census_year}"]["census_code"]
-
     data_folder = dwn(
         output_data_folder=output_data_folder,
         census_year=census_year

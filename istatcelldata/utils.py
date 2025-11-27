@@ -246,7 +246,7 @@ def get_census_dictionary(census_year: int, region_list: List[int] = []) -> dict
             census_code = f"sez{census_year}"
 
         else:
-            data_url = "https://esploradati.censimentopopolazione.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
+            data_url = "https://esploradati.istat.it/databrowser/DWL/PERMPOP/SUBCOM/Dati_regionali_2021.zip"
             census_code = "sez21_id"
 
         if census_year == 2011:

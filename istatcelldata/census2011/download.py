@@ -163,7 +163,6 @@ def download_administrative_boundaries(
         raise e
 
 
-
 def download_all_census_data_2011(
         output_data_folder: Path,
         region_list: List = []
