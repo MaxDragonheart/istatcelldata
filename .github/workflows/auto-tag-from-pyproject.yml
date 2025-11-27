@@ -1,0 +1,133 @@
+name: Auto tag & release from pyproject version
+
+on:
+  push:
+    branches:
+      - main          # usa il nome del tuo branch principale (main/master)
+    paths:
+      - "pyproject.toml"  # esegui il workflow solo se cambia questo file
+
+permissions:
+  contents: write   # serve per creare/pushare tag e creare la release
+
+jobs:
+  tag-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # importante per avere la history e i tag
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Read current version from pyproject.toml
+        id: current_version
+        run: |
+          python - << 'PY'
+          import tomllib
+          from pathlib import Path
+
+          data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          version = data["tool"]["poetry"]["version"]
+          print(f"version={version}")
+          with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as fh:
+              fh.write(f"version={version}\n")
+          PY
+
+      - name: Read previous version from previous commit (if any)
+        id: previous_version
+        run: |
+          set -e
+
+          # Proviamo a leggere il pyproject.toml del commit precedente
+          if git rev-parse HEAD^ >/dev/null 2>&1 && git show HEAD^:pyproject.toml >/tmp/pyproject_prev.toml 2>/dev/null; then
+            python - << 'PY'
+            import tomllib
+            from pathlib import Path
+
+            data = tomllib.loads(Path("/tmp/pyproject_prev.toml").read_text(encoding="utf-8"))
+            version = data["tool"]["poetry"]["version"]
+            print(f"previous_version={version}")
+            with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as fh:
+                fh.write(f"version={version}\n")
+            PY
+          else
+            echo "previous_version=" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+      - name: Decide whether to create tag
+        id: decide
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          PREVIOUS="${{ steps.previous_version.outputs.version }}"
+
+          echo "Current version : $CURRENT"
+          echo "Previous version: $PREVIOUS"
+
+          if [ -n "$PREVIOUS" ] && [ "$CURRENT" = "$PREVIOUS" ]; then
+            echo "Versione invariata, nessun tag da creare."
+            echo "create_tag=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Versione cambiata, creerò un nuovo tag."
+          echo "create_tag=true" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Create and push tag
+        if: steps.decide.outputs.create_tag == 'true'
+        run: |
+          VERSION="${{ steps.current_version.outputs.version }}"
+          TAG="${VERSION}"
+
+          # Se il tag esiste già, non fare nulla
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG esiste già, non lo ricreo."
+            exit 0
+          fi
+
+          echo "Creo il tag $TAG..."
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+        shell: bash
+
+      - name: Create GitHub Release with auto-generated notes
+        if: steps.decide.outputs.create_tag == 'true'
+        run: |
+          VERSION="${{ steps.current_version.outputs.version }}"
+          TAG="${VERSION}"
+
+          echo "Creo la release per $TAG con note automatiche..."
+
+          # Installo jq per costruire il payload JSON
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
+          API_URL="https://api.github.com/repos/${{ github.repository }}/releases"
+
+          BODY=$(jq -n \
+            --arg tag "$TAG" \
+            --arg name "$TAG" \
+            '{
+              tag_name: $tag,
+              name: $name,
+              generate_release_notes: true,
+              draft: false,
+              prerelease: false
+            }')
+
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "$API_URL" \
+            -d "$BODY"
+        shell: bash
