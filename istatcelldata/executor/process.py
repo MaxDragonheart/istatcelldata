@@ -20,18 +20,46 @@ def finalize_census_data(
         output_data_folder: Path = None,
         delete_preprocessed_data: bool = False,
 ):
-    """Finalizza i dati del censimento unendo i dati geografici con i dati tabellari e salva il risultato.
+    """Finalizza i dati del censimento unendo geodati e dati tabellari in un GeoPackage unico.
+
+    Per ciascun anno indicato, la funzione:
+    1. Legge i dati geografici (sezioni di censimento) dal layer `census<anno>`.
+    2. Legge i dati tabellari dal layer `data<anno>`.
+    3. Rimuove eventuali colonne non necessarie dai dati tabellari.
+    4. Esegue il join tra dati geografici e tabellari sulla chiave `SEZ<anno>`.
+    5. Ordina i dati e costruisce un GeoDataFrame finale.
+    6. Salva il risultato in un GeoPackage denominato `census_data.gpkg`,
+       con un layer per anno (`census<anno>`).
 
     Args:
-        census_data_path (Path): Cartella contenente i dati pre-processati del censimento.
-        years (List[int]): Lista degli anni del censimento da processare.
-        output_data_folder (Path, opzionale): Cartella di destinazione per i dati finali. Default: None.
-        delete_preprocessed_data (bool, opzionale): Se True, elimina i dati pre-processati dopo il completamento.
-            Default: False.
+        census_data_path (Path):
+            Cartella contenente il file GeoPackage pre-processato (`census.gpkg`),
+            generato dalle fasi precedenti del workflow.
+        years (list):
+            Lista degli anni di censimento da finalizzare (es. [1991, 2001, 2011, 2021]).
+        output_data_folder (Path, optional):
+            Cartella in cui salvare il GeoPackage finale `census_data.gpkg`.
+            Se None, il file viene salvato in `census_data_path`.
+        delete_preprocessed_data (bool, optional):
+            Se True, elimina il file `census.gpkg` dopo il completamento della
+            finalizzazione.
 
     Raises:
-        FileNotFoundError: Se il file GeoPackage principale non esiste.
-        KeyError: Se non viene trovata la colonna di unione corretta tra i dati.
+        FileNotFoundError:
+            Se il file GeoPackage principale `census.gpkg` non esiste nel percorso
+            indicato da `census_data_path`.
+        KeyError:
+            Se la colonna di join `SEZ<anno>` non è presente nei dati geografici o
+            tabellari, oppure se nel dizionario `census_data` non sono definite
+            le colonne da rimuovere per l'anno in esame.
+
+    Notes:
+        - La chiave di join tra dati geografici e tabellari è dinamica e segue
+          la convenzione `SEZ<anno>`.
+        - Le colonne da rimuovere dai dati tabellari sono definite in
+          `census_data[year]['data_columns_to_remove']`.
+        - Il GeoPackage finale può contenere più layer, uno per ogni anno
+          processato.
     """
     time_start = datetime.datetime.now()
     logging.info(f"Inizio preprocessing del censimento alle {time_start} per gli anni: {years}")

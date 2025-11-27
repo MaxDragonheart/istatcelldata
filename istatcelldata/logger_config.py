@@ -9,15 +9,30 @@ def get_log_filename(
         log_dir: Path = None,
         log_name: str = None,
 ) -> Path:
-    """
-    Generate a log file name with process ID and timestamp.
+    """Genera un percorso completo per un file di log includendo timestamp e nome opzionale.
+
+    La funzione crea automaticamente una cartella `logs` all’interno della directory
+    specificata, genera un nome di file univoco basato sul timestamp (fino ai millisecondi)
+    e restituisce il percorso completo del file. Se non viene fornita alcuna directory,
+    viene utilizzata la cartella temporanea del sistema.
 
     Args:
-        log_dir: Directory where the log file should be saved.
-        log_name: Name of log file, if None the name is generated automatically.
+        log_dir (Path, optional):
+            Directory in cui salvare il file di log.
+            Se None, viene utilizzata la directory temporanea (`tempfile.gettempdir()`).
+        log_name (str, optional):
+            Nome base del file di log.
+            Se None, il nome generato sarà del tipo `log_<timestamp>.log`.
+            Se fornito, il file sarà del tipo `<log_name>_<timestamp>.log`.
 
     Returns:
-        Path: The full path of the log file.
+        Path:
+            Percorso completo del file di log generato.
+
+    Notes:
+        - Il timestamp è nel formato `YYYYMMDDTHHMMSS.mmm`.
+        - La cartella `logs` viene creata automaticamente se non esiste.
+        - Il nome del file è sempre univoco grazie al timestamp a millisecondi.
     """
     # Use the system's temp directory if log_dir is not provided
     if log_dir is None:
@@ -41,12 +56,29 @@ def configure_logging(
         log_dir: Path = None,
         log_name: str = None,
 ):
-    """
-    Configure the logging system to output to both console and file.
+    """Configura il sistema di logging per scrivere sia su console che su file.
+
+    La funzione inizializza il logger principale dell'applicazione, imposta il livello
+    di logging a `INFO` e registra due handler:
+
+    - **Console handler** → stampa i messaggi su `stdout`.
+    - **File handler** → salva i log in un file il cui nome è generato dinamicamente
+      tramite `get_log_filename()`, utilizzando timestamp e nome opzionale.
 
     Args:
-        log_dir: Directory where the log file should be saved.
-        log_name: Name of log file, if None the name is generated automatically.
+        log_dir (Path, optional):
+            Directory in cui salvare il file di log. Se None, viene utilizzata la
+            directory temporanea del sistema.
+        log_name (str, optional):
+            Nome base del file di log. Se None, viene generato automaticamente un nome
+            del tipo `log_<timestamp>.log`.
+
+    Notes:
+        - La funzione utilizza il logger globale (`logging.getLogger()`).
+        - Ogni chiamata aggiunge nuovi handler: per evitare duplicazioni in caso
+          di chiamate multiple, può essere utile svuotare gli handler prima di
+          configurarli (se lo desideri posso aggiungerlo).
+        - Il formato dei log include: livello, PID, timestamp, nome del logger e messaggio.
     """
     # Configure logger
     global logger

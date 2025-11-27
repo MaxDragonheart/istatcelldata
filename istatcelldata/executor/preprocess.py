@@ -22,19 +22,54 @@ def preprocess_census(
         delete_download_folder: bool = False,
         municipalities_code: list[int] = []
 ):
-    """Preprocessa i dati del censimento per più anni, includendo l'opzione di processare anche
-    i confini amministrativi.
+    """Preprocessa i dati censuari per uno o più anni, integrando geodati,
+    confini amministrativi e dati tabellari.
+
+    La funzione coordina l’intero workflow di preprocessing dei censimenti,
+    eseguendo per ciascun anno richiesto:
+
+    1. Preprocessing dei dati geografici (shapefile/simili).
+    2. Preprocessing dei dati tabellari (CSV).
+    3. Aggiunta delle informazioni amministrative (opzionale).
+    4. Salvataggio dei dati risultanti all’interno di un GeoPackage.
+    5. Eventuale eliminazione della cartella dei dati pre-processati.
+
+    Gli input necessari vengono letti dal dizionario di configurazione
+    `census_data`, che definisce paths, colonne, mapping e impostazioni specifiche
+    per ogni anno censuario.
 
     Args:
-        processed_data_folder (Path): Cartella contenente i dati pre-processati.
-        years (List[int]): Lista degli anni del censimento da processare.
-        output_data_folder (Path, opzionale): Cartella di destinazione per i dati elaborati. Default: None.
-        delete_download_folder (bool, opzionale): Se True, elimina la cartella di dati pre-processati dopo
-        il completamento del download. Default: False.
-        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
+        processed_data_folder (Path):
+            Cartella contenente i dati pre-scaricati o pre-processati
+            (geodati, dati tabellari, confini amministrativi).
+        years (List[int]):
+            Lista degli anni di censimento da processare (es. [1991, 2001, 2011, 2021]).
+        output_data_folder (Path, optional):
+            Cartella in cui salvare i dati elaborati (GeoPackage e layer associati).
+            Se None, viene utilizzata la cartella padre di `processed_data_folder`.
+        delete_download_folder (bool, optional):
+            Se True, elimina la cartella `processed_data_folder` al termine del processo.
+        municipalities_code (list[int], optional):
+            Lista di codici ISTAT dei comuni da filtrare nei dati (chiave `PRO_COM`).
+            Se vuota, vengono usati tutti i comuni disponibili.
 
     Returns:
-        Path: Percorso della cartella con i dati elaborati.
+        Path:
+            Percorso della cartella finale che contiene i dati elaborati.
+
+    Raises:
+        KeyError:
+            Se il dizionario `census_data` non contiene la configurazione per un anno richiesto.
+        Exception:
+            Per eventuali errori durante la lettura, il preprocessing o il salvataggio.
+
+    Notes:
+        - Il file GeoPackage è aperto e scritto tramite `sqlite3.connect()`.
+        - I layer inseriti nel GeoPackage seguono convenzioni come:
+            - `sezioni<anno>` per il layer geografico
+            - `data<anno>` per il dataset tabellare
+            - `tracciato<anno>` per il tracciato dei campi
+        - Il parametro `municipalities_code` viene applicato nella fase dei geodati.
     """
     time_start = datetime.datetime.now()
     logging.info(f"Inizio preprocessing del censimento alle {time_start} per gli anni: {years}")

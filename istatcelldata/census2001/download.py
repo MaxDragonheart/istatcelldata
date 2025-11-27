@@ -17,16 +17,39 @@ def download_all_census_data_2001(
         output_data_folder: Path,
         region_list: List = []
 ) -> Path:
-    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
-    effettuare il download per singola Regione ma anche per specifiche Regioni.
-    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
+    """Scarica l'intero set di dati censuari e geografici relativi al Censimento 2001.
+
+    Questa funzione coordina tutte le operazioni necessarie per ottenere i dati
+    censuari e le informazioni geografiche associate al Censimento 2001.
+    In particolare, si occupa di:
+
+    - scaricare i dati censuari tabellari;
+    - scaricare i geodati (per tutte le Regioni o per un sottoinsieme specificato);
+    - scaricare i confini amministrativi ufficiali.
+
+    Se `region_list` è vuota, vengono scaricati i geodati per tutte le Regioni
+    disponibili.
 
     Args:
-        output_data_folder: Path
-        region_list: List
+        output_data_folder (Path):
+            Percorso principale in cui salvare tutti i dati scaricati e processati.
+        region_list (List, optional):
+            Lista dei codici o nomi delle Regioni di cui scaricare i geodati.
+            Se lasciata vuota, la funzione considera tutte le Regioni.
 
     Returns:
-        Path di destinazione.
+        Path:
+            Percorso della cartella radice `output_data_folder` contenente la
+            struttura dei dati del Censimento 2001.
+
+    Notes:
+        - La funzione è specifica per il Censimento 2001 (il parametro `census_year`
+          è fissato internamente a 2001).
+        - Utilizza le funzioni di supporto:
+          `download_data()`, `download_geodata()` e
+          `download_administrative_boundaries()`.
+        - Crea automaticamente una sottocartella dedicata al preprocessing,
+          definita dalla costante `PREPROCESSING_FOLDER`.
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)

@@ -25,21 +25,50 @@ def read_administrative_boundaries(
         output_folder: Path = None,
         layer_name: str = None,
 ) -> Union[pd.DataFrame, Path]:
-    """Legge i confini amministrativi da un file shapefile e restituisce un DataFrame filtrato.
+    """Legge i confini amministrativi e restituisce un DataFrame o un GeoPackage.
+
+    La funzione legge un file di confini amministrativi (tipicamente uno shapefile),
+    seleziona un sottoinsieme di colonne e imposta una colonna come indice. In base
+    ai parametri forniti, può:
+
+    - restituire un DataFrame privo della geometria, ordinato e indicizzato;
+    - salvare i dati come layer di un GeoPackage, mantenendo la geometria.
+
+    L’encoding viene ricavato dal file .dbf associato allo shapefile per evitare
+    problemi di caratteri accentati o simboli speciali.
 
     Args:
-        file_path (Path): Percorso del file shapefile contenente i confini amministrativi.
-        target_columns (list): Lista delle colonne da selezionare dal file.
-        index_column (str): Nome della colonna da utilizzare come indice per il DataFrame.
-        column_remapping (dict, opzionale): Mappa di rinominazione per le colonne. Default: None.
-        output_folder (Path, opzionale): Percorso della cartella di output per salvare il GeoPackage.
-        layer_name (str, opzionale): Nome del layer per il GeoPackage. Obbligatorio se `with_geometry` è True.
+        file_path (Path):
+            Percorso del file vettoriale (es. shapefile) contenente i confini
+            amministrativi.
+        target_columns (list):
+            Lista delle colonne da selezionare dal dataset sorgente. La colonna
+            di geometria viene aggiunta automaticamente.
+        index_column (str):
+            Nome della colonna da usare come indice del DataFrame risultante
+            (es. codice ISTAT).
+        column_remapping (dict, optional):
+            Dizionario per rinominare le colonne (es. `{"DEN_REG": "REGIONE"}`).
+            Se None, i nomi originali vengono mantenuti.
+        output_folder (Path, optional):
+            Cartella di output in cui salvare il GeoPackage. Se None, la funzione
+            restituisce un DataFrame (senza geometria) invece di scrivere su disco.
+        layer_name (str, optional):
+            Nome del layer da utilizzare all’interno del GeoPackage. Deve essere
+            valorizzato se `output_folder` è fornito, per distinguere correttamente
+            i layer.
 
     Returns:
-        pd.DataFrame o Path: DataFrame filtrato o percorso del file GeoPackage se `with_geometry` è True.
+        Union[pd.DataFrame, Path]:
+            - Un DataFrame indicizzato e ordinato, senza colonna di geometria,
+              se `output_folder` è None.
+            - Il percorso al file GeoPackage creato, se `output_folder` è fornito.
 
-    Raises:
-        ValueError: Se `with_geometry` è True, ma `output_folder` o `layer_name` non sono forniti.
+    Notes:
+        - La colonna di geometria viene aggiunta automaticamente a `target_columns`
+          tramite la costante `GEOMETRY_COLUMN_NAME`.
+        - Il GeoPackage viene salvato con nome basato sulla costante
+          `YEAR_GEODATA_NAME` e contiene il layer specificato da `layer_name`.
     """
     logging.info(f"Lettura dei confini amministrativi da {file_path}")
 
@@ -92,21 +121,59 @@ def read_census(
         output_folder: Path = None,
         layer_name: str = None
 ) -> Union[gpd.GeoDataFrame, Path]:
-    """Legge i dati del censimento da una cartella contenente file shapefile e li restituisce come GeoDataFrame o
-    salva in un GeoPackage.
+    """Legge i dati di censimento da shapefile e restituisce un GeoDataFrame o un GeoPackage.
+
+    La funzione cerca ricorsivamente tutti gli shapefile presenti in una cartella,
+    ne legge i dati, seleziona un sottoinsieme di colonne, corregge le geometrie
+    non valide, aggiunge la descrizione del tipo di località (derivata da
+    `tipo_loc_mapping`) e costruisce un GeoDataFrame unico con tutte le sezioni
+    censuarie.
+
+    In base ai parametri, può:
+
+    - restituire direttamente il GeoDataFrame risultante;
+    - salvare i dati come layer in un GeoPackage (`YEAR_GEODATA_NAME.gpkg`) e
+      restituire il percorso al file creato.
 
     Args:
-        shp_folder (Path): Percorso della cartella contenente i file shapefile del censimento.
-        target_columns (list): Lista delle colonne da selezionare dai file shapefile.
-        tipo_loc_mapping (dict): Mappatura dei codici di località per il campo 'tipo_loc'.
-        column_remapping (dict, opzionale): Mappatura per rinominare le colonne del DataFrame. Default: None.
-        output_folder (Path, opzionale): Percorso della cartella di output per salvare il GeoPackage. Default: None.
+        shp_folder (Path):
+            Percorso della cartella contenente i file shapefile del censimento
+            (lettura ricorsiva tramite `rglob("*.shp")`).
+        target_columns (list):
+            Lista delle colonne da selezionare da ciascuno shapefile
+            (deve includere, o essere compatibile con, la colonna di geometria).
+        tipo_loc_mapping (dict):
+            Mappatura dei codici di località per il campo `TIPO_LOC`
+            (es. `{1: "Centro abitato", 2: "Nucleo", ...}`), usata per creare
+            la colonna descrittiva `DEN_LOC`.
+        column_remapping (dict, optional):
+            Dizionario per rinominare le colonne selezionate
+            (es. `{"PRO_COM": "PRO_COMUNE"}`).
+            Se None, i nomi originali vengono mantenuti.
+        output_folder (Path, optional):
+            Cartella in cui salvare il GeoPackage risultante. Se None, la
+            funzione non scrive su disco e restituisce direttamente
+            il GeoDataFrame.
+        layer_name (str, optional):
+            Nome del layer da utilizzare all’interno del GeoPackage.
+            Deve essere valorizzato se `output_folder` è fornito.
 
     Returns:
-        Union[gpd.GeoDataFrame, Path]: Un GeoDataFrame con i dati del censimento o il percorso del GeoPackage salvato.
+        Union[gpd.GeoDataFrame, Path]:
+            - Un `GeoDataFrame` con i dati di censimento e le geometrie corrette,
+              se `output_folder` è None.
+            - Il percorso al file GeoPackage creato, se `output_folder` è fornito.
 
     Raises:
-        ValueError: Se non ci sono shapefile nella cartella specificata.
+        ValueError:
+            Se nella cartella indicata non viene trovato alcun file shapefile.
+
+    Notes:
+        - Le geometrie vengono validate con `make_valid()` per ridurre i problemi
+          dovuti a poligoni non validi.
+        - Viene calcolata una colonna `area_mq` contenente l’area in metri quadrati.
+        - L’indice del GeoDataFrame viene impostato sulla prima colonna di `df_columns`
+          (tipicamente il codice della sezione censuaria).
     """
     logging.info(f"Lettura dei file shapefile dalla cartella {shp_folder}")
 
@@ -198,31 +265,73 @@ def preprocess_geodata(
         municipalities_column_remapping: dict = None,
         municipalities_code: list[int] = [],
 ) -> Path:
-    """Preprocessa e salva i dati geografici del censimento e, opzionalmente, i confini amministrativi.
+    """Preprocessa i dati geografici del censimento e i confini amministrativi e li salva in un GeoPackage.
+
+    La funzione esegue l’intero workflow di preparazione dei dati geografici
+    per un anno di censimento, combinando:
+
+    1. Lettura e normalizzazione dei confini amministrativi (regioni, province, comuni).
+    2. Eventuale correzione di campi mancanti (es. `COD_PROV` per il 2021).
+    3. Lettura e preparazione dei dati di censimento (sezioni) da shapefile.
+    4. Join delle sezioni con i comuni, le province e le regioni.
+    5. Eventuale filtro per un sottoinsieme di comuni (`municipalities_code`).
+    6. Salvataggio del risultato finale in un GeoPackage.
 
     Args:
-        census_shp_folder (Path): Cartella contenente i file shapefile del censimento.
-        census_target_columns (list): Colonne da selezionare dai dati del censimento.
-        census_tipo_loc_mapping (dict): Mappatura del tipo di località per il censimento.
-        output_folder (Path): Cartella di output per salvare i risultati.
-        census_layer_name (str): Nome del layer per il GeoPackage del censimento.
-        census_column_remapping (dict, opzionale): Mappatura per rinominare le colonne del censimento. Default: None.
-        regions_file_path (Path, opzionale): Percorso del file dei confini regionali. Default: None.
-        regions_target_columns (list, opzionale): Colonne da selezionare dai dati regionali. Default: None.
-        regions_index_column (str, opzionale): Colonna da usare come indice per i dati regionali. Default: None.
-        regions_column_remapping (dict, opzionale): Mappatura per rinominare le colonne regionali. Default: None.
-        provinces_file_path (Path, opzionale): Percorso del file dei confini provinciali. Default: None.
-        provinces_target_columns (list, opzionale): Colonne da selezionare dai dati provinciali. Default: None.
-        provinces_index_column (str, opzionale): Colonna da usare come indice per i dati provinciali. Default: None.
-        provinces_column_remapping (dict, opzionale): Mappatura per rinominare le colonne provinciali. Default: None.
-        municipalities_file_path (Path, opzionale): Percorso del file dei confini comunali. Default: None.
-        municipalities_target_columns (list, opzionale): Colonne da selezionare dai dati comunali. Default: None.
-        municipalities_index_column (str, opzionale): Colonna da usare come indice per i dati comunali. Default: None.
-        municipalities_column_remapping (dict, opzionale): Mappatura per rinominare le colonne comunali. Default: None.
-        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
+        census_shp_folder (Path):
+            Cartella contenente i file shapefile del censimento (sezioni).
+        census_target_columns (list):
+            Colonne da selezionare dai dati di censimento (sezioni).
+        census_tipo_loc_mapping (dict):
+            Mappatura per il campo `TIPO_LOC` per derivare la descrizione
+            del tipo di località.
+        output_folder (Path):
+            Cartella in cui salvare il GeoPackage risultante.
+        census_layer_name (str):
+            Nome del layer di censimento (es. `census2011`), usato anche per
+            derivare l’anno dal suffisso.
+        census_column_remapping (dict, optional):
+            Mappatura per rinominare le colonne dei dati di censimento.
+        regions_file_path (Path, optional):
+            Percorso del file vettoriale dei confini regionali.
+        regions_target_columns (list, optional):
+            Colonne da selezionare dai dati regionali.
+        regions_index_column (str, optional):
+            Colonna da utilizzare come indice per i dati regionali.
+        regions_column_remapping (dict, optional):
+            Mappatura per rinominare le colonne dei dati regionali.
+        provinces_file_path (Path, optional):
+            Percorso del file vettoriale dei confini provinciali.
+        provinces_target_columns (list, optional):
+            Colonne da selezionare dai dati provinciali.
+        provinces_index_column (str, optional):
+            Colonna da utilizzare come indice per i dati provinciali.
+        provinces_column_remapping (dict, optional):
+            Mappatura per rinominare le colonne dei dati provinciali.
+        municipalities_file_path (Path, optional):
+            Percorso del file vettoriale dei confini comunali.
+        municipalities_target_columns (list, optional):
+            Colonne da selezionare dai dati comunali.
+        municipalities_index_column (str, optional):
+            Colonna da utilizzare come indice per i dati comunali.
+        municipalities_column_remapping (dict, optional):
+            Mappatura per rinominare le colonne dei dati comunali.
+        municipalities_code (list[int], optional):
+            Lista di codici ISTAT dei comuni (campo `PRO_COM`) da estrarre.
+            Se vuota, vengono mantenuti tutti i comuni.
 
     Returns:
-        Path: Il percorso della cartella di output con i dati elaborati.
+        Path:
+            Percorso del GeoPackage generato contenente il layer di censimento
+            arricchito con informazioni amministrative.
+
+    Notes:
+        - L’anno del censimento viene ricavato dal nome del layer
+          `census_layer_name[6:]` (es. `census2011` → `2011`).
+        - Per il 2021 viene ricostruita manualmente la colonna `COD_PROV`
+          a partire da `PRO_COM_T` (vedi issue #47 del repository).
+        - Il GeoPackage viene salvato come `{YEAR_GEODATA_NAME}.gpkg` e il layer
+          come `{YEAR_GEODATA_NAME}{census_year}`.
     """
     census_year = census_layer_name[6:]
     logging.info(f"Anno del censimento rilevato: {census_year}")

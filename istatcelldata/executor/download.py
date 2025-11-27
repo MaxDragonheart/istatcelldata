@@ -20,15 +20,33 @@ def download_census(
         output_data_folder: Path,
         region_list: List = []
 ):
-    """Scarica i dati censuari per gli anni specificati e salva i dati nella cartella di output.
+    """Scarica i dati censuari per uno o più anni richiesti, inclusi geodati e confini amministrativi.
+
+    La funzione permette di avviare in modo centralizzato il download dei dati
+    censuari per gli anni 1991, 2001, 2011 e 2021. Per ciascun anno vengono
+    automaticamente eseguite le procedure di:
+
+    - download dei dati censuari tabellari,
+    - download dei geodati (per tutte le Regioni o per quelle indicate),
+    - download dei confini amministrativi.
+
+    Se `years` è vuoto, vengono scaricati automaticamente i dati per tutti gli
+    anni disponibili.
 
     Args:
-        years (List[int]): Lista degli anni censuari da scaricare. Se vuota, scarica i dati per tutti gli anni disponibili.
-        output_data_folder (Path): Percorso della cartella di destinazione per i dati scaricati.
-        region_list (List, opzionale): Lista delle regioni per cui scaricare i dati. Se vuota, scarica i dati per tutte le regioni.
+        years (List[int]):
+            Lista degli anni censuari da scaricare.
+            Se la lista è vuota, saranno scaricati i dati dei censimenti:
+            1991, 2001, 2011 e 2021.
+        output_data_folder (Path):
+            Percorso della cartella in cui salvare tutti i dati scaricati.
+        region_list (List, optional):
+            Lista dei codici o nomi delle Regioni per cui scaricare i geodati.
+            Se vuota, vengono scaricati i geodati di tutte le Regioni disponibili.
 
     Raises:
-        ValueError: Se un anno specificato non è supportato o non esiste nella mappa delle funzioni.
+        ValueError:
+            Se uno degli anni specificati non è supportato o non esiste nella mappa.
     """
     time_start = datetime.datetime.now()
     logging.info(f"Inizio dell'analisi alle {time_start}")

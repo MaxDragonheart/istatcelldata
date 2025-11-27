@@ -18,6 +18,38 @@ def download_data(
         output_data_folder: Path,
         census_year: int
 ) -> Path:
+    """Scarica, organizza ed elabora i dati censuari per un determinato anno.
+
+    La funzione gestisce l'intero flusso di acquisizione dei dati censuari
+    dall’origine fino alla produzione dei file CSV finali. Vengono effettuate
+    le seguenti operazioni:
+
+    1. Recupero del dizionario dei link relativi all'anno censuario.
+    2. Download dei dati grezzi tramite la funzione `dwn()`.
+    3. Creazione della struttura di cartelle di output.
+    4. Individuazione e lettura dei file `.xls`.
+    5. Conversione dei file Excel in CSV.
+    6. Estrazione del tracciamento (metadati/codifiche) dal primo file disponibile.
+    7. Rimozione dei file Excel originali.
+
+    Args:
+        output_data_folder (Path):
+            Percorso della cartella radice in cui salvare i dati scaricati.
+        census_year (int):
+            Anno di riferimento dei dati censuari da trattare.
+
+    Returns:
+        Path: Percorso della cartella contenente i dati censuari scaricati
+        ed elaborati.
+
+    Raises:
+        Exception: Se non viene trovato alcun file `.xls` nella cartella dei dati.
+
+    Notes:
+        - La conversione da XLS a CSV viene eseguita tramite la funzione `read_xls()`.
+        - Il tracciamento del dataset viene effettuato solo sul primo file XLS trovato.
+        - I file XLS vengono rimossi a fine processo per ridurre lo spazio occupato.
+    """
     link_dict = get_census_dictionary(census_year=census_year)
     census_code = link_dict[f"census{census_year}"]["census_code"]
 
@@ -64,16 +96,34 @@ def download_all_census_data_1991(
         output_data_folder: Path,
         region_list: List = []
 ) -> Path:
-    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
-    effettuare il download per singola Regione ma anche per specifiche Regioni.
-    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
+    """Scarica l'intero set di dati censuari e geografici relativi al Censimento 1991.
+
+    Questa funzione coordina tutte le operazioni necessarie per ottenere i dati
+    censuari e le informazioni geografiche associate al Censimento 1991.
+    Consente di scaricare:
+
+    - dati censuari tabellari,
+    - geodati specifici per una o più Regioni,
+    - confini amministrativi ufficiali.
+
+    Se non viene fornito alcun valore per `region_list`, vengono scaricati i
+    geodati relativi a tutte le Regioni.
 
     Args:
-        output_data_folder: Path
-        region_list: List
+        output_data_folder (Path):
+            Percorso principale in cui salvare tutti i dati scaricati e processati.
+        region_list (List, optional):
+            Lista contenente i codici o nomi delle Regioni di cui scaricare i geodati.
+            Se vuota, vengono considerate tutte le Regioni disponibili.
 
     Returns:
-        Path di destinazione.
+        Path: Percorso della cartella radice contenente i dati scaricati.
+
+    Notes:
+        - La funzione opera esclusivamente sul Censimento 1991.
+        - Utilizza funzioni di supporto come `download_data()`,
+          `download_geodata()` e `download_administrative_boundaries()`.
+        - Crea automaticamente la struttura di cartelle necessaria.
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
