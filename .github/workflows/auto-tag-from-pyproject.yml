@@ -3,12 +3,12 @@ name: Auto tag & release from pyproject version
 on:
   push:
     branches:
-      - main          # usa il nome del tuo branch principale (main/master)
+      - main          # cambia in master se necessario
     paths:
-      - "pyproject.toml"  # esegui il workflow solo se cambia questo file
+      - "pyproject.toml"
 
 permissions:
-  contents: write   # serve per creare/pushare tag e creare la release
+  contents: write
 
 jobs:
   tag-and-release:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # importante per avere la history e i tag
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,38 +28,21 @@ jobs:
       - name: Read current version from pyproject.toml
         id: current_version
         run: |
-          python - << 'PY'
-          import tomllib
-          from pathlib import Path
-
-          data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
-          version = data["tool"]["poetry"]["version"]
-          print(f"version={version}")
-          with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as fh:
-              fh.write(f"version={version}\n")
-          PY
+          VERSION=$(python -c "import tomllib, pathlib; data = tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8')); print(data['tool']['poetry']['version'])")
+          echo "Current version: $VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Read previous version from previous commit (if any)
         id: previous_version
         run: |
-          set -e
-
-          # Proviamo a leggere il pyproject.toml del commit precedente
-          if git rev-parse HEAD^ >/dev/null 2>&1 && git show HEAD^:pyproject.toml >/tmp/pyproject_prev.toml 2>/dev/null; then
-            python - << 'PY'
-            import tomllib
-            from pathlib import Path
-
-            data = tomllib.loads(Path("/tmp/pyproject_prev.toml").read_text(encoding="utf-8"))
-            version = data["tool"]["poetry"]["version"]
-            print(f"previous_version={version}")
-            with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as fh:
-                fh.write(f"version={version}\n")
-            PY
+          if git rev-parse HEAD^ >/dev/null 2>&1 && git show HEAD^:pyproject.toml > /tmp/pyproject_prev.toml 2>/dev/null; then
+            PREV_VERSION=$(python -c "import tomllib, pathlib; data = tomllib.loads(pathlib.Path('/tmp/pyproject_prev.toml').read_text(encoding='utf-8')); print(data['tool']['poetry']['version'])")
+            echo "Previous version: $PREV_VERSION"
+            echo "version=$PREV_VERSION" >> "$GITHUB_OUTPUT"
           else
-            echo "previous_version=" >> "$GITHUB_OUTPUT"
+            echo "No previous pyproject.toml found"
+            echo "version=" >> "$GITHUB_OUTPUT"
           fi
-        shell: bash
 
       - name: Decide whether to create tag
         id: decide
@@ -78,7 +61,6 @@ jobs:
 
           echo "Versione cambiata, creerò un nuovo tag."
           echo "create_tag=true" >> "$GITHUB_OUTPUT"
-        shell: bash
 
       - name: Create and push tag
         if: steps.decide.outputs.create_tag == 'true'
@@ -86,7 +68,6 @@ jobs:
           VERSION="${{ steps.current_version.outputs.version }}"
           TAG="${VERSION}"
 
-          # Se il tag esiste già, non fare nulla
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "Tag $TAG esiste già, non lo ricreo."
             exit 0
@@ -98,7 +79,6 @@ jobs:
 
           git tag -a "$TAG" -m "Release $TAG"
           git push origin "$TAG"
-        shell: bash
 
       - name: Create GitHub Release with auto-generated notes
         if: steps.decide.outputs.create_tag == 'true'
@@ -108,7 +88,6 @@ jobs:
 
           echo "Creo la release per $TAG con note automatiche..."
 
-          # Installo jq per costruire il payload JSON
           sudo apt-get update -y
           sudo apt-get install -y jq
 
@@ -130,4 +109,3 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             "$API_URL" \
             -d "$BODY"
-        shell: bash
