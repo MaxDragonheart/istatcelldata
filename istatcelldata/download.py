@@ -21,23 +21,34 @@ def download_base(
         data_folder: Path,
         destination_folder: Path,
 ) -> Path:
-    """Funzione di download base per scaricare dati da un link.
+    """Scarica un file da URL, mostra una barra di avanzamento ed estrae lo ZIP risultante.
 
-    La funzione si occupa di scaricare i dati dal link fornito e salvarli nel percorso
-    specificato. Se il download ha successo, il file ZIP scaricato viene estratto e
-    il file ZIP originale viene eliminato.
+    La funzione gestisce l’intero flusso di download di un archivio (tipicamente ZIP)
+    a partire da un URL HTTP/HTTPS, salvandolo in un percorso locale, mostrando una
+    barra di avanzamento tramite `tqdm`, estraendo il contenuto nella cartella
+    di destinazione e infine rimuovendo il file compresso.
 
     Args:
-        data_link (str): L'URL da cui scaricare i dati.
-        data_file_path_destination (Path): Il percorso dove salvare il file scaricato.
-        data_folder (Path): La cartella dove estrarre i dati.
-        destination_folder (Path): La cartella di destinazione.
+        data_link (str):
+            URL da cui scaricare il file (es. archivio ZIP dei dati censuari).
+        data_file_path_destination (Path):
+            Percorso completo del file da creare in locale (file compresso scaricato).
+        data_folder (Path):
+            Cartella in cui verrà estratto il contenuto del file compresso.
+        destination_folder (Path):
+            Cartella logica di destinazione associata al dataset scaricato; viene
+            restituita al termine del processo per coerenza con il workflow chiamante.
 
     Returns:
-        Path: Il percorso della cartella di destinazione.
+        Path:
+            Percorso di `destination_folder`, utilizzabile come riferimento
+            alla radice dei dati scaricati ed estratti.
 
     Raises:
-        Exception: Se il download fallisce, restituisce il codice di stato HTTP.
+        Exception:
+            Se il server restituisce un codice di stato HTTP diverso da 200
+            oppure se si verifica un qualsiasi errore durante il download,
+            il salvataggio o l’estrazione del file.
     """
     start_time = time.time()
     try:

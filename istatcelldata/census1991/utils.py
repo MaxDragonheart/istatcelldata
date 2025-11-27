@@ -12,25 +12,40 @@ def read_xls(
         census_code: str,
         output_path: Path = None,
 ) -> Union[pd.DataFrame, Path]:
-    """Legge un file Excel (.xls) e restituisce un DataFrame pandas o salva i dati in CSV.
+    """Legge un file Excel (.xls) e restituisce un DataFrame oppure salva i dati in CSV.
 
-    La funzione legge i dati da un file Excel e restituisce un DataFrame pandas
-    contenente i dati. Se viene fornito un percorso di output, i dati vengono
-    salvati anche in un file CSV.
+    La funzione apre un file Excel in formato `.xls`, seleziona automaticamente
+    il primo foglio utile (escludendo eventuali fogli denominati "Metadati"),
+    estrae le righe del foglio, costruisce un DataFrame pandas e imposta come
+    indice la colonna corrispondente al codice censuario fornito.
+
+    Se viene indicato un percorso di output, il DataFrame viene salvato in
+    formato CSV; altrimenti, viene restituito direttamente.
 
     Args:
-        file_path (Path): Il percorso del file Excel da leggere.
-        output_path (Path, optional): Il percorso in cui salvare il file CSV.
-            Se None, la funzione restituisce il DataFrame (default: None).
+        file_path (Path):
+            Percorso del file Excel da leggere.
+        census_code (str):
+            Nome della colonna da utilizzare come indice del DataFrame
+            (es. codice ISTAT del comune).
+        output_path (Path, optional):
+            Percorso della cartella in cui salvare il CSV risultante.
+            Se None, il DataFrame viene restituito senza salvare nulla.
 
     Returns:
-        Union[pd.DataFrame, Path]: Un DataFrame pandas contenente i dati letti,
-            o il percorso del file CSV salvato.
+        Union[pd.DataFrame, Path]:
+            - Un DataFrame contenente i dati letti dal file Excel, se
+              `output_path` è None.
+            - Il percorso del file CSV salvato, se viene specificato
+              `output_path`.
 
     Raises:
-        FileNotFoundError: Se il file Excel non viene trovato.
-        xlrd.XLRDError: Se si verifica un errore durante la lettura del file Excel.
-        Exception: Per altri errori durante il processo di lettura o salvataggio.
+        FileNotFoundError:
+            Se il file indicato non esiste.
+        xlrd.XLRDError:
+            Se si verifica un errore durante la lettura del file Excel.
+        Exception:
+            Per qualsiasi errore non previsto durante il parsing o il salvataggio.
     """
     try:
         logging.info(f"Lettura del file Excel da {file_path}")
@@ -85,25 +100,37 @@ def census_trace(
         year: int,
         output_path: Path = None
 ) -> Path:
-    """Estrae i metadati da un file Excel e restituisce un DataFrame o salva i dati in CSV.
+    """Estrae il tracciato dei metadati dal foglio “Metadati” di un file Excel.
 
-    Questa funzione legge il foglio "Metadati" da un file Excel, estrae i dati
-    pertinenti e restituisce un DataFrame pandas. Se viene fornito un percorso di
-    output, i dati vengono anche salvati in un file CSV.
+    La funzione accede al foglio denominato **"Metadati"** di un file Excel
+    relativo ai dati censuari, ne estrae le colonne fondamentali (nome del campo
+    e descrizione) e costruisce un DataFrame pandas con indice basato sul nome
+    del campo. Se viene fornito un percorso di output, il tracciato viene
+    salvato anche in formato CSV.
 
     Args:
-        file_path (Path): Il percorso del file Excel da leggere.
-        output_path (Path, optional): Il percorso in cui salvare il file CSV.
-            Se None, la funzione restituisce il DataFrame (default: None).
+        file_path (Path):
+            Percorso del file Excel da cui estrarre i metadati.
+        year (int):
+            Anno di riferimento del censimento, utilizzato per generare il nome
+            del file di output.
+        output_path (Path, optional):
+            Percorso della cartella in cui salvare il CSV del tracciato.
+            Se None, viene restituito direttamente un DataFrame.
 
     Returns:
-        Path: Il percorso del file CSV salvato, o il DataFrame pandas se
-            output_path è None.
+        Path | pd.DataFrame:
+            - Il percorso del file CSV generato, se `output_path` è fornito.
+            - Un DataFrame pandas contenente il tracciato dei metadati,
+              se `output_path` è None.
 
     Raises:
-        FileNotFoundError: Se il file Excel non viene trovato.
-        xlrd.XLRDError: Se si verifica un errore durante la lettura del file Excel.
-        Exception: Per altri errori durante il processo di lettura o salvataggio.
+        FileNotFoundError:
+            Se il file Excel specificato non esiste.
+        xlrd.XLRDError:
+            Se si verifica un errore durante l’apertura o la lettura del file Excel.
+        Exception:
+            Per eventuali errori non previsti durante il parsing o il salvataggio.
     """
     try:
         logging.info(f"Lettura dei dati da {file_path}")

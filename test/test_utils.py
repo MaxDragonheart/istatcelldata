@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import requests
+
 from istatcelldata.config import DEMO_DATA_FOLDER
 from istatcelldata.utils import check_encoding, csv_from_excel, census_folder, unzip_data, get_region, get_census_dictionary
 
@@ -50,10 +52,26 @@ def test_get_region():
 
 def test_get_census_dictionary():
     print("test_get_census_dictionary")
+    target_year = 2021
     data = get_census_dictionary(
-        census_year=1991,
+        census_year=target_year,
         region_list=[3, 5]
     )
-    print(data)
+
+    for x, y in data[f"census{target_year}"].items():
+        if isinstance(y, list):
+            target_link = y[0]
+        else:
+            target_link = y
+
+        try:
+            response = requests.get(target_link, timeout=5)
+            if response.status_code == 200:
+                print(f"Il link è raggiungibile: {target_link}")
+            else:
+                print(f"Il link risponde, ma con codice {response.status_code}: {target_link}")
+        except requests.RequestException:
+            print(f"Il link NON è raggiungibile: {target_link}")
+
     assert isinstance(data, dict)
 

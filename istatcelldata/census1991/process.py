@@ -21,19 +21,49 @@ def add_administrative_info(
         municipalities_data_path: Path,
         municipalities_target_columns: list
 ) -> pd.DataFrame:
-    """Aggiunge informazioni amministrative (regioni, province e comuni) ai dati del censimento.
+    """Arricchisce i dati censuari con informazioni amministrative (comuni, province, regioni).
+
+    La funzione integra ai dati del censimento i codici e le denominazioni
+    amministrative corrispondenti, partendo da tre sorgenti esterne:
+    confini regionali, provinciali e comunali.
+
+    Il flusso logico prevede:
+    1. Uniformazione dei nomi delle colonne del dataset censuario.
+    2. Lettura dei dataset amministrativi (regioni, province, comuni).
+    3. Merge dei comuni con le province.
+    4. Merge del risultato con le regioni.
+    5. Join finale con il dataset del censimento sulla chiave comunale (`PRO_COM`).
+    6. Pulizia e rinomina delle colonne amministrative finali.
 
     Args:
-        census_data (pd.DataFrame): Dati del censimento a cui aggiungere informazioni amministrative.
-        regions_data_path (Path): Percorso del file con i confini regionali.
-        regions_target_columns (list): Colonne target da estrarre dai dati delle regioni.
-        provinces_data_path (Path): Percorso del file con i confini provinciali.
-        provinces_target_columns (list): Colonne target da estrarre dai dati delle province.
-        municipalities_data_path (Path): Percorso del file con i confini comunali.
-        municipalities_target_columns (list): Colonne target da estrarre dai dati dei comuni.
+        census_data (pd.DataFrame):
+            Dataset del censimento a cui aggiungere le informazioni amministrative.
+        regions_data_path (Path):
+            Percorso del file contenente i dati delle regioni.
+        regions_target_columns (list):
+            Elenco delle colonne da estrarre dal dataset regionale
+            (la prima colonna è usata come indice).
+        provinces_data_path (Path):
+            Percorso del file contenente i dati delle province.
+        provinces_target_columns (list):
+            Elenco delle colonne da estrarre dal dataset provinciale
+            (la prima colonna è usata come indice).
+        municipalities_data_path (Path):
+            Percorso del file contenente i dati dei comuni.
+        municipalities_target_columns (list):
+            Elenco delle colonne da estrarre dal dataset comunale
+            (la prima colonna è usata come indice).
 
     Returns:
-        pd.DataFrame: DataFrame del censimento con informazioni aggiuntive su comuni, province e regioni.
+        pd.DataFrame:
+            DataFrame del censimento arricchito con le informazioni
+            amministrative su comuni, province e regioni.
+
+    Notes:
+        - Si assume che i codici amministrativi utilizzati per i merge siano:
+          `PRO_COM` (comune), `COD_PROV`/`COD_PRO` (provincia), `COD_REG` (regione).
+        - La funzione utilizza `read_administrative_boundaries()` per caricare
+          e filtrare i dataset amministrativi.
     """
     logging.info("Inizio aggiunta delle informazioni amministrative ai dati del censimento.")
 

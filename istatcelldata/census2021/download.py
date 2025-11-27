@@ -6,7 +6,7 @@ from istatcelldata.census2011.download import download_data as dwn, download_geo
 from istatcelldata.census2021.utils import read_xlsx
 from istatcelldata.config import DATA_FOLDER, CENSUS_DATA_FOLDER, PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging
-from istatcelldata.utils import get_census_dictionary, remove_files
+from istatcelldata.utils import remove_files
 
 # Configure logging at the start of the script
 configure_logging()
@@ -18,9 +18,34 @@ def download_data(
         output_data_folder: Path,
         census_year: int
 ) -> Path:
-    link_dict = get_census_dictionary(census_year=census_year)
-    census_code = link_dict[f"census{census_year}"]["census_code"]
+    """Scarica, organizza e converte i dati censuari in formato elaborabile.
 
+    Questa funzione gestisce l’intero flusso di download e preparazione
+    dei dati censuari per un anno specifico. Individua i file
+    XLSX presenti, ne esegue la conversione in CSV e rimuove i file
+    originali non più necessari.
+
+    Args:
+        output_data_folder (Path):
+            Percorso della cartella principale in cui salvare i dati
+            scaricati e processati.
+        census_year (int):
+            Anno di riferimento dei dati censuari da scaricare.
+
+    Returns:
+        Path: Percorso della cartella contenente i dati scaricati e processati.
+
+    Raises:
+        Exception: Se non viene trovato alcun file XLSX nella cartella
+            dei dati scaricati.
+
+    Notes:
+        - I file XLSX vengono convertiti in CSV per facilitare le fasi
+          successive di ETL e analisi.
+        - I file XLSX originali vengono eliminati per ridurre lo spazio occupato.
+        - La struttura finale dei dati dipende dalle costanti globali
+          `DATA_FOLDER` e `CENSUS_DATA_FOLDER`.
+    """
     data_folder = dwn(
         output_data_folder=output_data_folder,
         census_year=census_year
@@ -56,18 +81,36 @@ def download_all_census_data_2021(
         output_data_folder: Path,
         region_list: List = []
 ) -> Path:
-    """Download di tutti i dati censuari per l'anno selezionato. E' possibile
-    effettuare il download per singola Regione ma anche per specifiche Regioni.
-    Quando il campo `region_list` resta vuoto vengono scaricati i dati di tutte le Regioni.
+    """Scarica l’intero set di dati censuari e geografici relativi al Censimento 2021.
+
+    Questa funzione esegue tutte le operazioni necessarie per ottenere i dati
+    censuari del 2021, coordinando automaticamente:
+
+    1. Il download dei dati censuari tabellari.
+    2. Il download dei geodati delle Regioni richieste (o di tutte, se `region_list` è vuota).
+    3. Il download dei confini amministrativi ufficiali.
+
+    La funzione crea automaticamente la struttura di cartelle necessaria per
+    organizzare i dati, definita dalla costante `PREPROCESSING_FOLDER`.
 
     Args:
-        output_data_folder: Path
-        region_list: List
+        output_data_folder (Path):
+            Percorso principale in cui salvare i dati del Censimento 2021.
+        region_list (List, optional):
+            Codici o nomi delle Regioni di cui scaricare i geodati.
+            Se la lista è vuota, vengono scaricati i geodati di tutte le Regioni.
 
     Returns:
-        Path di destinazione.
-    """
-    # Make data folder
+        Path:
+            Percorso della cartella radice che contiene l’intera struttura
+            dei dati scaricati per il Censimento 2021.
+
+    Notes:
+        - Il parametro `census_year` è fissato a 2021.
+        - Utilizza le funzioni di supporto:
+          `download_data()`, `download_geodata()`,
+          `download_administrative_boundaries()`.
+    """    # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
 

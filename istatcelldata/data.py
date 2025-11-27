@@ -27,25 +27,66 @@ def preprocess_data(
         municipalities_target_columns: list = None,
         output_folder: Path = None,
 ) -> Union[dict, Path]:
-    """Preprocessa i file CSV presenti in una cartella e restituisce i dati concatenati e il file di trace.
+    """Preprocessa i file CSV del censimento e restituisce i dati aggregati e il tracciato.
+
+    La funzione esegue le seguenti operazioni:
+
+    1. Cerca tutti i file CSV nella cartella indicata.
+    2. Utilizza l’ultimo CSV (in ordine alfabetico) come file di tracciato (trace).
+    3. Carica e concatena tutti gli altri CSV in un unico DataFrame.
+    4. Applica, se fornita, una mappatura dei nomi di colonna (`data_column_remapping`).
+    5. Aggiunge, se richiesto, le informazioni amministrative (regioni, province, comuni).
+    6. Sostituisce eventuali valori NaN con 0.
+    7. Carica il file di tracciato in un DataFrame dedicato.
+    8. Restituisce:
+       - o un dizionario con i DataFrame `census_data` e `trace`,
+       - oppure salva i CSV risultanti in `output_folder` e restituisce il percorso.
 
     Args:
-        data_folder (Path): Cartella contenente i file CSV da processare.
-        data_column_remapping (dict, opzionale): Mappatura per rinominare le colonne del censimento. Default: None.
-        add_administrative_informations (bool, opzionale): Se True, aggiunge le informazioni amministrative ai dati.
-        regions_data_path (Path, opzionale): Percorso del file contenente i dati delle regioni.
-        regions_target_columns (list, opzionale): Lista delle colonne target per i dati delle regioni.
-        provinces_data_path (Path, opzionale): Percorso del file contenente i dati delle province.
-        provinces_target_columns (list, opzionale): Lista delle colonne target per i dati delle province.
-        municipalities_data_path (Path, opzionale): Percorso del file contenente i dati dei comuni.
-        municipalities_target_columns (list, opzionale): Lista delle colonne target per i dati dei comuni.
-
+        data_folder (Path):
+            Cartella contenente i file CSV da processare.
+        data_column_remapping (dict, optional):
+            Dizionario di mappatura per rinominare le colonne del dataset
+            di censimento (es. `{"pro_com": "PRO_COM"}`).
+        add_administrative_informations (bool, optional):
+            Se True, arricchisce i dati con informazioni amministrative
+            (regioni, province, comuni) tramite `add_administrative_info()`.
+        regions_data_path (Path, optional):
+            Percorso del file contenente i dati delle regioni.
+        regions_target_columns (list, optional):
+            Lista delle colonne da estrarre/tenere per i dati delle regioni.
+        provinces_data_path (Path, optional):
+            Percorso del file contenente i dati delle province.
+        provinces_target_columns (list, optional):
+            Lista delle colonne da estrarre/tenere per i dati delle province.
+        municipalities_data_path (Path, optional):
+            Percorso del file contenente i dati dei comuni.
+        municipalities_target_columns (list, optional):
+            Lista delle colonne da estrarre/tenere per i dati dei comuni.
+        output_folder (Path, optional):
+            Cartella di destinazione in cui salvare i file:
+            - `census_data.csv` per i dati concatenati;
+            - `census_trace.csv` per il tracciato.
+            Se None, i dati vengono restituiti come dizionario di DataFrame.
 
     Returns:
-        dict: Dizionario con i dati del censimento concatenati, il file di trace e l'anno di riferimento.
+        Union[dict, Path]:
+            - dict: con le chiavi:
+                - `"census_data"` → DataFrame con i dati del censimento concatenati;
+                - `"trace"` → DataFrame con il tracciato dei campi.
+              Restituito se `output_folder` è None.
+            - Path: percorso di `output_folder`, se specificato, in cui sono stati
+              salvati i file `census_data.csv` e `census_trace.csv`.
 
     Raises:
-        ValueError: Se non vengono trovati file CSV nella cartella specificata.
+        ValueError:
+            Se non viene trovato alcun file CSV nella cartella indicata.
+
+    Notes:
+        - Il file di tracciato (trace) è considerato l’ultimo CSV in ordine
+          alfabetico all’interno di `data_folder`.
+        - La funzione `check_encoding()` viene utilizzata per determinare
+          l’encoding corretto dei file CSV.
     """
     logging.info(f"Inizio preprocessing dei dati nella cartella {data_folder}")
 

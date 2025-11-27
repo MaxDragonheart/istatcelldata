@@ -30,18 +30,54 @@ def run(
         delete_preprocessed_data: bool,
         municipalities_code: list[int]
 ):
-    """Esegue il processo di download, preprocessing e finalizzazione dei dati del censimento per gli anni specificati.
+    """Esegue l’intero workflow ETL dei dati di censimento per uno o più anni.
+
+    La funzione coordina l’intero processo di gestione dei dati censuari,
+    eseguendo in sequenza:
+
+    1. **Download** dei dati censuari, geodati e confini amministrativi per
+       gli anni specificati.
+    2. **Preprocessing** dei dati (geografici e tabellari), con eventuale
+       filtro sui comuni di interesse.
+    3. **Finalizzazione** dei dati in un GeoPackage unico, pronto per analisi
+       e utilizzo in ambiente GIS/DB.
 
     Args:
-        years (list): Lista di anni del censimento da processare.
-        regions (list): Lista di regioni da considerare per il download e il preprocessing.
-        data_dir (Path): Cartella di destinazione per i dati scaricati ed elaborati.
-        delete_download_folder (bool): Se True, elimina la cartella dei dati scaricati dopo il preprocessing.
-        delete_preprocessed_data (bool): Se True, elimina i dati pre-processati dopo la finalizzazione.
-        municipalities_code (list, opzionale): Lista di comuni da estrarre. Usare i dati presenti in `PRO_COM`
+        years (list):
+            Lista degli anni di censimento da processare
+            (es. [1991, 2001, 2011, 2021]).
+        regions (list):
+            Lista dei codici delle regioni da considerare per il download dei
+            geodati. Se la logica interna di `download_census()` prevede che una
+            lista vuota significhi “tutte le regioni”, questo comportamento viene
+            ereditato.
+        data_dir (Path):
+            Cartella radice in cui vengono salvati:
+            - i dati scaricati,
+            - i dati pre-processati,
+            - i dati finali (GeoPackage).
+        delete_download_folder (bool):
+            Se True, elimina la cartella dei dati scaricati/pre-processati
+            al termine della fase di preprocessing (parametro propagato a
+            `preprocess_census()`).
+        delete_preprocessed_data (bool):
+            Se True, elimina i dati pre-processati (es. `census.gpkg`) al termine
+            della fase di finalizzazione (parametro propagato a
+            `finalize_census_data()`).
+        municipalities_code (list[int]):
+            Lista di codici ISTAT dei comuni (`PRO_COM`) da estrarre. Se la logica
+            interna delle funzioni chiamate lo prevede, una lista vuota significa
+            che vengono considerati tutti i comuni.
 
     Returns:
         None
+
+    Notes:
+        - La funzione funge da entrypoint alto-livello per l’intera pipeline
+          ISTAT (download → preprocess → finalizza).
+        - Si appoggia alle funzioni:
+          `download_census()`, `preprocess_census()`, `finalize_census_data()`.
+        - I tempi di esecuzione complessivi vengono loggati.
     """
     time_start = datetime.datetime.now()
     logging.info(f"Inizio analisi alle {time_start} per gli anni: {years}.")
