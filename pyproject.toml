@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "istatcelldata"
-version = "1.2.0"
+version = "1.2.1"
 description = "Con ISTAT Cell Data puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati rilasciati anche i dati delle celle censuarie."
 authors = ["Massimiliano Moraca <gis.massimilianomoraca@gmail.com>"]
 readme = "README.md"
-license = "LICENSE"
+license = { file = "LICENSE" }
 
 [tool.poetry.dependencies]
 python = "^3.10"
