@@ -98,13 +98,17 @@ def add_administrative_info(
     add_provinces = pd.merge(
         left=municipalities_data, right=provinces_data, how="left", on="COD_PROV"
     )
-    logging.info(f"Merge between municipalities and provinces completed. {len(add_provinces)} resulting records.")
+    logging.info(
+        f"Merge between municipalities and provinces completed. "
+        f"{len(add_provinces)} resulting records."
+    )
 
     # Merge resulting data with regional data
     logging.info("Starting merge between municipal-provincial and regional data.")
     add_regions = pd.merge(left=add_provinces, right=regions_data, how="left", on="COD_REG")
     logging.info(
-        f"Merge between municipalities, provinces and regions completed. {len(add_regions)} resulting records."
+        f"Merge between municipalities, provinces and regions completed. "
+        f"{len(add_regions)} resulting records."
     )
 
     # Final merge of census data with added administrative information

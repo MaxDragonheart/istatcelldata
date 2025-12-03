@@ -67,7 +67,7 @@ def test_mock_http_error(tmp_path: Path):
     mock_response.status_code = 404
 
     with patch('istatcelldata.download.requests.get', return_value=mock_response):
-        with pytest.raises(Exception, match="restituisce codice di stato 404"):
+        with pytest.raises(Exception, match="returned status code 404"):
             download_base(
                 data_link="https://example.com/notfound.zip",
                 data_file_path_destination=download_folder / "data.zip",

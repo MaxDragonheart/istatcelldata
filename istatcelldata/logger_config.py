@@ -4,6 +4,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+# Module-level logger variable with proper type annotation
+logger: logging.Logger | None = None
+
 
 def get_log_filename(
     log_dir: Path | None = None,
