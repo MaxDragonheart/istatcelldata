@@ -3,7 +3,6 @@ import logging
 import os
 import zipfile
 from pathlib import Path
-from typing import List
 
 import chardet
 import xlrd
@@ -18,240 +17,216 @@ logger = logging.getLogger(__name__)
 
 
 def check_encoding(data: Path) -> str:
-    """Determina la codifica di un file leggendo un campione iniziale.
+    """Determine file encoding by reading an initial sample.
 
-    La funzione apre il file in modalità binaria, legge i primi 100.000 byte
-    e utilizza la libreria `chardet` per stimare la codifica del testo.
-    Nel caso in cui `chardet` identifichi la codifica come `'ascii'`, questa viene
-    convertita in `'latin1'` per garantire maggiore compatibilità, poiché molti file
-    amministrativi e geografici possono contenere caratteri estesi pur essendo
-    formalmente interpretati come ASCII.
+    This function opens the file in binary mode, reads the first 100,000 bytes,
+    and uses the `chardet` library to estimate the text encoding. If `chardet`
+    identifies the encoding as `'ascii'`, it is converted to `'latin1'` to ensure
+    greater compatibility, since many administrative and geographic files may contain
+    extended characters while being formally interpreted as ASCII.
 
     Args:
-        data (Path):
-            Percorso del file di cui si vuole determinare la codifica.
+        data: Path to the file whose encoding should be determined.
 
     Returns:
-        str:
-            La codifica rilevata.
-            Se viene restituito `'ascii'`, viene automaticamente sostituito con `'latin1'`.
+        The detected encoding. If `'ascii'` is detected, it is automatically
+        replaced with `'latin1'`.
 
-    Notes:
-        - `chardet` fornisce una stima heuristica della codifica; non è infallibile.
-        - La lettura è limitata ai primi 100.000 byte per migliorare le prestazioni.
-        - `'latin1'` è una scelta sicura per evitare errori su file con caratteri
-          accentati o codifiche ambigue tipiche dei dataset amministrativi ISTAT.
+    Note:
+        `chardet` provides a heuristic estimate of encoding and is not infallible.
+        Reading is limited to the first 100,000 bytes to improve performance.
+        `'latin1'` is a safe choice to avoid errors on files with accented
+        characters or ambiguous encodings typical of ISTAT administrative datasets.
     """
-    # Apre il file in modalità binaria e legge i primi 100.000 byte per la rilevazione della codifica.
-    with open(data, 'rb') as rawdata:
-        result = chardet.detect(rawdata.read(100000))  # Utilizza chardet per rilevare la codifica
+    # Open file in binary mode and read first 100,000 bytes for
+    # encoding detection.
+    with open(data, "rb") as rawdata:
+        # Use chardet to detect encoding
+        result = chardet.detect(rawdata.read(100000))
 
-        # Se la codifica rilevata è 'ascii', la modifica a 'latin1' per maggiore compatibilità
-        if result['encoding'] == 'ascii':
-            result['encoding'] = 'latin1'
+        # If detected encoding is 'ascii', change it to 'latin1' for better compatibility
+        if result["encoding"] == "ascii":
+            result["encoding"] = "latin1"
 
-    # Restituisce la codifica rilevata
-    return result['encoding']
+    # Return detected encoding
+    return result["encoding"]
 
 
-def csv_from_excel(        data: Path,
-        output_path: Path,
-        metadata: bool = False
-) -> Path:
-    """Converte un file Excel (.xls) in formato CSV.
+def csv_from_excel(data: Path, output_path: Path, metadata: bool = False) -> Path:
+    """Convert an Excel file (.xls) to CSV format.
 
-    La funzione legge un file Excel in formato legacy (.xls) tramite `xlrd` e
-    converte il contenuto di un foglio in un file CSV. Se `metadata=True`, viene
-    convertito il foglio chiamato **"Metadati"**; in caso contrario, viene
-    convertito il primo foglio disponibile escludendo `"Metadati"` se presente.
+    This function reads a legacy Excel file (.xls) using `xlrd` and converts
+    the content of a sheet to a CSV file. If `metadata=True`, the sheet named
+    **"Metadati"** is converted; otherwise, the first available sheet is converted,
+    excluding "Metadati" if present.
 
-    La conversione mantiene l'ordine delle righe e scrive tutti i campi con
-    `csv.QUOTE_ALL` per garantire compatibilità e preservare delimitatori,
-    stringhe con spazi o caratteri speciali.
+    The conversion preserves row order and writes all fields using `csv.QUOTE_ALL`
+    to ensure compatibility and preserve delimiters, strings with spaces, or
+    special characters.
 
     Args:
-        data (Path):
-            Percorso del file Excel da convertire.
-        output_path (Path):
-            Percorso del file CSV prodotto.
-        metadata (bool, optional):
-            Se True converte il foglio `"Metadati"`.
-            Se False converte il primo foglio utile escludendo `"Metadati"`
-            (default: False).
+        data: Path to the Excel file to convert.
+        output_path: Path where the output CSV file will be saved.
+        metadata: If True, converts the "Metadati" sheet. If False, converts
+            the first available sheet excluding "Metadati". Defaults to False.
 
     Returns:
-        Path:
-            Percorso del file CSV generato.
+        Path to the generated CSV file.
 
     Raises:
-        FileNotFoundError:
-            Se il file Excel indicato non esiste.
-        xlrd.XLRDError:
-            Se il file non può essere letto o il foglio richiesto non esiste.
-        Exception:
-            Per eventuali altri errori durante la conversione o la scrittura.
+        FileNotFoundError: If the specified Excel file does not exist.
+        xlrd.XLRDError: If the file cannot be read or the requested sheet does
+            not exist.
+        Exception: For any other errors during conversion or writing.
 
-    Notes:
-        - La conversione utilizza `xlrd`, pertanto il file deve essere in formato
-          `.xls` (Excel legacy). I file `.xlsx` non sono supportati da xlrd.
-        - Il CSV viene salvato in UTF-8.
-        - La funzione utilizza `tqdm` per mostrare una barra di avanzamento.
+    Note:
+        The conversion uses `xlrd`, so the file must be in `.xls` format
+        (Excel legacy). `.xlsx` files are not supported by xlrd.
+        The CSV is saved in UTF-8 encoding.
+        The function uses `tqdm` to display a progress bar.
     """
     try:
-        logging.info(f"Lettura del file Excel da {data}")
+        logging.info(f"Reading Excel file from {data}")
 
-        # Legge il file Excel
+        # Read Excel file
         read_data = xlrd.open_workbook(data)
 
-        # Se è richiesto di leggere i metadati
+        # If metadata reading is requested
         if metadata:
-            sheet_name = 'Metadati'
-            logging.info("Conversione del foglio 'Metadati'.")
+            sheet_name = "Metadati"
+            logging.info("Converting 'Metadati' sheet.")
         else:
-            # Prende la lista dei fogli, escludendo 'Metadati' se presente
+            # Get list of sheets, excluding 'Metadati' if present
             sheet_list = read_data.sheet_names()
-            if 'Metadati' in sheet_list:
-                sheet_list.remove('Metadati')
-            sheet_name = sheet_list[0]  # Primo foglio disponibile
-            logging.info(f"Conversione del foglio: {sheet_name}")
+            if "Metadati" in sheet_list:
+                sheet_list.remove("Metadati")
+            sheet_name = sheet_list[0]  # First available sheet
+            logging.info(f"Converting sheet: {sheet_name}")
 
-        # Estrae il foglio da convertire
+        # Extract sheet to convert
         get_sheet = read_data.sheet_by_name(sheet_name)
 
-        # Crea e scrive nel file CSV
-        with open(output_path, 'w', newline='', encoding='utf-8') as output_data:
+        # Create and write to CSV file
+        with open(output_path, "w", newline="", encoding="utf-8") as output_data:
             write_csv = csv.writer(output_data, quoting=csv.QUOTE_ALL)
 
-            logging.info(f"Conversione del foglio '{sheet_name}' in CSV.")
-            for row_id in tqdm(range(get_sheet.nrows), desc="Conversione"):
+            logging.info(f"Converting sheet '{sheet_name}' to CSV.")
+            for row_id in tqdm(range(get_sheet.nrows), desc="Conversion"):
                 write_csv.writerow(get_sheet.row_values(row_id))
 
-        logging.info(f"Dati convertiti salvati in {output_path}.")
+        logging.info(f"Converted data saved to {output_path}.")
         return output_path
 
     except FileNotFoundError as e:
-        logging.error(f"File Excel non trovato: {data}")
+        logging.error(f"Excel file not found: {data}")
         raise e
     except xlrd.XLRDError as e:
-        logging.error(f"Errore nella lettura del file Excel: {str(e)}")
+        logging.error(f"Error reading Excel file: {str(e)}")
         raise e
     except Exception as e:
-        logging.error(f"Errore durante la conversione da Excel a CSV: {str(e)}")
+        logging.error(f"Error during Excel to CSV conversion: {str(e)}")
         raise e
 
 
-def census_folder(
-        output_data_folder: Path,
-        year: int
-) -> Path:
-    """Crea (se necessario) la cartella dedicata ai dati del censimento per un anno specifico.
+def census_folder(output_data_folder: Path, year: int) -> Path:
+    """Create (if necessary) the folder dedicated to census data for a specific year.
 
-    La funzione genera una directory denominata `census_<anno>` all’interno della
-    cartella `output_data_folder` e la crea se non esiste già. Questa cartella
-    rappresenta la radice dei dati scaricati ed elaborati per un determinato
-    censimento, mantenendo una struttura ordinata e coerente tra anni diversi.
+    This function generates a directory named `census_<year>` within the
+    `output_data_folder` and creates it if it doesn't already exist. This folder
+    represents the root of downloaded and processed data for a specific census,
+    maintaining an organized and consistent structure across different years.
 
     Args:
-        output_data_folder (Path):
-            Cartella principale sotto cui creare la directory del censimento.
-        year (int):
-            Anno del censimento da organizzare (es. 1991, 2001, 2011, 2021).
+        output_data_folder: Main folder under which to create the census directory.
+        year: Census year to organize (e.g., 1991, 2001, 2011, 2021).
 
     Returns:
-        Path:
-            Il percorso completo della cartella del censimento creata o già esistente.
+        Complete path to the created or existing census folder.
 
     Raises:
-        Exception:
-            Se la cartella non può essere creata per motivi di permessi o percorsi non validi.
+        Exception: If the folder cannot be created due to permissions or invalid paths.
     """
     try:
-        # Log dell'inizio del processo
-        logging.info(f"Creazione della cartella per i dati del censimento {year}.")
+        # Log process start
+        logging.info(f"Creating folder for census data {year}.")
 
-        # Nome della cartella basata sull'anno del censimento
+        # Folder name based on census year
         download_folder_name = f"census_{year}"
 
-        # Percorso completo della cartella
+        # Complete folder path
         destination_folder = output_data_folder.joinpath(download_folder_name)
 
-        # Creazione della cartella (se non esiste già)
+        # Create folder (if it doesn't already exist)
         destination_folder.mkdir(parents=True, exist_ok=True)
 
-        # Log del successo
-        logging.info(f"Cartella creata o già esistente: {destination_folder}")
+        # Log success
+        logging.info(f"Folder created or already exists: {destination_folder}")
 
         return destination_folder
 
     except Exception as e:
-        # Log degli errori
-        logging.error(f"Errore durante la creazione della cartella per il censimento {year}: {str(e)}")
+        # Log errors
+        logging.error(
+            f"Error creating folder for census {year}: {str(e)}"
+        )
         raise e
 
 
 def unzip_data(input_data: Path, output_folder: Path) -> Path:
-    """Decomprime un file ZIP nella cartella di destinazione specificata.
+    """Decompress a ZIP file into the specified destination folder.
 
-    La funzione apre un archivio ZIP e ne estrae l’intero contenuto nella cartella
-    indicata. Se la cartella di output non esiste, viene creata automaticamente.
-    Funziona come componente interno del workflow di download dei dati ISTAT.
+    This function opens a ZIP archive and extracts its entire content into the
+    specified folder. If the output folder does not exist, it is created automatically.
+    Functions as an internal component of the ISTAT data download workflow.
 
     Args:
-        input_data (Path):
-            Percorso del file ZIP da decomprimere.
-        output_folder (Path):
-            Cartella in cui estrarre il contenuto dell’archivio.
+        input_data: Path to the ZIP file to decompress.
+        output_folder: Folder where the archive content will be extracted.
 
     Returns:
-        Path:
-            Il percorso della cartella contenente i file estratti.
+        Path to the folder containing the extracted files.
 
     Raises:
-        FileNotFoundError:
-            Se il file ZIP non esiste.
-        zipfile.BadZipFile:
-            Se il file fornito non è un ZIP valido.
-        Exception:
-            Per qualsiasi errore durante la decompressione.
+        FileNotFoundError: If the ZIP file does not exist.
+        zipfile.BadZipFile: If the provided file is not a valid ZIP archive.
+        Exception: For any error during decompression.
     """
     try:
-        logging.info(f"Decompressione del file {input_data} nella cartella {output_folder}.")
+        logging.info(f"Decompressing file {input_data} to folder {output_folder}.")
 
-        # Verifica se la cartella di output esiste, altrimenti la crea
+        # Check if output folder exists, otherwise create it
         output_folder.mkdir(parents=True, exist_ok=True)
 
-        # Decomprime il file ZIP
+        # Decompress ZIP file
         with zipfile.ZipFile(input_data, "r") as zf:
             zf.extractall(output_folder)
 
-        logging.info(f"Decompressione completata. File estratti in {output_folder}.")
+        logging.info(f"Decompression completed. Files extracted to {output_folder}.")
         return output_folder
 
     except FileNotFoundError as e:
-        logging.error(f"File ZIP non trovato: {input_data}")
+        logging.error(f"ZIP file not found: {input_data}")
         raise e
     except zipfile.BadZipFile as e:
-        logging.error(f"Il file fornito non è un file ZIP valido: {input_data}")
+        logging.error(f"The provided file is not a valid ZIP file: {input_data}")
         raise e
     except Exception as e:
-        logging.error(f"Errore durante la decompressione: {str(e)}")
+        logging.error(f"Error during decompression: {str(e)}")
         raise e
 
 
-def get_region(region_list: List[int] = []) -> List[int]:
-    """Restituisce la lista delle regioni da utilizzare per il download dei geodati.
+def get_region(region_list: list[int] = []) -> list[int]:
+    """Return the list of regions to use for geodata download.
 
-    Se non viene fornita una lista, restituisce l’elenco completo delle 20 regioni
-    italiane (codici 1–20). In caso contrario, restituisce la lista fornita.
+    If no list is provided, returns the complete list of 20 Italian regions
+    (codes 1–20). Otherwise, returns the provided list.
 
     Args:
-        region_list (List[int], optional):
-            Lista dei codici delle regioni da utilizzare.
-            Se vuota → restituisce tutte le regioni (1–20).
+        region_list: Optional list of region codes to use.
+            If empty, returns all regions (1–20).
 
     Returns:
-        List[int]:
-            Lista dei codici regione da processare.
+        List of region codes to process.
     """
     if len(region_list) == 0:
         regions = list(range(1, 21, 1))
@@ -261,31 +236,27 @@ def get_region(region_list: List[int] = []) -> List[int]:
     return regions
 
 
-def get_census_dictionary(census_year: int, region_list: List[int] = []) -> dict:
-    """Genera i link ufficiali ISTAT per dati censuari, geodati e confini amministrativi.
+def get_census_dictionary(census_year: int, region_list: list[int] = []) -> dict:
+    """Generate official ISTAT URLs for census data, geodata, and administrative boundaries.
 
-    La funzione costruisce dinamicamente i percorsi di download in base all’anno
-    di censimento e alla lista delle regioni desiderate. Gestisce le differenze
-    strutturali fra censimenti precedenti (1991–2011) e quello del 2021.
+    This function dynamically constructs download paths based on the census year
+    and the list of desired regions. It handles structural differences between
+    previous censuses (1991–2011) and the 2021 census.
 
     Args:
-        census_year (int):
-            Anno del censimento (1991, 2001, 2011 o 2021).
-        region_list (List[int], optional):
-            Lista delle regioni per cui generare i link dei geodati.
-            Se vuota → regioni 1–20.
+        census_year: Census year (1991, 2001, 2011, or 2021).
+        region_list: Optional list of regions for which to generate geodata URLs.
+            If empty, uses regions 1–20.
 
     Returns:
-        dict:
-            Dizionario contenente i link:
-            - `data_url` per i dati del censimento
-            - `geodata_urls` per le basi territoriali
-            - `admin_boundaries_url` per i confini amministrativi
-            - `census_code` codice primario per join e identificativi
+        Dictionary containing the URLs:
+            - `data_url`: URL for census data
+            - `geodata_urls`: URLs for territorial bases
+            - `admin_boundaries_url`: URL for administrative boundaries
+            - `census_code`: Primary code for joins and identifiers
 
     Raises:
-        ValueError:
-            Se l’anno fornito non è supportato.
+        ValueError: If the provided year is not supported.
     """
     main_link = "https://www.istat.it/storage/cartografia"
     census = [1991, 2001, 2011, 2021]
@@ -301,7 +272,9 @@ def get_census_dictionary(census_year: int, region_list: List[int] = []) -> dict
 
             if census_year in [1991, 2001, 2011]:
                 geodata_file = f"R{region_str}_{year_code}_WGS84.zip"
-                geodata_url = f"{main_link}/basi_territoriali/WGS_84_UTM/{census_year}/{geodata_file}"
+                geodata_url = (
+                    f"{main_link}/basi_territoriali/WGS_84_UTM/{census_year}/{geodata_file}"
+                )
             else:
                 geodata_file = f"R{region_str}_{year_code}.zip"
                 geodata_url = f"{main_link}/basi_territoriali/{census_year}/{geodata_file}"
@@ -320,32 +293,36 @@ def get_census_dictionary(census_year: int, region_list: List[int] = []) -> dict
         else:
             boundaries_folder = f"Limiti{census_year}.zip"
 
+        admin_boundaries_url = (
+            f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}"
+        )
         links_dict = {
             f"census{census_year}": {
                 "data_url": data_url,
                 "geodata_urls": geodata_urls,
-                "admin_boundaries_url": f"{main_link}/confini_amministrativi/non_generalizzati/{boundaries_folder}",
-                "census_code": census_code
+                "admin_boundaries_url": admin_boundaries_url,
+                "census_code": census_code,
             }
         }
 
         return links_dict
 
     else:
-        raise ValueError(f"L'anno di censimento scelto non è supportato. Puo scegliere tra {census}.")
+        raise ValueError(
+            f"The selected census year is not supported. You can choose from {census}."
+        )
 
 
 def remove_files(files_path: list) -> None:
-    """Rimuove una lista di file dal filesystem.
+    """Remove a list of files from the filesystem.
 
     Args:
-        files_path (list):
-            Lista di oggetti Path da eliminare.
+        files_path: List of Path objects to delete.
 
-    Notes:
-        - Le eccezioni non vengono catturate: se un file non può essere eliminato,
-          l’errore emerge esplicitamente (comportamento desiderabile nel workflow ETL).
+    Note:
+        Exceptions are not caught: if a file cannot be deleted, the error
+        emerges explicitly (desirable behavior in ETL workflows).
     """
-    # Remove xls
+    # Remove files
     for file_path in files_path:
         os.remove(file_path)

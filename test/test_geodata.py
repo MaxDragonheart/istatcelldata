@@ -1,10 +1,10 @@
 from pathlib import Path
 
-import pandas as pd
 import geopandas as gpd
+import pandas as pd
 
-from istatcelldata.config import census_data, DOWNLOAD_RAW_DATA
-from istatcelldata.geodata import read_administrative_boundaries, read_census, preprocess_geodata
+from istatcelldata.config import DOWNLOAD_RAW_DATA, census_data
+from istatcelldata.geodata import preprocess_geodata, read_administrative_boundaries, read_census
 
 year = 2011
 

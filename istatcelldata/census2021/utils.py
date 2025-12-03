@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 
@@ -13,55 +12,55 @@ logger = logging.getLogger(__name__)
 
 
 def read_xlsx(
-        file_path: Path,
-        output_path: Path = None,
-) -> Union[pd.DataFrame, Path]:
-    """Legge un file Excel (formato .xlsx) e lo converte in un DataFrame Pandas.
-    Se specificato, salva i dati in formato CSV.
+    file_path: Path,
+    output_path: Path | None = None,
+) -> pd.DataFrame | Path:
+    """Read an Excel file (XLSX format) and convert to a Pandas DataFrame.
+
+    If specified, saves the data in CSV format.
 
     Args:
-        file_path (Path): Il percorso del file Excel da leggere.
-        output_path (Path, opzionale): Il percorso in cui salvare il file CSV generato.
-            Se non viene specificato, restituisce il DataFrame.
+        file_path: Path to the Excel file to read.
+        output_path: Path where the generated CSV file will be saved.
+            If not specified, returns the DataFrame.
 
     Returns:
-        Union[pd.DataFrame, Path]: Restituisce un DataFrame se `output_path` è None,
-        altrimenti restituisce il percorso del file CSV salvato.
+        A DataFrame if `output_path` is None, otherwise returns the path to
+        the saved CSV file.
 
     Raises:
-        FileNotFoundError: Se il file Excel specificato non viene trovato.
-        ValueError: Se il file Excel non può essere letto correttamente.
+        FileNotFoundError: If the specified Excel file is not found.
+        ValueError: If the Excel file cannot be read correctly.
     """
     try:
-        logging.info(f"Lettura del file Excel da {file_path}")
-        # Lettura del file Excel utilizzando il motore 'openpyxl'
-        df = pd.read_excel(file_path, engine='openpyxl')
+        logging.info(f"Reading Excel file from {file_path}")
+        # Read Excel file using 'openpyxl' engine
+        df = pd.read_excel(file_path, engine="openpyxl")
 
-
-        # Se non viene fornito un percorso di output, restituisce il DataFrame
+        # If no output path is provided, return DataFrame
         if output_path is None:
-            logging.info(f"Restituzione del DataFrame senza salvare su disco.")
+            logging.info("Returning DataFrame without saving to disk.")
             return df
         else:
             if file_path.stem[:1] == "R":
                 file_name = file_path.stem
-                census_data_path = output_path.joinpath(f'{file_name}.csv')
-                logging.info(f"Salvataggio dei dati in formato CSV in {census_data_path}")
-                # Salva i dati nel percorso specificato
-                df.to_csv(path_or_buf=census_data_path, sep=';', index=False)
-                logging.info(f"Dati salvati correttamente in {census_data_path}")
+                census_data_path = output_path.joinpath(f"{file_name}.csv")
+                logging.info(f"Saving data to CSV format at {census_data_path}")
+                # Save data to specified path
+                df.to_csv(path_or_buf=census_data_path, sep=";", index=False)
+                logging.info(f"Data saved successfully to {census_data_path}")
                 return census_data_path
             else:
-                trace_data_path = output_path.joinpath('tracciato_2021_sezioni.csv')
-                logging.info(f"Salvataggio dei dati del tracciato in {trace_data_path}")
-                # Salva i dati nel percorso specificato
-                df.to_csv(path_or_buf=trace_data_path, sep=';', index=False)
-                logging.info(f"Dati salvati correttamente in {trace_data_path}")
+                trace_data_path = output_path.joinpath("tracciato_2021_sezioni.csv")
+                logging.info(f"Saving trace data to {trace_data_path}")
+                # Save data to specified path
+                df.to_csv(path_or_buf=trace_data_path, sep=";", index=False)
+                logging.info(f"Data saved successfully to {trace_data_path}")
                 return trace_data_path
 
     except FileNotFoundError as e:
-        logging.error(f"File non trovato: {file_path}")
+        logging.error(f"File not found: {file_path}")
         raise e
     except ValueError as e:
-        logging.error(f"Errore nella lettura del file Excel: {file_path}. Dettagli: {str(e)}")
+        logging.error(f"Error reading Excel file: {file_path}. Details: {str(e)}")
         raise e

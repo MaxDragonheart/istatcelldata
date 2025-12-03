@@ -4,7 +4,6 @@ from pathlib import Path
 from istatcelldata.executor.download import download_census
 from istatcelldata.logger_config import configure_logging
 
-
 main_path = Path("/home/max/Desktop/census")
 list_year = []
 list_region = []

@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from tqdm import tqdm
@@ -16,104 +15,93 @@ logger = logging.getLogger(__name__)
 
 
 def preprocess_data(
-        data_folder: Path,
-        data_column_remapping: dict = None,
-        add_administrative_informations: bool = None,
-        regions_data_path: Path = None,
-        regions_target_columns: list = None,
-        provinces_data_path: Path = None,
-        provinces_target_columns: list = None,
-        municipalities_data_path: Path = None,
-        municipalities_target_columns: list = None,
-        output_folder: Path = None,
-) -> Union[dict, Path]:
-    """Preprocessa i file CSV del censimento e restituisce i dati aggregati e il tracciato.
+    data_folder: Path,
+    data_column_remapping: dict | None = None,
+    add_administrative_informations: bool | None = None,
+    regions_data_path: Path | None = None,
+    regions_target_columns: list | None = None,
+    provinces_data_path: Path | None = None,
+    provinces_target_columns: list | None = None,
+    municipalities_data_path: Path | None = None,
+    municipalities_target_columns: list | None = None,
+    output_folder: Path | None = None,
+) -> dict | Path:
+    """Preprocess census CSV files and return aggregated data and trace record.
 
-    La funzione esegue le seguenti operazioni:
+    This function performs the following operations:
 
-    1. Cerca tutti i file CSV nella cartella indicata.
-    2. Utilizza l’ultimo CSV (in ordine alfabetico) come file di tracciato (trace).
-    3. Carica e concatena tutti gli altri CSV in un unico DataFrame.
-    4. Applica, se fornita, una mappatura dei nomi di colonna (`data_column_remapping`).
-    5. Aggiunge, se richiesto, le informazioni amministrative (regioni, province, comuni).
-    6. Sostituisce eventuali valori NaN con 0.
-    7. Carica il file di tracciato in un DataFrame dedicato.
-    8. Restituisce:
-       - o un dizionario con i DataFrame `census_data` e `trace`,
-       - oppure salva i CSV risultanti in `output_folder` e restituisce il percorso.
+    1. Searches for all CSV files in the specified folder.
+    2. Uses the last CSV file (in alphabetical order) as the trace record file.
+    3. Loads and concatenates all other CSV files into a single DataFrame.
+    4. Applies column name remapping if `data_column_remapping` is provided.
+    5. Adds administrative information (regions, provinces, municipalities) if requested.
+    6. Replaces any NaN values with 0.
+    7. Loads the trace record file into a dedicated DataFrame.
+    8. Returns either:
+       - A dictionary containing `census_data` and `trace` DataFrames, or
+       - Saves the resulting CSV files to `output_folder` and returns the path.
 
     Args:
-        data_folder (Path):
-            Cartella contenente i file CSV da processare.
-        data_column_remapping (dict, optional):
-            Dizionario di mappatura per rinominare le colonne del dataset
-            di censimento (es. `{"pro_com": "PRO_COM"}`).
-        add_administrative_informations (bool, optional):
-            Se True, arricchisce i dati con informazioni amministrative
-            (regioni, province, comuni) tramite `add_administrative_info()`.
-        regions_data_path (Path, optional):
-            Percorso del file contenente i dati delle regioni.
-        regions_target_columns (list, optional):
-            Lista delle colonne da estrarre/tenere per i dati delle regioni.
-        provinces_data_path (Path, optional):
-            Percorso del file contenente i dati delle province.
-        provinces_target_columns (list, optional):
-            Lista delle colonne da estrarre/tenere per i dati delle province.
-        municipalities_data_path (Path, optional):
-            Percorso del file contenente i dati dei comuni.
-        municipalities_target_columns (list, optional):
-            Lista delle colonne da estrarre/tenere per i dati dei comuni.
-        output_folder (Path, optional):
-            Cartella di destinazione in cui salvare i file:
-            - `census_data.csv` per i dati concatenati;
-            - `census_trace.csv` per il tracciato.
-            Se None, i dati vengono restituiti come dizionario di DataFrame.
+        data_folder: Folder containing the CSV files to process.
+        data_column_remapping: Optional dictionary for renaming census dataset columns
+            (e.g., `{"pro_com": "PRO_COM"}`).
+        add_administrative_informations: If True, enriches data with administrative
+            information (regions, provinces, municipalities) via `add_administrative_info()`.
+        regions_data_path: Optional path to the file containing region data.
+        regions_target_columns: Optional list of columns to extract/keep for region data.
+        provinces_data_path: Optional path to the file containing province data.
+        provinces_target_columns: Optional list of columns to extract/keep for province data.
+        municipalities_data_path: Optional path to the file containing municipality data.
+        municipalities_target_columns: Optional list of columns to extract/keep for
+            municipality data.
+        output_folder: Optional destination folder where the following files will be saved:
+            - `census_data.csv` for concatenated data
+            - `census_trace.csv` for the trace record
+            If None, data is returned as a dictionary of DataFrames.
 
     Returns:
-        Union[dict, Path]:
-            - dict: con le chiavi:
-                - `"census_data"` → DataFrame con i dati del censimento concatenati;
-                - `"trace"` → DataFrame con il tracciato dei campi.
-              Restituito se `output_folder` è None.
-            - Path: percorso di `output_folder`, se specificato, in cui sono stati
-              salvati i file `census_data.csv` e `census_trace.csv`.
+        Either a dictionary with keys:
+            - `"census_data"`: DataFrame containing concatenated census data
+            - `"trace"`: DataFrame containing field trace record
+        Or the path to `output_folder` if specified, where `census_data.csv` and
+        `census_trace.csv` have been saved.
 
     Raises:
-        ValueError:
-            Se non viene trovato alcun file CSV nella cartella indicata.
+        ValueError: If no CSV files are found in the specified folder.
 
-    Notes:
-        - Il file di tracciato (trace) è considerato l’ultimo CSV in ordine
-          alfabetico all’interno di `data_folder`.
-        - La funzione `check_encoding()` viene utilizzata per determinare
-          l’encoding corretto dei file CSV.
+    Note:
+        The trace record file is considered to be the last CSV in alphabetical
+        order within `data_folder`. The `check_encoding()` function is used to
+        determine the correct encoding for CSV files.
     """
-    logging.info(f"Inizio preprocessing dei dati nella cartella {data_folder}")
+    logging.info(f"Starting data preprocessing in folder {data_folder}")
 
-    # Trova e ordina tutti i file CSV nella cartella specificata
-    csv_list = sorted(list(data_folder.glob('*.csv')))
+    # Find and sort all CSV files in the specified folder
+    csv_list = sorted(list(data_folder.glob("*.csv")))
 
     if not csv_list:
-        raise ValueError(f"Nessun file CSV trovato nella cartella {data_folder}")
+        raise ValueError(f"No CSV files found in folder {data_folder}")
 
-    logging.info(f"Trovati {len(csv_list)} file CSV")
+    logging.info(f"Found {len(csv_list)} CSV files")
 
-    # Ultimo file CSV considerato come "trace"
+    # Last CSV file considered as "trace"
     trace = csv_list[-1]
-    logging.info(f"File di trace selezionato: {trace}")
+    logging.info(f"Trace file selected: {trace}")
 
     data_list = []
 
-    # Itera attraverso i file CSV e carica i dati
-    for csv in tqdm(csv_list, desc="Lettura dei file CSV..."):
+    # Iterate through CSV files and load data
+    for csv in tqdm(csv_list, desc="Reading CSV files..."):
         if csv != trace:
-            logging.info(f"Processamento file: {csv}")
+            logging.info(f"Processing file: {csv}")
 
-            # Lettura del file CSV
-            read_csv = pd.read_csv(filepath_or_buffer=csv, sep=';', encoding=check_encoding(data=csv))
+            # Read CSV file
+            read_csv = pd.read_csv(
+                filepath_or_buffer=csv, sep=";", encoding=check_encoding(data=csv)
+            )
             data_list.append(read_csv)
 
-    # Concatena tutti i dati letti in un unico DataFrame
+    # Concatenate all loaded data into a single DataFrame
     df = pd.concat(data_list, ignore_index=True)
     if data_column_remapping is not None:
         df.rename(columns=data_column_remapping, inplace=True)
@@ -126,30 +114,30 @@ def preprocess_data(
             provinces_data_path=provinces_data_path,
             provinces_target_columns=provinces_target_columns,
             municipalities_data_path=municipalities_data_path,
-            municipalities_target_columns=municipalities_target_columns
+            municipalities_target_columns=municipalities_target_columns,
         )
     df.fillna(value=0, inplace=True)
-    logging.info("Dati concatenati con successo")
+    logging.info("Data concatenated successfully")
 
-    # Lettura del file di trace
-    trace_df = pd.read_csv(filepath_or_buffer=trace, sep=';', encoding=check_encoding(data=trace))
-    logging.info(f"File di trace letto con successo: {trace}")
+    # Read trace file
+    trace_df = pd.read_csv(filepath_or_buffer=trace, sep=";", encoding=check_encoding(data=trace))
+    logging.info(f"Trace file read successfully: {trace}")
 
-    logging.info(f"Preprocessing completato con successo.")
+    logging.info("Preprocessing completed successfully.")
     if output_folder is not None:
-        logging.info(f"Salvataggio dei file...")
+        logging.info("Saving files...")
         census_file_path = output_folder.joinpath("census_data.csv")
-        df.to_csv(census_file_path, index=False, sep=';')
+        df.to_csv(census_file_path, index=False, sep=";")
 
         trace_file_path = output_folder.joinpath("census_trace.csv")
-        trace_df.to_csv(trace_file_path, index=False, sep=';')
+        trace_df.to_csv(trace_file_path, index=False, sep=";")
 
         return output_folder
 
     else:
-        # Restituisce il dizionario con i dati concatenati e il file di trace.
+        # Return dictionary with concatenated data and trace file
         result = {
-            'census_data': df,
-            'trace': trace_df,
+            "census_data": df,
+            "trace": trace_df,
         }
         return result

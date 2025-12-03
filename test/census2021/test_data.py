@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from istatcelldata.config import census_data, DOWNLOAD_RAW_DATA
+from istatcelldata.config import DOWNLOAD_RAW_DATA, census_data
 from istatcelldata.data import preprocess_data
 
 year = 2021

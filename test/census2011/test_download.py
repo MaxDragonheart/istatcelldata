@@ -1,7 +1,11 @@
 from pathlib import Path
 
-from istatcelldata.census2011.download import download_data, download_geodata, download_administrative_boundaries, \
-    download_all_census_data_2011
+from istatcelldata.census2011.download import (
+    download_administrative_boundaries,
+    download_all_census_data_2011,
+    download_data,
+    download_geodata,
+)
 
 year = 2011
 
