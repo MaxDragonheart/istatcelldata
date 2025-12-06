@@ -309,30 +309,44 @@ def preprocess_geodata(
 
     # Read and save regional boundaries
     logging.info("Starting processing of regional boundaries")
+    if regions_file_path is None or regions_target_columns is None or regions_index_column is None:
+        raise ValueError("Regional boundaries information is required")
     region = read_administrative_boundaries(
         file_path=regions_file_path,
         target_columns=regions_target_columns,
         index_column=regions_index_column,
         column_remapping=regions_column_remapping,
     )
+    if isinstance(region, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
 
     # Read and save provincial boundaries
     logging.info("Starting processing of provincial boundaries")
+    if (provinces_file_path is None or provinces_target_columns is None or
+        provinces_index_column is None):
+        raise ValueError("Provincial boundaries information is required")
     province = read_administrative_boundaries(
         file_path=provinces_file_path,
         target_columns=provinces_target_columns,
         index_column=provinces_index_column,
         column_remapping=provinces_column_remapping,
     )
+    if isinstance(province, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
 
     # Read and save municipal boundaries
     logging.info("Starting processing of municipal boundaries")
+    if (municipalities_file_path is None or municipalities_target_columns is None or
+        municipalities_index_column is None):
+        raise ValueError("Municipal boundaries information is required")
     municipality = read_administrative_boundaries(
         file_path=municipalities_file_path,
         target_columns=municipalities_target_columns,
         index_column=municipalities_index_column,
         column_remapping=municipalities_column_remapping,
     )
+    if isinstance(municipality, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     municipality.reset_index(inplace=True)
     # Since 2021 municipal boundaries don't have 'COD_PROV' column, add it manually.
     # TODO https://github.com/MaxDragonheart/istatcelldata/issues/47
@@ -360,6 +374,9 @@ def preprocess_geodata(
         tipo_loc_mapping=census_tipo_loc_mapping,
         column_remapping=census_column_remapping,
     )
+    if isinstance(census_geodata, Path):
+        raise ValueError("Expected GeoDataFrame but got Path from read_census")
+
     if len(municipalities_code) > 0:
         logging.info(f"Municipalities to extract: {municipalities_code}")
         mun_reg = mun_reg[mun_reg["PRO_COM"].isin(municipalities_code)]

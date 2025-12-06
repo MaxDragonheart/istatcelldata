@@ -89,7 +89,9 @@ def read_xls(
         raise e
 
 
-def census_trace(file_path: Path, year: int, output_path: Path | None = None) -> Path:
+def census_trace(
+    file_path: Path, year: int, output_path: Path | None = None
+) -> pd.DataFrame | Path:
     """Extract metadata trace record from the "Metadati" sheet of an Excel file.
 
     This function accesses the sheet named **"Metadati"** in an Excel file
@@ -138,9 +140,10 @@ def census_trace(file_path: Path, year: int, output_path: Path | None = None) ->
             return df
         else:
             file_name = f"tracciato_{year}_sezioni.csv"
-            logging.info(f"Salvataggio dei dati in {output_path.joinpath(file_name)}")
-            df.to_csv(path_or_buf=output_path.joinpath(file_name), sep=";")
-            return output_path.joinpath(file_name)  # Restituisce il percorso del file CSV salvato
+            file_path = output_path.joinpath(file_name)
+            logging.info(f"Salvataggio dei dati in {file_path}")
+            df.to_csv(path_or_buf=file_path, sep=";")
+            return file_path  # Restituisce il percorso del file CSV salvato
 
     except FileNotFoundError as e:
         logging.error(f"Excel file not found: {file_path}")

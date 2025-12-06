@@ -70,6 +70,8 @@ def add_administrative_info(
         target_columns=regions_target_columns,
         index_column=regions_target_columns[0],
     )
+    if isinstance(regions_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     regions_data.reset_index(inplace=True)
     logging.info(f"Regional data read successfully. {len(regions_data)} records found.")
 
@@ -80,6 +82,8 @@ def add_administrative_info(
         target_columns=provinces_target_columns,
         index_column=provinces_target_columns[0],
     )
+    if isinstance(provinces_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     provinces_data.reset_index(inplace=True)
     logging.info(f"Provincial data read successfully. {len(provinces_data)} records found.")
 
@@ -90,6 +94,8 @@ def add_administrative_info(
         target_columns=municipalities_target_columns,
         index_column=municipalities_target_columns[0],
     )
+    if isinstance(municipalities_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     municipalities_data.reset_index(inplace=True)
     logging.info(f"Municipal data read successfully. {len(municipalities_data)} records found.")
 

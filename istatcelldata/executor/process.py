@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 from pathlib import Path
+from typing import Any
 
 import geopandas as gpd
 import pandas as pd
@@ -74,7 +75,8 @@ def finalize_census_data(
 
         logging.info(f"Loading tabular data from layer 'data{year}'")
         data = gpd.read_file(filename=main_data, layer=f"data{year}")
-        columns_to_remove = census_data[year]["data_columns_to_remove"]
+        year_data: dict[str, Any] = census_data[year]  # type: ignore[assignment]
+        columns_to_remove = year_data["data_columns_to_remove"]
         data.drop(columns=columns_to_remove, inplace=True)
 
         # Merge geodata with tabular data

@@ -48,8 +48,8 @@ def check_encoding(data: Path) -> str:
         if result["encoding"] == "ascii":
             result["encoding"] = "latin1"
 
-    # Return detected encoding
-    return result["encoding"]
+    # Return detected encoding, default to 'latin1' if None
+    return result["encoding"] or "latin1"
 
 
 def csv_from_excel(data: Path, output_path: Path, metadata: bool = False) -> Path:

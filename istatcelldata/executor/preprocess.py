@@ -3,6 +3,7 @@ import logging
 import shutil
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 from istatcelldata.config import YEAR_GEODATA_NAME, census_data
 from istatcelldata.data import preprocess_data
@@ -82,31 +83,44 @@ def preprocess_census(
         census_layer_name = f"{YEAR_GEODATA_NAME}{year}"
 
         # Extract paths and columns from census_data dictionary for the current year
-        data_root = census_data[year]["data_root"]
-        regions_root = census_data[year]["regions_root"]
-        regions_column = census_data[year]["regions_column"]
-        regions_column_remapping = census_data[year].get("regions_column_remapping", None)
-        regions_index = census_data[year]["regions_index"]
-        provinces_root = census_data[year].get("provinces_root", None)
-        provinces_column = census_data[year].get("provinces_column", None)
-        provinces_column_remapping = census_data[year].get("provinces_column_remapping", None)
-        provinces_index = census_data[year]["provinces_index"]
-        municipalities_root = census_data[year].get("municipalities_root", None)
-        municipalities_column = census_data[year].get("municipalities_column", None)
-        municipalities_column_remapping = census_data[year].get(
+        year_data: dict[str, Any] = census_data[year]  # type: ignore[assignment]
+        data_root = year_data["data_root"]
+        regions_root = year_data["regions_root"]
+        regions_column = year_data["regions_column"]
+        regions_column_remapping = year_data.get("regions_column_remapping", None)
+        regions_index = year_data["regions_index"]
+        provinces_root = year_data.get("provinces_root", None)
+        provinces_column = year_data.get("provinces_column", None)
+        provinces_column_remapping = year_data.get("provinces_column_remapping", None)
+        provinces_index = year_data["provinces_index"]
+        municipalities_root = year_data.get("municipalities_root", None)
+        municipalities_column = year_data.get("municipalities_column", None)
+        municipalities_column_remapping = year_data.get(
             "municipalities_column_remapping", None
         )
-        municipalities_index = census_data[year]["municipalities_index"]
-        census_shp_root = census_data[year].get("census_shp_root", None)
-        census_shp_column = census_data[year].get("census_shp_column", None)
-        census_shp_column_remapping = census_data[year].get("census_shp_column_remapping", None)
-        tipo_loc_mapping = census_data[year].get("tipo_loc_mapping", None)
-        add_administrative_informations = census_data[year].get(
+        municipalities_index = year_data["municipalities_index"]
+        census_shp_root = year_data.get("census_shp_root", None)
+        census_shp_column = year_data.get("census_shp_column", None)
+        census_shp_column_remapping = year_data.get("census_shp_column_remapping", None)
+        tipo_loc_mapping = year_data.get("tipo_loc_mapping", None)
+        add_administrative_informations = year_data.get(
             "add_administrative_informations", None
         )
 
         # Preprocess census geodata and administrative boundaries
         logging.info("Preprocessing geodata.")
+
+        # Runtime checks for required paths
+        if census_shp_root is None or census_shp_column is None or tipo_loc_mapping is None:
+            raise ValueError("Census shapefile configuration is required")
+        if regions_root is None or regions_column is None or regions_index is None:
+            raise ValueError("Regions configuration is required")
+        if provinces_root is None or provinces_column is None or provinces_index is None:
+            raise ValueError("Provinces configuration is required")
+        if (municipalities_root is None or municipalities_column is None or
+            municipalities_index is None):
+            raise ValueError("Municipalities configuration is required")
+
         geodata_path = preprocess_geodata(
             census_shp_folder=processed_data_folder.joinpath(*census_shp_root),
             census_target_columns=census_shp_column,
@@ -134,6 +148,9 @@ def preprocess_census(
 
         # Preprocess non-geographic data (CSV)
         logging.info("Preprocessing non-geographic data.")
+        if data_root is None:
+            raise ValueError("Data root path is required")
+
         get_census_data = preprocess_data(
             data_folder=processed_data_folder.joinpath(*data_root),
             data_column_remapping=census_shp_column_remapping,
@@ -147,14 +164,15 @@ def preprocess_census(
         )
 
         # Save data to GeoPackage
-        data = get_census_data["census_data"]
+        census_result: dict[str, Any] = get_census_data  # type: ignore[assignment]
+        data = census_result["census_data"]
         data_layer_name = f"data{year}"
         logging.info("Saving non-geographic data.")
         data.to_sql(name=data_layer_name, con=connection, if_exists="replace")
         logging.info("Non-geographic data saved successfully.")
 
         # Save trace file to GeoPackage
-        trace = get_census_data["trace"]
+        trace = census_result["trace"]
         trace_layer_name = f"tracciato{year}"
         logging.info("Saving non-geographic data trace record.")
         trace.to_sql(name=trace_layer_name, con=connection, if_exists="replace")
