@@ -1,39 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/LICENSE/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/LICENSE/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/LICENSE/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/LICENSE/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/data/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/data/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/data/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/data/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/download/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/download/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/download/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/download/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/geodata/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/geodata/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/geodata/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/geodata/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/intro/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/intro/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/intro/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/intro/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/process/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/process/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/process/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/process/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/documentation/utils/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/documentation/utils/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/utils/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/utils/"/>
     </url>
     <url>
-         <loc>https://maxdragonheart.github.io/istatcelldata/tutorial/intro/</loc>
-         <lastmod>2025-12-06</lastmod>
+        <loc>https://maxdragonheart.github.io/istatcelldata/tutorial/intro/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/tutorial/intro/"/>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/tutorial/intro/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/LICENSE/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/LICENSE/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/LICENSE/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/data/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/data/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/data/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/download/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/download/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/download/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/geodata/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/geodata/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/geodata/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/intro/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/intro/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/intro/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/process/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/process/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/process/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/documentation/utils/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/utils/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/documentation/utils/"/>
+    </url>
+    <url>
+        <loc>https://maxdragonheart.github.io/istatcelldata/it/tutorial/intro/</loc>
+        <lastmod>2025-12-06</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="it" href="https://maxdragonheart.github.io/istatcelldata/it/tutorial/intro/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://maxdragonheart.github.io/istatcelldata/tutorial/intro/"/>
     </url>
 </urlset>

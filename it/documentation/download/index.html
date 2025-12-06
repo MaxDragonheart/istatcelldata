@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="it" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -12,35 +12,35 @@
         <meta name="author" content="Massimiliano Moraca">
       
       
-        <link rel="canonical" href="https://maxdragonheart.github.io/istatcelldata/documentation/utils/">
+        <link rel="canonical" href="https://maxdragonheart.github.io/istatcelldata/it/documentation/download/">
       
       
-        <link rel="prev" href="../process/">
+        <link rel="prev" href="../data/">
       
       
-        <link rel="next" href="../../tutorial/intro/">
+        <link rel="next" href="../geodata/">
       
       
         
-          <link rel="alternate" href="./" hreflang="en">
+          <link rel="alternate" href="../../../documentation/download/" hreflang="en">
         
-          <link rel="alternate" href="../../it/documentation/utils/" hreflang="it">
+          <link rel="alternate" href="./" hreflang="it">
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
     
     
       
-        <title>Utils - Census ISTAT</title>
+        <title>Download - Census ISTAT</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -59,15 +59,23 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../css/ansi-colours.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../css/jupyter-cells.css">
+      <link rel="stylesheet" href="../../../css/ansi-colours.css">
     
-      <link rel="stylesheet" href="../../css/pandas-dataframe.css">
+      <link rel="stylesheet" href="../../../css/jupyter-cells.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+      <link rel="stylesheet" href="../../../css/pandas-dataframe.css">
+    
+      <link rel="stylesheet" href="../../../css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="../../../css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="../../../css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -90,8 +98,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#utils-module" class="md-skip">
-          Skip to content
+        <a href="#modulo-download" class="md-skip">
+          Vai al contenuto
         </a>
       
     </div>
@@ -103,8 +111,8 @@
       
 
 <header class="md-header" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Census ISTAT" class="md-header__button md-logo" aria-label="Census ISTAT" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="Intestazione">
+    <a href="../../" title="Census ISTAT" class="md-header__button md-logo" aria-label="Census ISTAT" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -124,7 +132,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Utils
+              Download
             
           </span>
         </div>
@@ -138,20 +146,20 @@
       <div class="md-header__option">
   <div class="md-select">
     
-    <button class="md-header__button md-icon" aria-label="Select language">
+    <button class="md-header__button md-icon" aria-label="Seleziona la lingua">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
     </button>
     <div class="md-select__inner">
       <ul class="md-select__list">
         
           <li class="md-select__item">
-            <a href="./" hreflang="en" class="md-select__link">
+            <a href="../../../documentation/download/" hreflang="en" class="md-select__link">
               English
             </a>
           </li>
         
           <li class="md-select__item">
-            <a href="../../it/documentation/utils/" hreflang="it" class="md-select__link">
+            <a href="./" hreflang="it" class="md-select__link">
               Italiano
             </a>
           </li>
@@ -172,16 +180,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="Cerca" placeholder="Cerca" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="Cerca">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Cancella" aria-label="Cancella" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -192,7 +200,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            Inizializza la ricerca
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -204,7 +212,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/MaxDragonheart/istatcelldata" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/MaxDragonheart/istatcelldata" title="Apri repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -235,7 +243,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../" class="md-tabs__link">
         
   
   
@@ -262,7 +270,7 @@
           
   
   
-  Documentation
+  Documentazione
 
         </a>
       </li>
@@ -282,7 +290,7 @@
   
     
   
-  License
+  Licenza
 
       </a>
     </li>
@@ -347,9 +355,9 @@
   
 
 
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigazione" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Census ISTAT" class="md-nav__button md-logo" aria-label="Census ISTAT" data-md-component="logo">
+    <a href="../../" title="Census ISTAT" class="md-nav__button md-logo" aria-label="Census ISTAT" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -359,7 +367,7 @@
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/MaxDragonheart/istatcelldata" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/MaxDragonheart/istatcelldata" title="Apri repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -379,7 +387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
@@ -434,7 +442,7 @@
   <span class="md-ellipsis">
     
   
-    Documentation
+    Documentazione
   
 
     
@@ -450,7 +458,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Documentation
+    Documentazione
   
 
           </label>
@@ -573,10 +581,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../download/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Download
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -592,6 +627,147 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Indice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Indice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.download.download_base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_base
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census1991.download.download_all_census_data_1991" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_all_census_data_1991
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census1991.download.download_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2001.download.download_all_census_data_2001" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_all_census_data_2001
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2011.download.download_administrative_boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_administrative_boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2011.download.download_all_census_data_2011" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_all_census_data_2011
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2011.download.download_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2011.download.download_geodata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_geodata
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2021.download.download_all_census_data_2021" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_all_census_data_2021
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.census2021.download.download_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.executor.download.download_census" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_census
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -657,37 +833,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Utils
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../utils/" class="md-nav__link">
         
   
   
@@ -703,136 +852,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.census_folder" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        census_folder
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.check_encoding" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        check_encoding
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.csv_from_excel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        csv_from_excel
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.get_census_dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_census_dictionary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.get_region" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        get_region
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.remove_files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        remove_files
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.utils.unzip_data" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        unzip_data
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.census1991.utils.census_trace" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        census_trace
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.census1991.utils.read_xls" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        read_xls
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#istatcelldata.census2021.utils.read_xlsx" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        read_xlsx
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -895,7 +914,7 @@
   <span class="md-ellipsis">
     
   
-    License
+    Licenza
   
 
     
@@ -975,7 +994,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="Indice">
   
   
   
@@ -984,15 +1003,15 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      Indice
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.census_folder" class="md-nav__link">
+  <a href="#istatcelldata.download.download_base" class="md-nav__link">
     <span class="md-ellipsis">
       
-        census_folder
+        download_base
       
     </span>
   </a>
@@ -1000,10 +1019,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.check_encoding" class="md-nav__link">
+  <a href="#istatcelldata.census1991.download.download_all_census_data_1991" class="md-nav__link">
     <span class="md-ellipsis">
       
-        check_encoding
+        download_all_census_data_1991
       
     </span>
   </a>
@@ -1011,10 +1030,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.csv_from_excel" class="md-nav__link">
+  <a href="#istatcelldata.census1991.download.download_data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        csv_from_excel
+        download_data
       
     </span>
   </a>
@@ -1022,10 +1041,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.get_census_dictionary" class="md-nav__link">
+  <a href="#istatcelldata.census2001.download.download_all_census_data_2001" class="md-nav__link">
     <span class="md-ellipsis">
       
-        get_census_dictionary
+        download_all_census_data_2001
       
     </span>
   </a>
@@ -1033,10 +1052,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.get_region" class="md-nav__link">
+  <a href="#istatcelldata.census2011.download.download_administrative_boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        get_region
+        download_administrative_boundaries
       
     </span>
   </a>
@@ -1044,10 +1063,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.remove_files" class="md-nav__link">
+  <a href="#istatcelldata.census2011.download.download_all_census_data_2011" class="md-nav__link">
     <span class="md-ellipsis">
       
-        remove_files
+        download_all_census_data_2011
       
     </span>
   </a>
@@ -1055,10 +1074,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.utils.unzip_data" class="md-nav__link">
+  <a href="#istatcelldata.census2011.download.download_data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        unzip_data
+        download_data
       
     </span>
   </a>
@@ -1066,10 +1085,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.census1991.utils.census_trace" class="md-nav__link">
+  <a href="#istatcelldata.census2011.download.download_geodata" class="md-nav__link">
     <span class="md-ellipsis">
       
-        census_trace
+        download_geodata
       
     </span>
   </a>
@@ -1077,10 +1096,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.census1991.utils.read_xls" class="md-nav__link">
+  <a href="#istatcelldata.census2021.download.download_all_census_data_2021" class="md-nav__link">
     <span class="md-ellipsis">
       
-        read_xls
+        download_all_census_data_2021
       
     </span>
   </a>
@@ -1088,10 +1107,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#istatcelldata.census2021.utils.read_xlsx" class="md-nav__link">
+  <a href="#istatcelldata.census2021.download.download_data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        read_xlsx
+        download_data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#istatcelldata.executor.download.download_census" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        download_census
       
     </span>
   </a>
@@ -1118,8 +1148,10 @@
   
 
 
-<h1 id="utils-module">Utils Module</h1>
-<p>The Utils module collects a series of utility functions for file management and conversion, directory creation, and content extraction from compressed archives. These functions are essential to support census and geographic data management processes.</p>
+<h1 id="modulo-download">Modulo Download</h1>
+<p>Il modulo Download fornisce una serie di funzioni per scaricare e gestire dati censuari ed i confini amministrativi. 
+Le funzioni principali permettono di scaricare i dati da link specifici, organizzare i file in strutture di cartelle e 
+gestire il processo di estrazione e cancellazione automatica dei file ZIP.</p>
 
 
 <div class="doc doc-object doc-module">
@@ -1152,19 +1184,222 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="istatcelldata.utils.census_folder" class="doc doc-heading">
-            <code class=" language-python"><span class="n">census_folder</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span></code>
+<h2 id="istatcelldata.download.download_base" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_base</span><span class="p">(</span><span class="n">data_link</span><span class="p">,</span> <span class="n">data_file_path_destination</span><span class="p">,</span> <span class="n">data_folder</span><span class="p">,</span> <span class="n">destination_folder</span><span class="p">)</span></code>
 
 </h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Create (if necessary) the folder dedicated to census data for a specific year.</p>
-<p>This function generates a directory named <code>census_&lt;year&gt;</code> within the
-<code>output_data_folder</code> and creates it if it doesn't already exist. This folder
-represents the root of downloaded and processed data for a specific census,
-maintaining an organized and consistent structure across different years.</p>
+        <p>Download a file from URL, display progress bar, and extract the resulting ZIP.</p>
+<p>This function handles the complete workflow for downloading an archive (typically
+ZIP format) from an HTTP/HTTPS URL. It saves the file to a local path, displays
+a progress bar using <code>tqdm</code>, extracts the content to the destination folder, and
+finally removes the compressed file.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_link</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>URL from which to download the file (e.g., census data ZIP archive).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="str">str</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_file_path_destination</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Complete local path where the downloaded compressed
+file will be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Folder where the compressed file content will be extracted.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>destination_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Logical destination folder associated with the downloaded
+dataset. This path is returned at the end for consistency with the calling
+workflow.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to <code>destination_folder</code>, usable as a reference to the root of the</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>downloaded and extracted data.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="Exception">Exception</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If the server returns an HTTP status code other than 200, or if
+any error occurs during download, file saving, or extraction.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census1991.download.download_all_census_data_1991" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_all_census_data_1991</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download complete census and geographic dataset for the 1991 Census.</p>
+<p>This function coordinates all necessary operations to obtain census data
+and geographic information associated with the 1991 Census. It enables
+downloading of:</p>
+<ul>
+<li>Tabular census data</li>
+<li>Geodata specific to one or more regions</li>
+<li>Official administrative boundaries</li>
+</ul>
+<p>If no value is provided for <code>region_list</code>, geodata for all regions is
+downloaded.</p>
 
 
 <table>
@@ -1181,391 +1416,13 @@ maintaining an organized and consistent structure across different years.</p>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Main folder under which to create the census directory.</p>
+                <p>Main path where all downloaded and processed data
+will be saved.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>year</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Census year to organize (e.g., 1991, 2001, 2011, 2021).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="pathlib.Path">Path</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Complete path to the created or existing census folder.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RAISES</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="Exception">Exception</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the folder cannot be created due to permissions or invalid paths.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.check_encoding" class="doc doc-heading">
-            <code class=" language-python"><span class="n">check_encoding</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Determine file encoding by reading an initial sample.</p>
-<p>This function opens the file in binary mode, reads the first 100,000 bytes,
-and uses the <code>chardet</code> library to estimate the text encoding. If <code>chardet</code>
-identifies the encoding as <code>'ascii'</code>, it is converted to <code>'latin1'</code> to ensure
-greater compatibility, since many administrative and geographic files may contain
-extended characters while being formally interpreted as ASCII.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>data</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path to the file whose encoding should be determined.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="str">str</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>The detected encoding. If <code>'ascii'</code> is detected, it is automatically</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="str">str</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>replaced with <code>'latin1'</code>.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="note" open>
-  <summary>Note</summary>
-  <p><code>chardet</code> provides a heuristic estimate of encoding and is not infallible.
-Reading is limited to the first 100,000 bytes to improve performance.
-<code>'latin1'</code> is a safe choice to avoid errors on files with accented
-characters or ambiguous encodings typical of ISTAT administrative datasets.</p>
-</details>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.csv_from_excel" class="doc doc-heading">
-            <code class=" language-python"><span class="n">csv_from_excel</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Convert an Excel file (.xls) to CSV format.</p>
-<p>This function reads a legacy Excel file (.xls) using <code>xlrd</code> and converts
-the content of a sheet to a CSV file. If <code>metadata=True</code>, the sheet named
-<strong>"Metadati"</strong> is converted; otherwise, the first available sheet is converted,
-excluding "Metadati" if present.</p>
-<p>The conversion preserves row order and writes all fields using <code>csv.QUOTE_ALL</code>
-to ensure compatibility and preserve delimiters, strings with spaces, or
-special characters.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>data</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path to the Excel file to convert.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>output_path</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path where the output CSV file will be saved.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>metadata</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>If True, converts the "Metadati" sheet. If False, converts
-the first available sheet excluding "Metadati". Defaults to False.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="bool">bool</span></code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>False</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="pathlib.Path">Path</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Path to the generated CSV file.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RAISES</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the specified Excel file does not exist.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="xlrd.XLRDError">XLRDError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the file cannot be read or the requested sheet does
-not exist.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="Exception">Exception</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>For any other errors during conversion or writing.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="note" open>
-  <summary>Note</summary>
-  <p>The conversion uses <code>xlrd</code>, so the file must be in <code>.xls</code> format
-(Excel legacy). <code>.xlsx</code> files are not supported by xlrd.
-The CSV is saved in UTF-8 encoding.
-The function uses <code>tqdm</code> to display a progress bar.</p>
-</details>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.get_census_dictionary" class="doc doc-heading">
-            <code class=" language-python"><span class="n">get_census_dictionary</span><span class="p">(</span><span class="n">census_year</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Generate official ISTAT URLs for census data, geodata, and administrative boundaries.</p>
-<p>This function dynamically constructs download paths based on the census year
-and the list of desired regions. It handles structural differences between
-previous censuses (1991–2011) and the 2021 census.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>census_year</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Census year (1991, 2001, 2011, or 2021).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="int">int</span></code>
                   </span>
               </p>
             </td>
@@ -1576,263 +1433,17 @@ previous censuses (1991–2011) and the 2021 census.</p>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Optional list of regions for which to generate geodata URLs.
-If empty, uses regions 1–20.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="list">list</span>[<span title="int">int</span>]</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>[]</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="dict">dict</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>Dictionary containing the URLs:
-- <code>data_url</code>: URL for census data
-- <code>geodata_urls</code>: URLs for territorial bases
-- <code>admin_boundaries_url</code>: URL for administrative boundaries
-- <code>census_code</code>: Primary code for joins and identifiers</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RAISES</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="ValueError">ValueError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the provided year is not supported.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.get_region" class="doc doc-heading">
-            <code class=" language-python"><span class="n">get_region</span><span class="p">(</span><span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Return the list of regions to use for geodata download.</p>
-<p>If no list is provided, returns the complete list of 20 Italian regions
-(codes 1–20). Otherwise, returns the provided list.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>region_list</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Optional list of region codes to use.
-If empty, returns all regions (1–20).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="list">list</span>[<span title="int">int</span>]</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>[]</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="list">list</span>[<span title="int">int</span>]</code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>List of region codes to process.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.remove_files" class="doc doc-heading">
-            <code class=" language-python"><span class="n">remove_files</span><span class="p">(</span><span class="n">files_path</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Remove a list of files from the filesystem.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>files_path</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>List of Path objects to delete.</p>
+                <p>List containing region codes or names for which to download
+geodata. If empty, all available regions are considered.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
                       <code><span title="list">list</span></code>
                   </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="note" open>
-  <summary>Note</summary>
-  <p>Exceptions are not caught: if a file cannot be deleted, the error
-emerges explicitly (desirable behavior in ETL workflows).</p>
-</details>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.utils.unzip_data" class="doc doc-heading">
-            <code class=" language-python"><span class="n">unzip_data</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Decompress a ZIP file into the specified destination folder.</p>
-<p>This function opens a ZIP archive and extracts its entire content into the
-specified folder. If the output folder does not exist, it is created automatically.
-Functions as an internal component of the ISTAT data download workflow.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>input_data</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path to the ZIP file to decompress.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>output_folder</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Folder where the archive content will be extracted.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
                   </span>
               </p>
             </td>
@@ -1857,7 +1468,113 @@ Functions as an internal component of the ISTAT data download workflow.</p>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>Path to the folder containing the extracted files.</p>
+                <p>Path to the root folder containing the downloaded data.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>This function operates exclusively on the 1991 Census.
+It uses support functions such as <code>download_data()</code>,
+<code>download_geodata()</code>, and <code>download_administrative_boundaries()</code>.
+The necessary folder structure is created automatically.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census1991.download.download_data" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">census_year</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download, organize, and process census data for a specific year.</p>
+<p>This function manages the complete workflow for acquiring census data from
+source through to producing final CSV files. The following operations are
+performed:</p>
+<ol>
+<li>Retrieval of the dictionary of links for the census year.</li>
+<li>Download of raw data via the <code>dwn()</code> function.</li>
+<li>Creation of the output folder structure.</li>
+<li>Identification and reading of <code>.xls</code> files.</li>
+<li>Conversion of Excel files to CSV.</li>
+<li>Extraction of tracking metadata (codifications) from the first available file.</li>
+<li>Removal of original Excel files.</li>
+</ol>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Root folder path where downloaded data will be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>census_year</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Reference year for the census data to process.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to the folder containing the downloaded and processed census data.</p>
               </div>
             </td>
           </tr>
@@ -1876,42 +1593,25 @@ Functions as an internal component of the ISTAT data download workflow.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the ZIP file does not exist.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="zipfile.BadZipFile">BadZipFile</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the provided file is not a valid ZIP archive.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
                   <code><span title="Exception">Exception</span></code>
               </span>
             </td>
             <td class="doc-raises-details">
               <div class="doc-md-description">
-                <p>For any error during decompression.</p>
+                <p>If no <code>.xls</code> file is found in the data folder.</p>
               </div>
             </td>
           </tr>
       </tbody>
     </table>
 
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>Conversion from XLS to CSV is performed via the <code>read_xls()</code> function.
+Dataset tracking is performed only on the first XLS file found.
+XLS files are removed at the end of the process to reduce disk space usage.</p>
+</details>
 
     </div>
 
@@ -1955,20 +1655,24 @@ Functions as an internal component of the ISTAT data download workflow.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="istatcelldata.census1991.utils.census_trace" class="doc doc-heading">
-            <code class=" language-python"><span class="n">census_trace</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h2 id="istatcelldata.census2001.download.download_all_census_data_2001" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_all_census_data_2001</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Extract metadata trace record from the "Metadati" sheet of an Excel file.</p>
-<p>This function accesses the sheet named <strong>"Metadati"</strong> in an Excel file
-related to census data, extracts the fundamental columns (field name and
-description), and constructs a pandas DataFrame with an index based on the
-field name. If an output path is provided, the trace record is also saved
-in CSV format.</p>
+        <p>Download complete census and geographic dataset for the 2001 Census.</p>
+<p>This function coordinates all necessary operations to obtain census data
+and geographic information associated with the 2001 Census. Specifically,
+it handles:</p>
+<ul>
+<li>Downloading tabular census data</li>
+<li>Downloading geodata (for all regions or a specified subset)</li>
+<li>Downloading official administrative boundaries</li>
+</ul>
+<p>If <code>region_list</code> is empty, geodata for all available regions is downloaded.</p>
 
 
 <table>
@@ -1981,11 +1685,12 @@ in CSV format.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>file_path</code>
+                <code>output_data_folder</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Path to the Excel file from which to extract metadata.</p>
+                <p>Main path where all downloaded and processed data
+will be saved.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -1997,11 +1702,527 @@ in CSV format.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>year</code>
+                <code>region_list</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Reference year for the census, used to generate the output file name.</p>
+                <p>List of region codes or names for which to download geodata.
+If left empty, the function considers all regions.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="list">list</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to the root folder <code>output_data_folder</code> containing the 2001 Census</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>data structure.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>This function is specific to the 2001 Census (the <code>census_year</code> parameter
+is fixed internally to 2001).
+It uses support functions: <code>download_data()</code>, <code>download_geodata()</code>, and
+<code>download_administrative_boundaries()</code>.
+A preprocessing subfolder is created automatically, defined by the
+<code>PREPROCESSING_FOLDER</code> constant.</p>
+</details>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census2011.download.download_administrative_boundaries" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_administrative_boundaries</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">census_year</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download administrative boundaries for a census year and save to data structure.</p>
+<p>This function retrieves from the census dictionary the URL for administrative
+boundaries (regions, provinces, municipalities), prepares the folder structure
+dedicated to the census year, and downloads the associated ZIP file. The
+content is not extracted: the function only performs the download.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Main path where the census data structure will be created.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>census_year</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Reference census year (e.g., 1991, 2001, 2011).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to the folder containing the downloaded administrative boundaries.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="Exception">Exception</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If an error occurs during folder creation or download.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>Administrative boundaries include municipalities, provinces, and regions.
+The file is saved to the folder defined by the <code>BOUNDARIES_DATA_FOLDER</code>
+constant.
+The returned path is the census year folder, not the individual downloaded file.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census2011.download.download_all_census_data_2011" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_all_census_data_2011</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download complete census and geographic dataset for the 2011 Census.</p>
+<p>This function coordinates the three fundamental operations necessary to
+obtain all data for the 2011 Population Census:</p>
+<ol>
+<li>Download of tabular census data.</li>
+<li>Download of geodata for one or more regions (or all, if <code>region_list</code> is empty).</li>
+<li>Download of official administrative boundaries.</li>
+</ol>
+<p>In addition to downloading files, the function automatically creates the
+necessary folder structure within the output directory.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Main path where all census data will be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>region_list</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>List containing region codes or names for which to download
+geodata. If not provided or empty, the function downloads data for all regions.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="list">list</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to the root folder containing the 2011 Census data structure.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>This is a function specific to the 2011 census (the <code>census_year</code> parameter
+is fixed internally).
+It uses support functions: <code>download_data()</code>, <code>download_geodata()</code>,
+and <code>download_administrative_boundaries()</code>.
+The internal folder used for preprocessing is determined by the
+<code>PREPROCESSING_FOLDER</code> constant.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census2011.download.download_data" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">census_year</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download census data for a specific year and organize the working folder.</p>
+<p>This function retrieves from the census dictionary the link to data for the
+specified year, prepares the destination folder structure, and delegates
+the actual download to the <code>download_base()</code> function. Upon completion,
+it returns the path to the downloaded file (or folder, depending on how
+<code>download_base()</code> is implemented).</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Path to the output folder where the census data
+structure will be created (e.g., preprocessing folder or project).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>census_year</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Reference year for the census data to download
+(e.g., 1991, 2001, 2011).</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path returned by <code>download_base()</code>, representing the location of the</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>downloaded census data (file or folder).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+              <span class="doc-raises-annotation">
+                  <code><span title="Exception">Exception</span></code>
+              </span>
+            </td>
+            <td class="doc-raises-details">
+              <div class="doc-md-description">
+                <p>If an error occurs during link retrieval, folder creation,
+or data download.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census2011.download.download_geodata" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_geodata</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">census_year</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download census geodata for one or more regions for a census year.</p>
+<p>This function retrieves URLs for census geodata packages (ZIP) via
+<code>get_census_dictionary()</code>, creates the destination folder structure for the
+census year, and proceeds to download the ZIP files for the requested regions.
+If <code>region_list</code> is empty, data for all available regions in the dictionary
+is downloaded (typically 20).</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Root folder where the entire census data structure
+will be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>census_year</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Reference year for the census (e.g., 1991, 2001, 2011).</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2013,21 +2234,21 @@ in CSV format.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>output_path</code>
+                <code>region_list</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Path to the folder where the trace record CSV will be saved.
-If None, a DataFrame is returned directly.</p>
+                <p>List of ISTAT region codes for which to download geodata.
+If empty, geodata for all predefined regions is downloaded.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span> | None</code>
+                      <code><span title="list">list</span>[<span title="int">int</span>]</code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
-                      <code>None</code>
+                      <code>[]</code>
                   </span>
               </p>
             </td>
@@ -2047,24 +2268,12 @@ If None, a DataFrame is returned directly.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
+                    <code><span title="pathlib.Path">Path</span></code>
                 </span>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>Path to the generated CSV file if <code>output_path</code> is provided, or a pandas</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>DataFrame containing the metadata trace record if <code>output_path</code> is None.</p>
+                <p>Path to the folder containing the downloaded census geodata ZIP files.</p>
               </div>
             </td>
           </tr>
@@ -2072,227 +2281,13 @@ If None, a DataFrame is returned directly.</p>
     </table>
 
 
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RAISES</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the specified Excel file does not exist.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="xlrd.XLRDError">XLRDError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If an error occurs while opening or reading the Excel file.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="Exception">Exception</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>For any unexpected errors during parsing or saving.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="istatcelldata.census1991.utils.read_xls" class="doc doc-heading">
-            <code class=" language-python"><span class="n">read_xls</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">census_code</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Read an Excel file (.xls) and return a DataFrame or save data as CSV.</p>
-<p>This function opens an Excel file in <code>.xls</code> format, automatically selects
-the first useful sheet (excluding any sheets named "Metadati"), extracts
-the sheet rows, constructs a pandas DataFrame, and sets as index the column
-corresponding to the provided census code.</p>
-<p>If an output path is specified, the DataFrame is saved in CSV format;
-otherwise, it is returned directly.</p>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">PARAMETER</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>file_path</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path to the Excel file to read.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>census_code</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Name of the column to use as the DataFrame index
-(e.g., ISTAT municipality code).</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="str">str</span></code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>output_path</code>
-            </td>
-            <td class="doc-param-details">
-              <div class="doc-md-description">
-                <p>Path to the folder where the resulting CSV will be saved.
-If None, the DataFrame is returned without saving.</p>
-              </div>
-              <p>
-                  <span class="doc-param-annotation">
-                    <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span> | None</code>
-                  </span>
-                  <span class="doc-param-default">
-                    <b>DEFAULT:</b>
-                      <code>None</code>
-                  </span>
-              </p>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RETURNS</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>A DataFrame containing data read from the Excel file if <code>output_path</code></p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
-                </span>
-            </td>
-            <td class="doc-returns-details">
-              <div class="doc-md-description">
-                <p>is None, or the path to the saved CSV file if <code>output_path</code> is specified.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<table>
-      <thead>
-        <tr>
-          <th><span class="doc-section-title">RAISES</span></th>
-          <th><span>DESCRIPTION</span></th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If the specified file does not exist.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="xlrd.XLRDError">XLRDError</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>If an error occurs while reading the Excel file.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-              <span class="doc-raises-annotation">
-                  <code><span title="Exception">Exception</span></code>
-              </span>
-            </td>
-            <td class="doc-raises-details">
-              <div class="doc-md-description">
-                <p>For any unexpected error during parsing or saving.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
+<details class="note" open>
+  <summary>Note</summary>
+  <p>The function does not extract the ZIP files: it only downloads them.
+Geodata URLs are obtained from the census dictionary via the
+<code>geodata_urls</code> key.
+The final data path is organized via the global <code>GEODATA_FOLDER</code> constant.</p>
+</details>
 
     </div>
 
@@ -2336,16 +2331,24 @@ If None, the DataFrame is returned without saving.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="istatcelldata.census2021.utils.read_xlsx" class="doc doc-heading">
-            <code class=" language-python"><span class="n">read_xlsx</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+<h2 id="istatcelldata.census2021.download.download_all_census_data_2021" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_all_census_data_2021</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
 
 </h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Read an Excel file (XLSX format) and convert to a Pandas DataFrame.</p>
-<p>If specified, saves the data in CSV format.</p>
+        <p>Download complete census and geographic dataset for the 2021 Census.</p>
+<p>This function performs all necessary operations to obtain 2021 census data,
+automatically coordinating:</p>
+<ol>
+<li>Download of tabular census data.</li>
+<li>Download of geodata for requested regions (or all, if <code>region_list</code> is empty).</li>
+<li>Download of official administrative boundaries.</li>
+</ol>
+<p>The function automatically creates the necessary folder structure to organize
+the data, defined by the <code>PREPROCESSING_FOLDER</code> constant.</p>
 
 
 <table>
@@ -2358,11 +2361,11 @@ If None, the DataFrame is returned without saving.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>file_path</code>
+                <code>output_data_folder</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Path to the Excel file to read.</p>
+                <p>Main path where 2021 Census data will be saved.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
@@ -2374,21 +2377,21 @@ If None, the DataFrame is returned without saving.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>output_path</code>
+                <code>region_list</code>
             </td>
             <td class="doc-param-details">
               <div class="doc-md-description">
-                <p>Path where the generated CSV file will be saved.
-If not specified, returns the DataFrame.</p>
+                <p>Region codes or names for which to download geodata.
+If the list is empty, geodata for all regions is downloaded.</p>
               </div>
               <p>
                   <span class="doc-param-annotation">
                     <b>TYPE:</b>
-                      <code><span title="pathlib.Path">Path</span> | None</code>
+                      <code><span title="list">list</span></code>
                   </span>
                   <span class="doc-param-default">
                     <b>DEFAULT:</b>
-                      <code>None</code>
+                      <code>[]</code>
                   </span>
               </p>
             </td>
@@ -2408,24 +2411,122 @@ If not specified, returns the DataFrame.</p>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
+                    <code><span title="pathlib.Path">Path</span></code>
                 </span>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>A DataFrame if <code>output_path</code> is None, otherwise returns the path to</p>
+                <p>Path to the root folder containing the complete downloaded data structure</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
                 <span class="doc-returns-annotation">
-                    <code><span title="pandas.DataFrame">DataFrame</span> | <span title="pathlib.Path">Path</span></code>
+                    <code><span title="pathlib.Path">Path</span></code>
                 </span>
             </td>
             <td class="doc-returns-details">
               <div class="doc-md-description">
-                <p>the saved CSV file.</p>
+                <p>for the 2021 Census.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>The <code>census_year</code> parameter is fixed at 2021.
+It uses support functions: <code>download_data()</code>, <code>download_geodata()</code>,
+and <code>download_administrative_boundaries()</code>.</p>
+</details>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.census2021.download.download_data" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_data</span><span class="p">(</span><span class="n">output_data_folder</span><span class="p">,</span> <span class="n">census_year</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download, organize, and convert census data to processable format.</p>
+<p>This function manages the complete workflow of downloading and preparing
+census data for a specific year. It identifies XLSX files present,
+performs conversion to CSV, and removes the original files that are no
+longer needed.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Path to the main folder where downloaded and
+processed data will be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>census_year</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Reference year for the census data to download.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="int">int</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RETURNS</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <span class="doc-returns-annotation">
+                    <code><span title="pathlib.Path">Path</span></code>
+                </span>
+            </td>
+            <td class="doc-returns-details">
+              <div class="doc-md-description">
+                <p>Path to the folder containing the downloaded and processed data.</p>
               </div>
             </td>
           </tr>
@@ -2444,15 +2545,164 @@ If not specified, returns the DataFrame.</p>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
-                  <code><span title="FileNotFoundError">FileNotFoundError</span></code>
+                  <code><span title="Exception">Exception</span></code>
               </span>
             </td>
             <td class="doc-raises-details">
               <div class="doc-md-description">
-                <p>If the specified Excel file is not found.</p>
+                <p>If no XLSX file is found in the downloaded data folder.</p>
               </div>
             </td>
           </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Note</summary>
+  <p>XLSX files are converted to CSV to facilitate subsequent ETL and
+analysis phases.
+Original XLSX files are deleted to reduce disk space usage.
+The final data structure depends on the global constants
+<code>DATA_FOLDER</code> and <code>CENSUS_DATA_FOLDER</code>.</p>
+</details>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="istatcelldata.executor.download.download_census" class="doc doc-heading">
+            <code class=" language-python"><span class="n">download_census</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="n">output_data_folder</span><span class="p">,</span> <span class="n">region_list</span><span class="o">=</span><span class="p">[])</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Download census data for one or more requested years including geodata and boundaries.</p>
+<p>This function provides centralized download of census data for years 1991, 2001,
+2011, and 2021. For each year, it automatically executes the following procedures:</p>
+<ul>
+<li>Download of tabular census data</li>
+<li>Download of geodata (for all regions or specified ones)</li>
+<li>Download of administrative boundaries</li>
+</ul>
+<p>If <code>years</code> is empty, data for all available years is downloaded automatically.</p>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">PARAMETER</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>years</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>List of census years to download. If the list is empty, data for
+all census years (1991, 2001, 2011, 2021) will be downloaded.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="list">list</span>[<span title="int">int</span>]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>output_data_folder</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Path to the folder where all downloaded data will
+be saved.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="pathlib.Path">Path</span></code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>region_list</code>
+            </td>
+            <td class="doc-param-details">
+              <div class="doc-md-description">
+                <p>Optional list of region codes or names for which to download
+geodata. If empty, geodata for all available regions is downloaded.</p>
+              </div>
+              <p>
+                  <span class="doc-param-annotation">
+                    <b>TYPE:</b>
+                      <code><span title="list">list</span></code>
+                  </span>
+                  <span class="doc-param-default">
+                    <b>DEFAULT:</b>
+                      <code>[]</code>
+                  </span>
+              </p>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<table>
+      <thead>
+        <tr>
+          <th><span class="doc-section-title">RAISES</span></th>
+          <th><span>DESCRIPTION</span></th>
+        </tr>
+      </thead>
+      <tbody>
           <tr class="doc-section-item">
             <td>
               <span class="doc-raises-annotation">
@@ -2461,7 +2711,8 @@ If not specified, returns the DataFrame.</p>
             </td>
             <td class="doc-raises-details">
               <div class="doc-md-description">
-                <p>If the Excel file cannot be read correctly.</p>
+                <p>If one of the specified years is not supported or does not
+exist in the mapping.</p>
               </div>
             </td>
           </tr>
@@ -2503,7 +2754,7 @@ If not specified, returns the DataFrame.</p>
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
+  Torna su
 </button>
         
       </main>
@@ -2535,10 +2786,10 @@ If not specified, returns the DataFrame.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copiato", "clipboard.copy": "Copia", "search.result.more.one": "1 altro in questa pagina", "search.result.more.other": "# altri in questa pagina", "search.result.none": "Nessun documento trovato", "search.result.one": "1 documento trovato", "search.result.other": "# documenti trovati", "search.result.placeholder": "Scrivi per iniziare a cercare", "search.result.term.missing": "Non presente", "select.version": "Seleziona la versione"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
       
     
   </body>
