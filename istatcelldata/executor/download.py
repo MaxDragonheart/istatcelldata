@@ -59,9 +59,7 @@ def download_census(years: list[int], output_data_folder: Path, region_list: lis
 
     # If the year list is empty, download data for all available years
     if not years:
-        logging.info(
-            "No year specified, downloading all available data (1991, 2001, 2011, 2021)."
-        )
+        logging.info("No year specified, downloading all available data (1991, 2001, 2011, 2021).")
         years = [1991, 2001, 2011, 2021]
 
     # Download data for each specified year

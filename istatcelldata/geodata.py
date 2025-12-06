@@ -195,14 +195,10 @@ def read_census(
 
             # Check if geometry is present
             if census_geometry is not None:
-                validated_geometry = make_valid(
-                    census_geometry
-                )  # Correct geometry if necessary
+                validated_geometry = make_valid(census_geometry)  # Correct geometry if necessary
                 row[GEOMETRY_COLUMN_NAME] = validated_geometry
                 census_row = row.to_list()
-                tipo_loc = tipo_loc_mapping.get(
-                    row["TIPO_LOC"], None
-                )  # Map locality code
+                tipo_loc = tipo_loc_mapping.get(row["TIPO_LOC"], None)  # Map locality code
                 census_row.extend([tipo_loc])
                 census_cells.append(census_row)
             else:
@@ -322,8 +318,11 @@ def preprocess_geodata(
 
     # Read and save provincial boundaries
     logging.info("Starting processing of provincial boundaries")
-    if (provinces_file_path is None or provinces_target_columns is None or
-        provinces_index_column is None):
+    if (
+        provinces_file_path is None
+        or provinces_target_columns is None
+        or provinces_index_column is None
+    ):
         raise ValueError("Provincial boundaries information is required")
     province = read_administrative_boundaries(
         file_path=provinces_file_path,
@@ -336,8 +335,11 @@ def preprocess_geodata(
 
     # Read and save municipal boundaries
     logging.info("Starting processing of municipal boundaries")
-    if (municipalities_file_path is None or municipalities_target_columns is None or
-        municipalities_index_column is None):
+    if (
+        municipalities_file_path is None
+        or municipalities_target_columns is None
+        or municipalities_index_column is None
+    ):
         raise ValueError("Municipal boundaries information is required")
     municipality = read_administrative_boundaries(
         file_path=municipalities_file_path,
@@ -364,9 +366,7 @@ def preprocess_geodata(
     # Add regional details to municipalities
     mun_reg = pd.merge(left=mun_prov, right=region, how="left", on="COD_REG")
 
-    logging.info(
-        f"Starting preprocessing of census data from folder {census_shp_folder}"
-    )
+    logging.info(f"Starting preprocessing of census data from folder {census_shp_folder}")
     # Read and save census data
     census_geodata = read_census(
         shp_folder=census_shp_folder,

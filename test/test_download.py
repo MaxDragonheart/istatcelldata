@@ -21,32 +21,33 @@ def test_download_mock_success(tmp_path: Path):
 
     # Create a mock ZIP file in memory
     zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        zip_file.writestr('test_file.txt', 'test content')
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("test_file.txt", "test content")
     zip_data = zip_buffer.getvalue()
 
     # Mock the requests.get response
     mock_response = Mock()
     mock_response.status_code = 200
-    mock_response.headers = {'Content-Length': str(len(zip_data))}
-    mock_response.iter_content = lambda chunk_size: [zip_data[i:i+chunk_size]
-                                                      for i in range(0, len(zip_data), chunk_size)]
+    mock_response.headers = {"Content-Length": str(len(zip_data))}
+    mock_response.iter_content = lambda chunk_size: [
+        zip_data[i : i + chunk_size] for i in range(0, len(zip_data), chunk_size)
+    ]
 
-    with patch('istatcelldata.download.requests.get', return_value=mock_response):
+    with patch("istatcelldata.download.requests.get", return_value=mock_response):
         result = download_base(
             data_link="https://example.com/data.zip",
             data_file_path_destination=download_folder / "data.zip",
             data_folder=extract_folder,
-            destination_folder=destination_folder
+            destination_folder=destination_folder,
         )
 
     # Verify the result
     assert result == destination_folder
 
     # Verify the zip was extracted
-    extracted_file = extract_folder / 'test_file.txt'
+    extracted_file = extract_folder / "test_file.txt"
     assert extracted_file.exists()
-    assert extracted_file.read_text() == 'test content'
+    assert extracted_file.read_text() == "test content"
 
     # Verify the zip file was removed
     assert not (download_folder / "data.zip").exists()
@@ -66,13 +67,13 @@ def test_mock_http_error(tmp_path: Path):
     mock_response = Mock()
     mock_response.status_code = 404
 
-    with patch('istatcelldata.download.requests.get', return_value=mock_response):
+    with patch("istatcelldata.download.requests.get", return_value=mock_response):
         with pytest.raises(Exception, match="returned status code 404"):
             download_base(
                 data_link="https://example.com/notfound.zip",
                 data_file_path_destination=download_folder / "data.zip",
                 data_folder=extract_folder,
-                destination_folder=destination_folder
+                destination_folder=destination_folder,
             )
 
 
@@ -85,13 +86,13 @@ def test_mock_network_error(tmp_path: Path):
     destination_folder = tmp_path / "destination"
 
     # Mock a network error
-    with patch('istatcelldata.download.requests.get', side_effect=Exception("Network error")):
+    with patch("istatcelldata.download.requests.get", side_effect=Exception("Network error")):
         with pytest.raises(Exception, match="Network error"):
             download_base(
                 data_link="https://example.com/data.zip",
                 data_file_path_destination=download_folder / "data.zip",
                 data_folder=extract_folder,
-                destination_folder=destination_folder
+                destination_folder=destination_folder,
             )
 
 
@@ -108,8 +109,8 @@ def test_mock_no_content_length(tmp_path: Path):
 
     # Create a mock ZIP file
     zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        zip_file.writestr('test.txt', 'content')
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("test.txt", "content")
     zip_data = zip_buffer.getvalue()
 
     # Mock response without Content-Length
@@ -118,16 +119,16 @@ def test_mock_no_content_length(tmp_path: Path):
     mock_response.headers = {}  # No Content-Length
     mock_response.iter_content = lambda chunk_size: [zip_data]
 
-    with patch('istatcelldata.download.requests.get', return_value=mock_response):
+    with patch("istatcelldata.download.requests.get", return_value=mock_response):
         result = download_base(
             data_link="https://example.com/data.zip",
             data_file_path_destination=download_folder / "data.zip",
             data_folder=extract_folder,
-            destination_folder=destination_folder
+            destination_folder=destination_folder,
         )
 
     assert result == destination_folder
-    assert (extract_folder / 'test.txt').exists()
+    assert (extract_folder / "test.txt").exists()
 
 
 @pytest.mark.download
@@ -151,7 +152,7 @@ def test_download_base_real_integration(tmp_path: Path):
         data_link=download_url,
         data_file_path_destination=download_folder.joinpath(data_file_name),
         data_folder=extract_folder,
-        destination_folder=destination_folder
+        destination_folder=destination_folder,
     )
     print(data)
     assert isinstance(data, Path)

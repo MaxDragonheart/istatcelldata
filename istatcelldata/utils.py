@@ -166,9 +166,7 @@ def census_folder(output_data_folder: Path, year: int) -> Path:
 
     except Exception as e:
         # Log errors
-        logging.error(
-            f"Error creating folder for census {year}: {str(e)}"
-        )
+        logging.error(f"Error creating folder for census {year}: {str(e)}")
         raise e
 
 

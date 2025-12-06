@@ -83,9 +83,7 @@ def finalize_census_data(
         join_key = f"SEZ{year}"
 
         if join_key not in geodata.columns or join_key not in data.columns:
-            error_message = (
-                f"Join column '{join_key}' not found in geodata or tabular data"
-            )
+            error_message = f"Join column '{join_key}' not found in geodata or tabular data"
             logging.error(error_message)
             raise KeyError(error_message)
 

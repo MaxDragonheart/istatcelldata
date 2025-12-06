@@ -83,9 +83,7 @@ def read_xls(
         logging.error(f"Error reading Excel file: {str(e)}")
         raise e
     except Exception as e:
-        logging.error(
-            f"Error reading Excel file or saving data: {str(e)}"
-        )
+        logging.error(f"Error reading Excel file or saving data: {str(e)}")
         raise e
 
 
@@ -152,7 +150,5 @@ def census_trace(
         logging.error(f"Error reading Excel file: {str(e)}")
         raise e
     except Exception as e:
-        logging.error(
-            f"Error reading Excel file or saving data: {str(e)}"
-        )
+        logging.error(f"Error reading Excel file or saving data: {str(e)}")
         raise e

@@ -107,9 +107,14 @@ def preprocess_data(
         df.rename(columns=data_column_remapping, inplace=True)
 
     if add_administrative_informations:
-        if (regions_data_path is None or regions_target_columns is None or
-            provinces_data_path is None or provinces_target_columns is None or
-            municipalities_data_path is None or municipalities_target_columns is None):
+        if (
+            regions_data_path is None
+            or regions_target_columns is None
+            or provinces_data_path is None
+            or provinces_target_columns is None
+            or municipalities_data_path is None
+            or municipalities_target_columns is None
+        ):
             raise ValueError(
                 "Administrative data paths and columns are required when "
                 "add_administrative_informations is True"

@@ -95,17 +95,13 @@ def preprocess_census(
         provinces_index = year_data["provinces_index"]
         municipalities_root = year_data.get("municipalities_root", None)
         municipalities_column = year_data.get("municipalities_column", None)
-        municipalities_column_remapping = year_data.get(
-            "municipalities_column_remapping", None
-        )
+        municipalities_column_remapping = year_data.get("municipalities_column_remapping", None)
         municipalities_index = year_data["municipalities_index"]
         census_shp_root = year_data.get("census_shp_root", None)
         census_shp_column = year_data.get("census_shp_column", None)
         census_shp_column_remapping = year_data.get("census_shp_column_remapping", None)
         tipo_loc_mapping = year_data.get("tipo_loc_mapping", None)
-        add_administrative_informations = year_data.get(
-            "add_administrative_informations", None
-        )
+        add_administrative_informations = year_data.get("add_administrative_informations", None)
 
         # Preprocess census geodata and administrative boundaries
         logging.info("Preprocessing geodata.")
@@ -117,8 +113,11 @@ def preprocess_census(
             raise ValueError("Regions configuration is required")
         if provinces_root is None or provinces_column is None or provinces_index is None:
             raise ValueError("Provinces configuration is required")
-        if (municipalities_root is None or municipalities_column is None or
-            municipalities_index is None):
+        if (
+            municipalities_root is None
+            or municipalities_column is None
+            or municipalities_index is None
+        ):
             raise ValueError("Municipalities configuration is required")
 
         geodata_path = preprocess_geodata(
@@ -182,15 +181,11 @@ def preprocess_census(
 
     # Delete pre-processed data folder if requested
     if delete_download_folder:
-        logging.info(
-            f"Deleting pre-processed data folder: {processed_data_folder}"
-        )
+        logging.info(f"Deleting pre-processed data folder: {processed_data_folder}")
         shutil.rmtree(processed_data_folder)
 
     time_end = datetime.datetime.now()
     elapsed_time = time_end - time_start
-    logging.info(
-        f"Preprocessing completed in {elapsed_time}. Data saved to {output_data_folder}"
-    )
+    logging.info(f"Preprocessing completed in {elapsed_time}. Data saved to {output_data_folder}")
 
     return output_data_folder
