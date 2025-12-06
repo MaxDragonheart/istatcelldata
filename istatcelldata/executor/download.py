@@ -1,7 +1,6 @@
 import datetime
 import logging
 from pathlib import Path
-from typing import List
 
 from istatcelldata.census1991.download import download_all_census_data_1991
 from istatcelldata.census2001.download import download_all_census_data_2001
@@ -15,64 +14,63 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def download_census(
-        years: List[int],
-        output_data_folder: Path,
-        region_list: List = []
-):
-    """Scarica i dati censuari per uno o più anni richiesti, inclusi geodati e confini amministrativi.
+def download_census(years: list[int], output_data_folder: Path, region_list: list = []):
+    """Download census data for one or more requested years including geodata and boundaries.
 
-    La funzione permette di avviare in modo centralizzato il download dei dati
-    censuari per gli anni 1991, 2001, 2011 e 2021. Per ciascun anno vengono
-    automaticamente eseguite le procedure di:
+    This function provides centralized download of census data for years 1991, 2001,
+    2011, and 2021. For each year, it automatically executes the following procedures:
 
-    - download dei dati censuari tabellari,
-    - download dei geodati (per tutte le Regioni o per quelle indicate),
-    - download dei confini amministrativi.
+    - Download of tabular census data
+    - Download of geodata (for all regions or specified ones)
+    - Download of administrative boundaries
 
-    Se `years` è vuoto, vengono scaricati automaticamente i dati per tutti gli
-    anni disponibili.
+    If `years` is empty, data for all available years is downloaded automatically.
 
     Args:
-        years (List[int]):
-            Lista degli anni censuari da scaricare.
-            Se la lista è vuota, saranno scaricati i dati dei censimenti:
-            1991, 2001, 2011 e 2021.
-        output_data_folder (Path):
-            Percorso della cartella in cui salvare tutti i dati scaricati.
-        region_list (List, optional):
-            Lista dei codici o nomi delle Regioni per cui scaricare i geodati.
-            Se vuota, vengono scaricati i geodati di tutte le Regioni disponibili.
+        years: List of census years to download. If the list is empty, data for
+            all census years (1991, 2001, 2011, 2021) will be downloaded.
+        output_data_folder: Path to the folder where all downloaded data will
+            be saved.
+        region_list: Optional list of region codes or names for which to download
+            geodata. If empty, geodata for all available regions is downloaded.
 
     Raises:
-        ValueError:
-            Se uno degli anni specificati non è supportato o non esiste nella mappa.
+        ValueError: If one of the specified years is not supported or does not
+            exist in the mapping.
     """
     time_start = datetime.datetime.now()
-    logging.info(f"Inizio dell'analisi alle {time_start}")
+    logging.info(f"Starting analysis at {time_start}")
 
-    # Mappa degli anni censuari alle rispettive funzioni di download
+    # Map census years to their respective download functions
     function_map = {
-        1991: lambda: download_all_census_data_1991(output_data_folder=output_data_folder, region_list=region_list),
-        2001: lambda: download_all_census_data_2001(output_data_folder=output_data_folder, region_list=region_list),
-        2011: lambda: download_all_census_data_2011(output_data_folder=output_data_folder, region_list=region_list),
-        2021: lambda: download_all_census_data_2021(output_data_folder=output_data_folder, region_list=region_list),
+        1991: lambda: download_all_census_data_1991(
+            output_data_folder=output_data_folder, region_list=region_list
+        ),
+        2001: lambda: download_all_census_data_2001(
+            output_data_folder=output_data_folder, region_list=region_list
+        ),
+        2011: lambda: download_all_census_data_2011(
+            output_data_folder=output_data_folder, region_list=region_list
+        ),
+        2021: lambda: download_all_census_data_2021(
+            output_data_folder=output_data_folder, region_list=region_list
+        ),
     }
 
-    # Se la lista degli anni è vuota, scarica i dati per tutti gli anni disponibili
+    # If the year list is empty, download data for all available years
     if not years:
-        logging.info("Nessun anno specificato, scarico tutti i dati disponibili (1991, 2001, 2011, 2021).")
+        logging.info("No year specified, downloading all available data (1991, 2001, 2011, 2021).")
         years = [1991, 2001, 2011, 2021]
 
-    # Scarica i dati per ogni anno specificato
+    # Download data for each specified year
     for year in years:
         if year in function_map:
-            logging.info(f"Scarico i dati per il censimento del {year}")
-            function_map[year]()  # Chiamata alla funzione corrispondente per l'anno
+            logging.info(f"Downloading data for {year} census")
+            function_map[year]()  # Call the corresponding function for the year
         else:
-            logging.error(f"Anno {year} non supportato. Operazione annullata.")
-            raise ValueError(f"L'anno {year} non è supportato.")
+            logging.error(f"Year {year} not supported. Operation canceled.")
+            raise ValueError(f"Year {year} is not supported.")
 
-    # Calcolo del tempo totale di esecuzione
+    # Calculate total execution time
     time_end = datetime.datetime.now() - time_start
-    logging.info(f"Analisi completata in {time_end}")
+    logging.info(f"Analysis completed in {time_end}")

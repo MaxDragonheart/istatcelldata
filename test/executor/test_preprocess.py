@@ -10,8 +10,8 @@ def test_preprocess_census(tmp_path: Path):
         processed_data_folder=DOWNLOAD_RAW_DATA,
         years=[2021],
         output_data_folder=tmp_path,
-        municipalities_code=[1136, 2088, 85007]
-        #delete_download_folder=True
+        municipalities_code=[1136, 2088, 85007],
+        # delete_download_folder=True
     )
     print(data)
     assert isinstance(data, Path)

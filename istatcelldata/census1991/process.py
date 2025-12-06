@@ -13,129 +13,126 @@ logger = logging.getLogger(__name__)
 
 
 def add_administrative_info(
-        census_data: pd.DataFrame,
-        regions_data_path: Path,
-        regions_target_columns: list,
-        provinces_data_path: Path,
-        provinces_target_columns: list,
-        municipalities_data_path: Path,
-        municipalities_target_columns: list
+    census_data: pd.DataFrame,
+    regions_data_path: Path,
+    regions_target_columns: list,
+    provinces_data_path: Path,
+    provinces_target_columns: list,
+    municipalities_data_path: Path,
+    municipalities_target_columns: list,
 ) -> pd.DataFrame:
-    """Arricchisce i dati censuari con informazioni amministrative (comuni, province, regioni).
+    """Enrich census data with administrative information (municipalities, provinces, regions).
 
-    La funzione integra ai dati del censimento i codici e le denominazioni
-    amministrative corrispondenti, partendo da tre sorgenti esterne:
-    confini regionali, provinciali e comunali.
+    This function integrates corresponding administrative codes and names into the
+    census data, sourced from three external datasets: regional, provincial, and
+    municipal boundaries.
 
-    Il flusso logico prevede:
-    1. Uniformazione dei nomi delle colonne del dataset censuario.
-    2. Lettura dei dataset amministrativi (regioni, province, comuni).
-    3. Merge dei comuni con le province.
-    4. Merge del risultato con le regioni.
-    5. Join finale con il dataset del censimento sulla chiave comunale (`PRO_COM`).
-    6. Pulizia e rinomina delle colonne amministrative finali.
+    The logical workflow includes:
+    1. Standardization of census dataset column names.
+    2. Reading of administrative datasets (regions, provinces, municipalities).
+    3. Merge of municipalities with provinces.
+    4. Merge of result with regions.
+    5. Final join with census dataset on the municipal key (`PRO_COM`).
+    6. Cleanup and renaming of final administrative columns.
 
     Args:
-        census_data (pd.DataFrame):
-            Dataset del censimento a cui aggiungere le informazioni amministrative.
-        regions_data_path (Path):
-            Percorso del file contenente i dati delle regioni.
-        regions_target_columns (list):
-            Elenco delle colonne da estrarre dal dataset regionale
-            (la prima colonna è usata come indice).
-        provinces_data_path (Path):
-            Percorso del file contenente i dati delle province.
-        provinces_target_columns (list):
-            Elenco delle colonne da estrarre dal dataset provinciale
-            (la prima colonna è usata come indice).
-        municipalities_data_path (Path):
-            Percorso del file contenente i dati dei comuni.
-        municipalities_target_columns (list):
-            Elenco delle colonne da estrarre dal dataset comunale
-            (la prima colonna è usata come indice).
+        census_data: Census dataset to which administrative information will be added.
+        regions_data_path: Path to the file containing regional data.
+        regions_target_columns: List of columns to extract from the regional dataset
+            (the first column is used as the index).
+        provinces_data_path: Path to the file containing provincial data.
+        provinces_target_columns: List of columns to extract from the provincial dataset
+            (the first column is used as the index).
+        municipalities_data_path: Path to the file containing municipal data.
+        municipalities_target_columns: List of columns to extract from the municipal
+            dataset (the first column is used as the index).
 
     Returns:
-        pd.DataFrame:
-            DataFrame del censimento arricchito con le informazioni
-            amministrative su comuni, province e regioni.
+        Census DataFrame enriched with administrative information on municipalities,
+        provinces, and regions.
 
-    Notes:
-        - Si assume che i codici amministrativi utilizzati per i merge siano:
-          `PRO_COM` (comune), `COD_PROV`/`COD_PRO` (provincia), `COD_REG` (regione).
-        - La funzione utilizza `read_administrative_boundaries()` per caricare
-          e filtrare i dataset amministrativi.
+    Note:
+        Administrative codes used for merges are assumed to be:
+        `PRO_COM` (municipality), `COD_PROV`/`COD_PRO` (province), `COD_REG` (region).
+        The function uses `read_administrative_boundaries()` to load and filter
+        administrative datasets.
     """
-    logging.info("Inizio aggiunta delle informazioni amministrative ai dati del censimento.")
+    logging.info("Starting to add administrative information to census data.")
 
-    # Convertiamo i nomi delle colonne del censimento in maiuscolo per uniformità
+    # Convert census column names to uppercase for uniformity
     census_data.columns = census_data.columns.str.upper()
-    logging.info("Nomi delle colonne del dataset del censimento convertiti in maiuscolo.")
+    logging.info("Census dataset column names converted to uppercase.")
 
-    # Lettura dei confini amministrativi regionali
-    logging.info(f"Lettura dei dati delle regioni da {regions_data_path}")
+    # Read regional administrative boundaries
+    logging.info(f"Reading regional data from {regions_data_path}")
     regions_data = read_administrative_boundaries(
         file_path=regions_data_path,
         target_columns=regions_target_columns,
-        index_column=regions_target_columns[0]
+        index_column=regions_target_columns[0],
     )
+    if isinstance(regions_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     regions_data.reset_index(inplace=True)
-    logging.info(f"Dati delle regioni letti con successo. {len(regions_data)} record trovati.")
+    logging.info(f"Regional data read successfully. {len(regions_data)} records found.")
 
-    # Lettura dei confini amministrativi provinciali
-    logging.info(f"Lettura dei dati delle province da {provinces_data_path}")
+    # Read provincial administrative boundaries
+    logging.info(f"Reading provincial data from {provinces_data_path}")
     provinces_data = read_administrative_boundaries(
         file_path=provinces_data_path,
         target_columns=provinces_target_columns,
-        index_column=provinces_target_columns[0]
+        index_column=provinces_target_columns[0],
     )
+    if isinstance(provinces_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     provinces_data.reset_index(inplace=True)
-    logging.info(f"Dati delle province letti con successo. {len(provinces_data)} record trovati.")
+    logging.info(f"Provincial data read successfully. {len(provinces_data)} records found.")
 
-    # Lettura dei confini amministrativi comunali
-    logging.info(f"Lettura dei dati dei comuni da {municipalities_data_path}")
+    # Read municipal administrative boundaries
+    logging.info(f"Reading municipal data from {municipalities_data_path}")
     municipalities_data = read_administrative_boundaries(
         file_path=municipalities_data_path,
         target_columns=municipalities_target_columns,
-        index_column=municipalities_target_columns[0]
+        index_column=municipalities_target_columns[0],
     )
+    if isinstance(municipalities_data, Path):
+        raise ValueError("Expected DataFrame but got Path from read_administrative_boundaries")
     municipalities_data.reset_index(inplace=True)
-    logging.info(f"Dati dei comuni letti con successo. {len(municipalities_data)} record trovati.")
+    logging.info(f"Municipal data read successfully. {len(municipalities_data)} records found.")
 
-    # Merge dei dati comunali con quelli provinciali
-    logging.info("Inizio merge tra dati comunali e provinciali.")
+    # Merge municipal data with provincial data
+    logging.info("Starting merge between municipal and provincial data.")
     add_provinces = pd.merge(
-        left=municipalities_data,
-        right=provinces_data,
-        how='left',
-        on='COD_PROV'
+        left=municipalities_data, right=provinces_data, how="left", on="COD_PROV"
     )
-    logging.info(f"Merge tra comuni e province completato. {len(add_provinces)} record risultanti.")
+    logging.info(
+        f"Merge between municipalities and provinces completed. "
+        f"{len(add_provinces)} resulting records."
+    )
 
-    # Merge dei dati risultanti con i dati regionali
-    logging.info("Inizio merge tra dati comunali-province e regionali.")
-    add_regions = pd.merge(
-        left=add_provinces,
-        right=regions_data,
-        how='left',
-        on='COD_REG'
+    # Merge resulting data with regional data
+    logging.info("Starting merge between municipal-provincial and regional data.")
+    add_regions = pd.merge(left=add_provinces, right=regions_data, how="left", on="COD_REG")
+    logging.info(
+        f"Merge between municipalities, provinces and regions completed. "
+        f"{len(add_regions)} resulting records."
     )
-    logging.info(f"Merge tra comuni, province e regioni completato. {len(add_regions)} record risultanti.")
 
-    # Merge finale dei dati del censimento con le informazioni amministrative aggiunte
-    logging.info("Inizio merge finale con i dati del censimento.")
-    add_municipalities = pd.merge(
-        left=census_data,
-        right=add_regions,
-        how='left',
-        on='PRO_COM'
-    )
-    logging.info(f"Merge finale completato. {len(add_municipalities)} record nel dataset finale.")
-    add_municipalities.drop(columns=['COD_PRO', 'PRO_COM'], inplace=True)
+    # Final merge of census data with added administrative information
+    logging.info("Starting final merge with census data.")
+    add_municipalities = pd.merge(left=census_data, right=add_regions, how="left", on="PRO_COM")
+    logging.info(f"Final merge completed. {len(add_municipalities)} records in final dataset.")
+    add_municipalities.drop(columns=["COD_PRO", "PRO_COM"], inplace=True)
     add_municipalities.rename(
-        columns={'COD_COM': 'CODCOM', 'COD_PROV': 'CODPRO', 'COD_REG': 'CODREG', 'DEN_PROV': 'PROVINCIA', 'DEN_REG': 'REGIONE'},
-        inplace=True
+        columns={
+            "COD_COM": "CODCOM",
+            "COD_PROV": "CODPRO",
+            "COD_REG": "CODREG",
+            "DEN_PROV": "PROVINCIA",
+            "DEN_REG": "REGIONE",
+        },
+        inplace=True,
     )
 
-    logging.info("Aggiunta delle informazioni amministrative completata con successo.")
+    logging.info("Addition of administrative information completed successfully.")
 
     return add_municipalities

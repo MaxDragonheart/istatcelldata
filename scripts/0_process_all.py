@@ -12,6 +12,7 @@ main_path = Path("/home/max/Desktop/census")
 list_year = [1991, 2001, 2011, 2021]
 list_region = []
 
+
 # Configure logging at the start of the script
 def setup_logging(log_dir: Path):
     configure_logging(
@@ -19,16 +20,18 @@ def setup_logging(log_dir: Path):
         log_name="process_all",
     )
 
+
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
+
 def run(
-        years: list,
-        regions: list,
-        data_dir: Path,
-        delete_download_folder: bool,
-        delete_preprocessed_data: bool,
-        municipalities_code: list[int]
+    years: list,
+    regions: list,
+    data_dir: Path,
+    delete_download_folder: bool,
+    delete_preprocessed_data: bool,
+    municipalities_code: list[int],
 ):
     """Esegue l’intero workflow ETL dei dati di censimento per uno o più anni.
 
@@ -97,16 +100,14 @@ def run(
         processed_data_folder=data_dir.joinpath(PREPROCESSING_FOLDER),
         years=years,
         delete_download_folder=delete_download_folder,
-        municipalities_code=municipalities_code
+        municipalities_code=municipalities_code,
     )
     logging.info("Preprocessing completato con successo.")
 
     # Fase di finalizzazione dei dati del censimento
     logging.info("Avvio della finalizzazione dei dati del censimento.")
     finalize_census_data(
-        census_data_path=data_dir,
-        years=years,
-        delete_preprocessed_data=delete_preprocessed_data
+        census_data_path=data_dir, years=years, delete_preprocessed_data=delete_preprocessed_data
     )
 
     # Tempo totale di esecuzione
@@ -115,7 +116,7 @@ def run(
     logging.info(f"Analisi completata in {elapsed_time}.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Inizializza il logging
     setup_logging(log_dir=main_path)
 

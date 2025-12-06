@@ -3,9 +3,9 @@ import logging
 import shutil
 import sqlite3
 from pathlib import Path
-from typing import List
+from typing import Any
 
-from istatcelldata.config import census_data, YEAR_GEODATA_NAME
+from istatcelldata.config import YEAR_GEODATA_NAME, census_data
 from istatcelldata.data import preprocess_data
 from istatcelldata.geodata import preprocess_geodata
 from istatcelldata.logger_config import configure_logging
@@ -15,99 +15,111 @@ configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
+
 def preprocess_census(
-        processed_data_folder: Path,
-        years: List[int],
-        output_data_folder: Path = None,
-        delete_download_folder: bool = False,
-        municipalities_code: list[int] = []
-):
-    """Preprocessa i dati censuari per uno o più anni, integrando geodati,
-    confini amministrativi e dati tabellari.
+    processed_data_folder: Path,
+    years: list[int],
+    output_data_folder: Path | None = None,
+    delete_download_folder: bool = False,
+    municipalities_code: list[int] = [],
+) -> Path:
+    """Preprocess census data for one or more years, integrating geodata, boundaries, and tables.
 
-    La funzione coordina l’intero workflow di preprocessing dei censimenti,
-    eseguendo per ciascun anno richiesto:
+    This function coordinates the entire census preprocessing workflow, executing
+    for each requested year:
 
-    1. Preprocessing dei dati geografici (shapefile/simili).
-    2. Preprocessing dei dati tabellari (CSV).
-    3. Aggiunta delle informazioni amministrative (opzionale).
-    4. Salvataggio dei dati risultanti all’interno di un GeoPackage.
-    5. Eventuale eliminazione della cartella dei dati pre-processati.
+    1. Preprocessing of geographic data (shapefiles or similar).
+    2. Preprocessing of tabular data (CSV).
+    3. Addition of administrative information (optional).
+    4. Saving of resulting data into a GeoPackage.
+    5. Optional deletion of the pre-processed data folder.
 
-    Gli input necessari vengono letti dal dizionario di configurazione
-    `census_data`, che definisce paths, colonne, mapping e impostazioni specifiche
-    per ogni anno censuario.
+    Required inputs are read from the `census_data` configuration dictionary, which
+    defines paths, columns, mappings, and specific settings for each census year.
 
     Args:
-        processed_data_folder (Path):
-            Cartella contenente i dati pre-scaricati o pre-processati
-            (geodati, dati tabellari, confini amministrativi).
-        years (List[int]):
-            Lista degli anni di censimento da processare (es. [1991, 2001, 2011, 2021]).
-        output_data_folder (Path, optional):
-            Cartella in cui salvare i dati elaborati (GeoPackage e layer associati).
-            Se None, viene utilizzata la cartella padre di `processed_data_folder`.
-        delete_download_folder (bool, optional):
-            Se True, elimina la cartella `processed_data_folder` al termine del processo.
-        municipalities_code (list[int], optional):
-            Lista di codici ISTAT dei comuni da filtrare nei dati (chiave `PRO_COM`).
-            Se vuota, vengono usati tutti i comuni disponibili.
+        processed_data_folder: Folder containing pre-downloaded or pre-processed data
+            (geodata, tabular data, administrative boundaries).
+        years: List of census years to process (e.g., [1991, 2001, 2011, 2021]).
+        output_data_folder: Optional folder where processed data will be saved
+            (GeoPackage and associated layers). If None, the parent folder of
+            `processed_data_folder` is used.
+        delete_download_folder: If True, deletes the `processed_data_folder` at
+            the end of the process.
+        municipalities_code: Optional list of ISTAT municipality codes to filter
+            in the data (`PRO_COM` key). If empty, all available municipalities
+            are used.
 
     Returns:
-        Path:
-            Percorso della cartella finale che contiene i dati elaborati.
+        Path to the final folder containing the processed data.
 
     Raises:
-        KeyError:
-            Se il dizionario `census_data` non contiene la configurazione per un anno richiesto.
-        Exception:
-            Per eventuali errori durante la lettura, il preprocessing o il salvataggio.
+        KeyError: If the `census_data` dictionary does not contain configuration
+            for a requested year.
+        Exception: For any errors during reading, preprocessing, or saving.
 
-    Notes:
-        - Il file GeoPackage è aperto e scritto tramite `sqlite3.connect()`.
-        - I layer inseriti nel GeoPackage seguono convenzioni come:
-            - `sezioni<anno>` per il layer geografico
-            - `data<anno>` per il dataset tabellare
-            - `tracciato<anno>` per il tracciato dei campi
-        - Il parametro `municipalities_code` viene applicato nella fase dei geodati.
+    Note:
+        The GeoPackage file is opened and written via `sqlite3.connect()`.
+        Layers inserted into the GeoPackage follow conventions such as:
+        - `sezioni<year>` for the geographic layer
+        - `data<year>` for the tabular dataset
+        - `tracciato<year>` for the field trace record
+        The `municipalities_code` parameter is applied during the geodata phase.
     """
     time_start = datetime.datetime.now()
-    logging.info(f"Inizio preprocessing del censimento alle {time_start} per gli anni: {years}")
+    logging.info(f"Starting census preprocessing at {time_start} for years: {years}")
 
-    # Se non viene fornita una cartella di output, utilizza la cartella padre di quella di elaborazione
+    # If no output folder is provided, use the parent folder
+    # of the processing folder
     if output_data_folder is None:
         output_data_folder = processed_data_folder.parent
 
-    logging.info(f"Cartella di output: {output_data_folder}")
+    logging.info(f"Output folder: {output_data_folder}")
 
-    # Cicla attraverso gli anni forniti e preprocessa i dati per ciascun anno
+    # Loop through the provided years and preprocess data for each year
     for year in years:
-        logging.info(f"\n\n\nProcessamento dei dati per l'anno {year}")
+        logging.info(f"\n\n\nProcessing data for year {year}")
 
         census_layer_name = f"{YEAR_GEODATA_NAME}{year}"
 
-        # Estrae i percorsi e le colonne dal dizionario census_data per l'anno corrente
-        data_root = census_data[year]['data_root']
-        regions_root = census_data[year]['regions_root']
-        regions_column = census_data[year]['regions_column']
-        regions_column_remapping = census_data[year].get('regions_column_remapping', None)
-        regions_index = census_data[year]['regions_index']
-        provinces_root = census_data[year].get('provinces_root', None)
-        provinces_column = census_data[year].get('provinces_column', None)
-        provinces_column_remapping = census_data[year].get('provinces_column_remapping', None)
-        provinces_index = census_data[year]['provinces_index']
-        municipalities_root = census_data[year].get('municipalities_root', None)
-        municipalities_column = census_data[year].get('municipalities_column', None)
-        municipalities_column_remapping = census_data[year].get('municipalities_column_remapping', None)
-        municipalities_index = census_data[year]['municipalities_index']
-        census_shp_root = census_data[year].get('census_shp_root', None)
-        census_shp_column = census_data[year].get('census_shp_column', None)
-        census_shp_column_remapping = census_data[year].get('census_shp_column_remapping', None)
-        tipo_loc_mapping = census_data[year].get('tipo_loc_mapping', None)
-        add_administrative_informations = census_data[year].get('add_administrative_informations', None)
+        # Extract paths and columns from census_data dictionary for the current year
+        year_data: dict[str, Any] = census_data[year]  # type: ignore[assignment]
+        data_root = year_data["data_root"]
+        regions_root = year_data["regions_root"]
+        regions_column = year_data["regions_column"]
+        regions_column_remapping = year_data.get("regions_column_remapping", None)
+        regions_index = year_data["regions_index"]
+        provinces_root = year_data.get("provinces_root", None)
+        provinces_column = year_data.get("provinces_column", None)
+        provinces_column_remapping = year_data.get("provinces_column_remapping", None)
+        provinces_index = year_data["provinces_index"]
+        municipalities_root = year_data.get("municipalities_root", None)
+        municipalities_column = year_data.get("municipalities_column", None)
+        municipalities_column_remapping = year_data.get("municipalities_column_remapping", None)
+        municipalities_index = year_data["municipalities_index"]
+        census_shp_root = year_data.get("census_shp_root", None)
+        census_shp_column = year_data.get("census_shp_column", None)
+        census_shp_column_remapping = year_data.get("census_shp_column_remapping", None)
+        tipo_loc_mapping = year_data.get("tipo_loc_mapping", None)
+        add_administrative_informations = year_data.get("add_administrative_informations", None)
 
-        # Preprocessa i dati geografici del censimento e i confini amministrativi
-        logging.info(f"Preprocessamento dei dati geografici.")
+        # Preprocess census geodata and administrative boundaries
+        logging.info("Preprocessing geodata.")
+
+        # Runtime checks for required paths
+        if census_shp_root is None or census_shp_column is None or tipo_loc_mapping is None:
+            raise ValueError("Census shapefile configuration is required")
+        if regions_root is None or regions_column is None or regions_index is None:
+            raise ValueError("Regions configuration is required")
+        if provinces_root is None or provinces_column is None or provinces_index is None:
+            raise ValueError("Provinces configuration is required")
+        if (
+            municipalities_root is None
+            or municipalities_column is None
+            or municipalities_index is None
+        ):
+            raise ValueError("Municipalities configuration is required")
+
         geodata_path = preprocess_geodata(
             census_shp_folder=processed_data_folder.joinpath(*census_shp_root),
             census_target_columns=census_shp_column,
@@ -127,14 +139,17 @@ def preprocess_census(
             municipalities_target_columns=municipalities_column,
             municipalities_index_column=municipalities_index,
             municipalities_column_remapping=municipalities_column_remapping,
-            municipalities_code=municipalities_code
+            municipalities_code=municipalities_code,
         )
 
-        # Connessione al GeoPackage
+        # Connect to GeoPackage
         connection = sqlite3.connect(geodata_path)
 
-        # Preprocessamento dei dati non geografici (CSV)
-        logging.info(f"Preprocessamento dei dati non geografici.")
+        # Preprocess non-geographic data (CSV)
+        logging.info("Preprocessing non-geographic data.")
+        if data_root is None:
+            raise ValueError("Data root path is required")
+
         get_census_data = preprocess_data(
             data_folder=processed_data_folder.joinpath(*data_root),
             data_column_remapping=census_shp_column_remapping,
@@ -147,29 +162,30 @@ def preprocess_census(
             municipalities_target_columns=municipalities_column,
         )
 
-        # Salvataggio dei dati nel GeoPackage
-        data = get_census_data['census_data']
+        # Save data to GeoPackage
+        census_result: dict[str, Any] = get_census_data  # type: ignore[assignment]
+        data = census_result["census_data"]
         data_layer_name = f"data{year}"
-        logging.info(f"Salvataggio dei dati non geografici.")
-        data.to_sql(name=data_layer_name, con=connection, if_exists='replace')
-        logging.info(f"Salvataggio dei dati non geografici effettuato.")
+        logging.info("Saving non-geographic data.")
+        data.to_sql(name=data_layer_name, con=connection, if_exists="replace")
+        logging.info("Non-geographic data saved successfully.")
 
-        # Salvataggio del file di trace nel GeoPackage
-        trace = get_census_data['trace']
+        # Save trace file to GeoPackage
+        trace = census_result["trace"]
         trace_layer_name = f"tracciato{year}"
-        logging.info(f"Salvataggio del tracciato dati non geografici.")
-        trace.to_sql(name=trace_layer_name, con=connection, if_exists='replace')
-        logging.info(f"Salvataggio del tracciato dati non geografici effettuato.")
+        logging.info("Saving non-geographic data trace record.")
+        trace.to_sql(name=trace_layer_name, con=connection, if_exists="replace")
+        logging.info("Non-geographic data trace record saved successfully.")
 
-        logging.info(f"Dati per l'anno {year} processati e salvati con successo nel GeoPackage")
+        logging.info(f"Data for year {year} processed and saved successfully to GeoPackage")
 
-    # Eliminazione della cartella dei dati pre-processati, se richiesto
+    # Delete pre-processed data folder if requested
     if delete_download_folder:
-        logging.info(f"Eliminazione della cartella dei dati pre-processati: {processed_data_folder}")
+        logging.info(f"Deleting pre-processed data folder: {processed_data_folder}")
         shutil.rmtree(processed_data_folder)
 
     time_end = datetime.datetime.now()
     elapsed_time = time_end - time_start
-    logging.info(f"Preprocessing completato in {elapsed_time}. Dati salvati in {output_data_folder}")
+    logging.info(f"Preprocessing completed in {elapsed_time}. Data saved to {output_data_folder}")
 
     return output_data_folder

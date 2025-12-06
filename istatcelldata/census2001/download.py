@@ -1,9 +1,8 @@
 import logging
 from pathlib import Path
-from typing import List
 
 from istatcelldata.census1991.download import download_data
-from istatcelldata.census2011.download import download_geodata, download_administrative_boundaries
+from istatcelldata.census2011.download import download_administrative_boundaries, download_geodata
 from istatcelldata.config import PREPROCESSING_FOLDER
 from istatcelldata.logger_config import configure_logging
 
@@ -13,43 +12,36 @@ configure_logging()
 logger = logging.getLogger(__name__)
 
 
-def download_all_census_data_2001(
-        output_data_folder: Path,
-        region_list: List = []
-) -> Path:
-    """Scarica l'intero set di dati censuari e geografici relativi al Censimento 2001.
+def download_all_census_data_2001(output_data_folder: Path, region_list: list = []) -> Path:
+    """Download complete census and geographic dataset for the 2001 Census.
 
-    Questa funzione coordina tutte le operazioni necessarie per ottenere i dati
-    censuari e le informazioni geografiche associate al Censimento 2001.
-    In particolare, si occupa di:
+    This function coordinates all necessary operations to obtain census data
+    and geographic information associated with the 2001 Census. Specifically,
+    it handles:
 
-    - scaricare i dati censuari tabellari;
-    - scaricare i geodati (per tutte le Regioni o per un sottoinsieme specificato);
-    - scaricare i confini amministrativi ufficiali.
+    - Downloading tabular census data
+    - Downloading geodata (for all regions or a specified subset)
+    - Downloading official administrative boundaries
 
-    Se `region_list` è vuota, vengono scaricati i geodati per tutte le Regioni
-    disponibili.
+    If `region_list` is empty, geodata for all available regions is downloaded.
 
     Args:
-        output_data_folder (Path):
-            Percorso principale in cui salvare tutti i dati scaricati e processati.
-        region_list (List, optional):
-            Lista dei codici o nomi delle Regioni di cui scaricare i geodati.
-            Se lasciata vuota, la funzione considera tutte le Regioni.
+        output_data_folder: Main path where all downloaded and processed data
+            will be saved.
+        region_list: List of region codes or names for which to download geodata.
+            If left empty, the function considers all regions.
 
     Returns:
-        Path:
-            Percorso della cartella radice `output_data_folder` contenente la
-            struttura dei dati del Censimento 2001.
+        Path to the root folder `output_data_folder` containing the 2001 Census
+        data structure.
 
-    Notes:
-        - La funzione è specifica per il Censimento 2001 (il parametro `census_year`
-          è fissato internamente a 2001).
-        - Utilizza le funzioni di supporto:
-          `download_data()`, `download_geodata()` e
-          `download_administrative_boundaries()`.
-        - Crea automaticamente una sottocartella dedicata al preprocessing,
-          definita dalla costante `PREPROCESSING_FOLDER`.
+    Note:
+        This function is specific to the 2001 Census (the `census_year` parameter
+        is fixed internally to 2001).
+        It uses support functions: `download_data()`, `download_geodata()`, and
+        `download_administrative_boundaries()`.
+        A preprocessing subfolder is created automatically, defined by the
+        `PREPROCESSING_FOLDER` constant.
     """
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
@@ -59,9 +51,7 @@ def download_all_census_data_2001(
     download_data(output_data_folder=data_folder, census_year=2001)
 
     # Download geodata
-    download_geodata(
-        output_data_folder=data_folder, region_list=region_list, census_year=2001
-    )
+    download_geodata(output_data_folder=data_folder, region_list=region_list, census_year=2001)
 
     # Download administrative boundaries
     download_administrative_boundaries(output_data_folder=data_folder, census_year=2001)
