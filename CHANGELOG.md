@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-06-12
+
+### Changed
+- Renamed the installable distribution from `istatcelldata` to `istat-census-data`.
+- Kept the Python import package unchanged as `istatcelldata` for backward-compatible
+  imports.
+- Updated package metadata, documentation links, badges, installation examples, and
+  tutorial installation text for the new distribution name.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- Existing Python code should continue importing `istatcelldata`.
+
 ## [1.3.0] - 2025-12-03
 
 ### Added
@@ -79,10 +92,10 @@ See Git history for details on versions prior to v1.3.0.
 
 ```bash
 # Using pip
-pip install --upgrade istatcelldata
+pip install --upgrade istat-census-data
 
 # Using poetry
-poetry update istatcelldata
+poetry update istat-census-data
 
 # Verify installation
 python -c "import istatcelldata; print(istatcelldata.__version__)"
@@ -92,8 +105,8 @@ python -c "import istatcelldata; print(istatcelldata.__version__)"
 
 ## Links
 
-- **Homepage**: https://maxdragonheart.github.io/istatcelldata/
-- **Repository**: https://github.com/MaxDragonheart/istatcelldata
-- **PyPI**: https://pypi.org/project/istatcelldata/
-- **Documentation**: https://maxdragonheart.github.io/istatcelldata/
-- **Issue Tracker**: https://github.com/MaxDragonheart/istatcelldata/issues
+- **Homepage**: https://maxdragonheart.github.io/istat-census-data/
+- **Repository**: https://github.com/MaxDragonheart/istat-census-data
+- **PyPI**: https://pypi.org/project/istat-census-data/
+- **Documentation**: https://maxdragonheart.github.io/istat-census-data/
+- **Issue Tracker**: https://github.com/MaxDragonheart/istat-census-data/issues

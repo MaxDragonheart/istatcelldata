@@ -45,7 +45,7 @@ La fonte della tabella precedente è [questa](https://www.istat.it/it/archivio/1
 
 
 ## Shared data
-*[DA RIVEDERE PER I DATI 2021](https://github.com/MaxDragonheart/istatcelldata/issues/42)*
+*[DA RIVEDERE PER I DATI 2021](https://github.com/MaxDragonheart/istat-census-data/issues/42)*
 
 Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
 il loro codice. Questi campi sono stati definiti `SHARED_DATA` ed è possibile ottenerli scartando quelli che

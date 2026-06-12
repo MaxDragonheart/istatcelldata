@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Script di rilascio per il progetto istatcelldata:
+# Script di rilascio per il progetto istat-census-data:
 # - build + pubblicazione del pacchetto su PyPI usando Poetry
 # - deploy documentazione su GitHub Pages tramite MkDocs
 #
