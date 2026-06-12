@@ -8,11 +8,8 @@ from istatcelldata.config import (
     PREPROCESSING_FOLDER,
 )
 from istatcelldata.download import download_base
-from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import census_folder, get_census_dictionary
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -72,7 +69,7 @@ def download_data(output_data_folder: Path, census_year: int) -> Path:
 
 
 def download_geodata(
-    output_data_folder: Path, census_year: int, region_list: list[int] = []
+    output_data_folder: Path, census_year: int, region_list: list[int] | None = None
 ) -> Path:
     """Download census geodata for one or more regions for a census year.
 
@@ -98,7 +95,8 @@ def download_geodata(
         `geodata_urls` key.
         The final data path is organized via the global `GEODATA_FOLDER` constant.
     """
-    link_dict = get_census_dictionary(census_year=census_year, region_list=region_list)
+    selected_regions = [] if region_list is None else list(region_list)
+    link_dict = get_census_dictionary(census_year=census_year, region_list=selected_regions)
     geodata_urls = link_dict[f"census{census_year}"]["geodata_urls"]
 
     # Creazione della cartella di destinazione per i dati
@@ -181,7 +179,9 @@ def download_administrative_boundaries(output_data_folder: Path, census_year: in
         raise e
 
 
-def download_all_census_data_2011(output_data_folder: Path, region_list: list = []) -> Path:
+def download_all_census_data_2011(
+    output_data_folder: Path, region_list: list[int] | None = None
+) -> Path:
     """Download complete census and geographic dataset for the 2011 Census.
 
     This function coordinates the three fundamental operations necessary to
@@ -210,6 +210,8 @@ def download_all_census_data_2011(output_data_folder: Path, region_list: list = 
         The internal folder used for preprocessing is determined by the
         `PREPROCESSING_FOLDER` constant.
     """
+    selected_regions = [] if region_list is None else list(region_list)
+
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
@@ -218,7 +220,7 @@ def download_all_census_data_2011(output_data_folder: Path, region_list: list = 
     download_data(output_data_folder=data_folder, census_year=2011)
 
     # Download geodata
-    download_geodata(output_data_folder=data_folder, region_list=region_list, census_year=2011)
+    download_geodata(output_data_folder=data_folder, region_list=selected_regions, census_year=2011)
 
     # Download administrative boundaries
     download_administrative_boundaries(output_data_folder=data_folder, census_year=2011)

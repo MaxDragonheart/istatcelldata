@@ -4,15 +4,14 @@ from pathlib import Path
 from istatcelldata.census1991.download import download_data
 from istatcelldata.census2011.download import download_administrative_boundaries, download_geodata
 from istatcelldata.config import PREPROCESSING_FOLDER
-from istatcelldata.logger_config import configure_logging
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
 
-def download_all_census_data_2001(output_data_folder: Path, region_list: list = []) -> Path:
+def download_all_census_data_2001(
+    output_data_folder: Path, region_list: list[int] | None = None
+) -> Path:
     """Download complete census and geographic dataset for the 2001 Census.
 
     This function coordinates all necessary operations to obtain census data
@@ -43,6 +42,8 @@ def download_all_census_data_2001(output_data_folder: Path, region_list: list = 
         A preprocessing subfolder is created automatically, defined by the
         `PREPROCESSING_FOLDER` constant.
     """
+    selected_regions = [] if region_list is None else list(region_list)
+
     # Make data folder
     data_folder = output_data_folder.joinpath(PREPROCESSING_FOLDER)
     Path(data_folder).mkdir(parents=True, exist_ok=True)
@@ -51,7 +52,7 @@ def download_all_census_data_2001(output_data_folder: Path, region_list: list = 
     download_data(output_data_folder=data_folder, census_year=2001)
 
     # Download geodata
-    download_geodata(output_data_folder=data_folder, region_list=region_list, census_year=2001)
+    download_geodata(output_data_folder=data_folder, region_list=selected_regions, census_year=2001)
 
     # Download administrative boundaries
     download_administrative_boundaries(output_data_folder=data_folder, census_year=2001)

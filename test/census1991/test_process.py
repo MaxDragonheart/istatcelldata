@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -39,3 +40,48 @@ def test_add_administrative_info():
     )
     print(data)
     assert isinstance(data, pd.DataFrame)
+
+
+def test_add_administrative_info_handles_cod_prov_without_cod_pro(tmp_path: Path):
+    """Test cleanup works when province data already uses COD_PROV."""
+    census_data_df = pd.DataFrame({"PRO_COM": [1001], "POP_TOT": [12]})
+    regions_columns = ["COD_REG", "DEN_REG"]
+    provinces_columns = ["COD_PROV", "DEN_PROV", "SIGLA"]
+    municipalities_columns = ["PRO_COM", "COMUNE", "COD_REG", "COD_PROV"]
+
+    def fake_read_boundaries(file_path, target_columns, index_column):
+        if target_columns == regions_columns:
+            return pd.DataFrame(
+                {"DEN_REG": ["Lazio"]},
+                index=pd.Index([1], name="COD_REG"),
+            )
+        if target_columns == provinces_columns:
+            return pd.DataFrame(
+                {"DEN_PROV": ["Roma"], "SIGLA": ["RM"]},
+                index=pd.Index([10], name="COD_PROV"),
+            )
+        if target_columns == municipalities_columns:
+            return pd.DataFrame(
+                {"COMUNE": ["Roma"], "COD_REG": [1], "COD_PROV": [10]},
+                index=pd.Index([1001], name="PRO_COM"),
+            )
+        raise AssertionError(f"Unexpected target columns: {target_columns}")
+
+    with patch(
+        "istatcelldata.census1991.process.read_administrative_boundaries",
+        side_effect=fake_read_boundaries,
+    ):
+        data = add_administrative_info(
+            census_data=census_data_df,
+            regions_data_path=tmp_path / "regions.shp",
+            regions_target_columns=regions_columns,
+            provinces_data_path=tmp_path / "provinces.shp",
+            provinces_target_columns=provinces_columns,
+            municipalities_data_path=tmp_path / "municipalities.shp",
+            municipalities_target_columns=municipalities_columns,
+        )
+
+    assert "CODPRO" in data.columns
+    assert "COD_PRO" not in data.columns
+    assert "PRO_COM" not in data.columns
+    assert data.loc[0, "CODPRO"] == 10

@@ -3,7 +3,7 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from istatcelldata.config import DOWNLOAD_RAW_DATA, census_data
+from istatcelldata.config import DOWNLOAD_RAW_DATA, GEOMETRY_COLUMN_NAME, census_data
 from istatcelldata.geodata import preprocess_geodata, read_administrative_boundaries, read_census
 
 year = 2011
@@ -37,6 +37,20 @@ def test_read_regions(tmp_path: Path):
     )
     print(data)
     assert isinstance(data, pd.DataFrame) or isinstance(data, Path)
+
+
+def test_read_administrative_boundaries_does_not_mutate_target_columns():
+    columns = list(REGIONS_COLUMN)
+
+    data = read_administrative_boundaries(
+        file_path=DOWNLOAD_RAW_DATA.joinpath(*REGIONS_ROOT),
+        target_columns=columns,
+        index_column=REGIONS_INDEX,
+    )
+
+    assert isinstance(data, pd.DataFrame)
+    assert columns == REGIONS_COLUMN
+    assert GEOMETRY_COLUMN_NAME not in columns
 
 
 def test_read_provinces():

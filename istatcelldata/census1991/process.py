@@ -4,10 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from istatcelldata.geodata import read_administrative_boundaries
-from istatcelldata.logger_config import configure_logging
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -121,7 +118,8 @@ def add_administrative_info(
     logging.info("Starting final merge with census data.")
     add_municipalities = pd.merge(left=census_data, right=add_regions, how="left", on="PRO_COM")
     logging.info(f"Final merge completed. {len(add_municipalities)} records in final dataset.")
-    add_municipalities.drop(columns=["COD_PRO", "PRO_COM"], inplace=True)
+    columns_to_drop = [column for column in ["COD_PRO", "PRO_COM"] if column in add_municipalities]
+    add_municipalities.drop(columns=columns_to_drop, inplace=True)
     add_municipalities.rename(
         columns={
             "COD_COM": "CODCOM",

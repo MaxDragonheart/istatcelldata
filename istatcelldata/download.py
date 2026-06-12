@@ -6,11 +6,8 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import unzip_data
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 

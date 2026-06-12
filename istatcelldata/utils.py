@@ -8,10 +8,6 @@ import chardet
 import xlrd
 from tqdm import tqdm
 
-from istatcelldata.logger_config import configure_logging
-
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -213,7 +209,7 @@ def unzip_data(input_data: Path, output_folder: Path) -> Path:
         raise e
 
 
-def get_region(region_list: list[int] = []) -> list[int]:
+def get_region(region_list: list[int] | None = None) -> list[int]:
     """Return the list of regions to use for geodata download.
 
     If no list is provided, returns the complete list of 20 Italian regions
@@ -221,20 +217,20 @@ def get_region(region_list: list[int] = []) -> list[int]:
 
     Args:
         region_list: Optional list of region codes to use.
-            If empty, returns all regions (1–20).
+            If None or empty, returns all regions (1-20).
 
     Returns:
         List of region codes to process.
     """
-    if len(region_list) == 0:
+    if not region_list:
         regions = list(range(1, 21, 1))
     else:
-        regions = region_list
+        regions = list(region_list)
 
     return regions
 
 
-def get_census_dictionary(census_year: int, region_list: list[int] = []) -> dict:
+def get_census_dictionary(census_year: int, region_list: list[int] | None = None) -> dict:
     """Generate official ISTAT URLs for census data, geodata, and administrative boundaries.
 
     This function dynamically constructs download paths based on the census year
@@ -244,7 +240,7 @@ def get_census_dictionary(census_year: int, region_list: list[int] = []) -> dict
     Args:
         census_year: Census year (1991, 2001, 2011, or 2021).
         region_list: Optional list of regions for which to generate geodata URLs.
-            If empty, uses regions 1–20.
+            If None or empty, uses regions 1-20.
 
     Returns:
         Dictionary containing the URLs:

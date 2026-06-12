@@ -91,6 +91,7 @@ def test_get_region():
     assert isinstance(data, list)
 
 
+@pytest.mark.download
 def test_get_census_dictionary():
     print("test_get_census_dictionary")
     target_year = 2021
