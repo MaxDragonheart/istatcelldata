@@ -136,6 +136,7 @@ poetry.lock
 
 # Project
 istat_dataset
+census_tutorial
 
 #MkDocs
 docs-/site/
