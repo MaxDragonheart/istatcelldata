@@ -6,15 +6,14 @@ from istatcelldata.census1991.download import download_all_census_data_1991
 from istatcelldata.census2001.download import download_all_census_data_2001
 from istatcelldata.census2011.download import download_all_census_data_2011
 from istatcelldata.census2021.download import download_all_census_data_2021
-from istatcelldata.logger_config import configure_logging
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
 
-def download_census(years: list[int], output_data_folder: Path, region_list: list = []):
+def download_census(
+    years: list[int], output_data_folder: Path, region_list: list[int] | None = None
+) -> None:
     """Download census data for one or more requested years including geodata and boundaries.
 
     This function provides centralized download of census data for years 1991, 2001,
@@ -38,22 +37,23 @@ def download_census(years: list[int], output_data_folder: Path, region_list: lis
         ValueError: If one of the specified years is not supported or does not
             exist in the mapping.
     """
+    selected_regions = [] if region_list is None else list(region_list)
     time_start = datetime.datetime.now()
     logging.info(f"Starting analysis at {time_start}")
 
     # Map census years to their respective download functions
     function_map = {
         1991: lambda: download_all_census_data_1991(
-            output_data_folder=output_data_folder, region_list=region_list
+            output_data_folder=output_data_folder, region_list=selected_regions
         ),
         2001: lambda: download_all_census_data_2001(
-            output_data_folder=output_data_folder, region_list=region_list
+            output_data_folder=output_data_folder, region_list=selected_regions
         ),
         2011: lambda: download_all_census_data_2011(
-            output_data_folder=output_data_folder, region_list=region_list
+            output_data_folder=output_data_folder, region_list=selected_regions
         ),
         2021: lambda: download_all_census_data_2021(
-            output_data_folder=output_data_folder, region_list=region_list
+            output_data_folder=output_data_folder, region_list=selected_regions
         ),
     }
 

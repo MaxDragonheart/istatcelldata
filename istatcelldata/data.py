@@ -5,11 +5,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from istatcelldata.census1991.process import add_administrative_info
-from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import check_encoding
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -128,7 +125,9 @@ def preprocess_data(
             municipalities_data_path=municipalities_data_path,
             municipalities_target_columns=municipalities_target_columns,
         )
-    df.fillna(value=0, inplace=True)
+    for column in df.columns:
+        fill_value = "0" if pd.api.types.is_string_dtype(df[column]) else 0
+        df[column] = df[column].fillna(value=fill_value)
     logging.info("Data concatenated successfully")
 
     # Read trace file

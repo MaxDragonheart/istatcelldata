@@ -6,6 +6,7 @@ from pathlib import Path
 
 # Module-level logger variable with proper type annotation
 logger: logging.Logger | None = None
+_HANDLER_MARKER = "_istatcelldata_handler"
 
 
 def get_log_filename(
@@ -54,7 +55,7 @@ def get_log_filename(
 def configure_logging(
     log_dir: Path | None = None,
     log_name: str | None = None,
-):
+) -> None:
     """Configure the logging system to write to both console and file.
 
     This function initializes the application's main logger, sets the logging level
@@ -72,8 +73,7 @@ def configure_logging(
 
     Note:
         - This function uses the global logger (`logging.getLogger()`).
-        - Each call adds new handlers: to avoid duplicates in case of multiple calls,
-          it may be useful to clear handlers before configuring them.
+        - Repeated calls replace handlers previously created by this function.
         - Log format includes: level, PID, timestamp, logger name, and message.
     """
     # Configure logger
@@ -81,12 +81,18 @@ def configure_logging(
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
+    for handler in list(logger.handlers):
+        if getattr(handler, _HANDLER_MARKER, False):
+            logger.removeHandler(handler)
+            handler.close()
+
     # Define log format
     log_format = "%(levelname)s | %(process)d | %(asctime)s | %(name)s | %(message)s"
     formatter = logging.Formatter(log_format)
 
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
+    setattr(console_handler, _HANDLER_MARKER, True)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
@@ -95,5 +101,6 @@ def configure_logging(
         log_dir=log_dir, log_name=log_name
     )  # Use dynamic log file name
     file_handler = logging.FileHandler(log_file_path)
+    setattr(file_handler, _HANDLER_MARKER, True)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)

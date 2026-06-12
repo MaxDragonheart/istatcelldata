@@ -3,10 +3,6 @@ from pathlib import Path
 
 import pandas as pd
 
-from istatcelldata.logger_config import configure_logging
-
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 

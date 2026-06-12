@@ -8,10 +8,7 @@ from typing import Any
 from istatcelldata.config import YEAR_GEODATA_NAME, census_data
 from istatcelldata.data import preprocess_data
 from istatcelldata.geodata import preprocess_geodata
-from istatcelldata.logger_config import configure_logging
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -21,7 +18,7 @@ def preprocess_census(
     years: list[int],
     output_data_folder: Path | None = None,
     delete_download_folder: bool = False,
-    municipalities_code: list[int] = [],
+    municipalities_code: list[int] | None = None,
 ) -> Path:
     """Preprocess census data for one or more years, integrating geodata, boundaries, and tables.
 
@@ -66,6 +63,7 @@ def preprocess_census(
         - `tracciato<year>` for the field trace record
         The `municipalities_code` parameter is applied during the geodata phase.
     """
+    selected_municipalities = [] if municipalities_code is None else list(municipalities_code)
     time_start = datetime.datetime.now()
     logging.info(f"Starting census preprocessing at {time_start} for years: {years}")
 
@@ -139,7 +137,7 @@ def preprocess_census(
             municipalities_target_columns=municipalities_column,
             municipalities_index_column=municipalities_index,
             municipalities_column_remapping=municipalities_column_remapping,
-            municipalities_code=municipalities_code,
+            municipalities_code=selected_municipalities,
         )
 
         # Connect to GeoPackage

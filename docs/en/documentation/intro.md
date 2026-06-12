@@ -40,7 +40,7 @@ The source of the previous table is [this](https://www.istat.it/it/archivio/1043
 
 
 ## Shared data
-*[TO BE REVIEWED FOR 2021 DATA](https://github.com/MaxDragonheart/istatcelldata/issues/42)*
+*[TO BE REVIEWED FOR 2021 DATA](https://github.com/MaxDragonheart/istat-census-data/issues/42)*
 
 Analyzing the trace records of the 1991, 2001, and 2011 censuses revealed the presence of fields that have maintained their code. These fields are defined as `SHARED_DATA` and can be obtained by discarding those that have changed their code over the years. The shared fields are as follows:
 ```

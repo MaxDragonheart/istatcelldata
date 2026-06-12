@@ -7,11 +7,8 @@ from shapely.validation import make_valid
 from tqdm import tqdm
 
 from istatcelldata.config import GEOMETRY_COLUMN_NAME, GLOBAL_ENCODING, YEAR_GEODATA_NAME
-from istatcelldata.logger_config import configure_logging
 from istatcelldata.utils import check_encoding
 
-# Configure logging at the start of the script
-configure_logging()
 # Define the logger as a global variable
 logger = logging.getLogger(__name__)
 
@@ -74,10 +71,12 @@ def read_administrative_boundaries(
     data = gpd.read_file(filename=file_path, encoding=encoding)
     logging.info(f"File {file_path} read successfully")
 
-    # Select target columns
-    target_columns.extend([GEOMETRY_COLUMN_NAME])
-    data_target = data[target_columns]
-    logging.info(f"Selected columns: {target_columns}")
+    # Select target columns without mutating caller-owned configuration lists.
+    selected_columns = list(target_columns)
+    if GEOMETRY_COLUMN_NAME not in selected_columns:
+        selected_columns.append(GEOMETRY_COLUMN_NAME)
+    data_target = data[selected_columns].copy()
+    logging.info(f"Selected columns: {selected_columns}")
 
     # Rename columns if specified
     if column_remapping is not None:
@@ -179,7 +178,7 @@ def read_census(
         # Read shapefile
         data = gpd.read_file(filename=shp, encoding=encoding)
         crs_list.append(data.crs)  # Save coordinate reference system (CRS)
-        census_data = data[target_columns]
+        census_data = data[target_columns].copy()
         logging.info(f"Selected columns: {target_columns}")
 
         # Rename columns if specified
@@ -207,8 +206,7 @@ def read_census(
                 )
                 pass
 
-    df_columns = columns_list[0]  # Retrieve column names
-    df_columns.extend(["DEN_LOC"])  # Add 'DEN_LOC' as column
+    df_columns = [*columns_list[0], "DEN_LOC"]
     logging.info(f"Final columns: {df_columns}")
 
     # Create DataFrame and GeoDataFrame
@@ -251,7 +249,7 @@ def preprocess_geodata(
     municipalities_target_columns: list | None = None,
     municipalities_index_column: str | None = None,
     municipalities_column_remapping: dict | None = None,
-    municipalities_code: list[int] = [],
+    municipalities_code: list[int] | None = None,
 ) -> Path:
     """Preprocess census geodata and administrative boundaries and save to GeoPackage.
 
@@ -300,6 +298,7 @@ def preprocess_geodata(
         is saved as `{YEAR_GEODATA_NAME}.gpkg` and the layer as
         `{YEAR_GEODATA_NAME}{census_year}`.
     """
+    selected_municipalities = [] if municipalities_code is None else list(municipalities_code)
     census_year = census_layer_name[6:]
     logging.info(f"Detected census year: {census_year}")
 
@@ -377,10 +376,10 @@ def preprocess_geodata(
     if isinstance(census_geodata, Path):
         raise ValueError("Expected GeoDataFrame but got Path from read_census")
 
-    if len(municipalities_code) > 0:
-        logging.info(f"Municipalities to extract: {municipalities_code}")
-        mun_reg = mun_reg[mun_reg["PRO_COM"].isin(municipalities_code)]
-        census_geodata = census_geodata[census_geodata["PRO_COM"].isin(municipalities_code)]
+    if selected_municipalities:
+        logging.info(f"Municipalities to extract: {selected_municipalities}")
+        mun_reg = mun_reg[mun_reg["PRO_COM"].isin(selected_municipalities)]
+        census_geodata = census_geodata[census_geodata["PRO_COM"].isin(selected_municipalities)]
     census_geodata_full = pd.merge(left=census_geodata, right=mun_reg, how="left", on="PRO_COM")
 
     gdf = gpd.GeoDataFrame(

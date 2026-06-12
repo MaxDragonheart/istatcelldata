@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from istatcelldata.census2011.download import (
     download_administrative_boundaries,
     download_all_census_data_2011,
@@ -10,6 +12,7 @@ from istatcelldata.census2011.download import (
 year = 2011
 
 
+@pytest.mark.download
 def test_download_data(tmp_path: Path):
     print("test_download_data")
     data = download_data(output_data_folder=tmp_path, census_year=year)
@@ -17,6 +20,7 @@ def test_download_data(tmp_path: Path):
     assert isinstance(data, Path)
 
 
+@pytest.mark.download
 def test_download_geodata(tmp_path: Path):
     print("test_download_geodata")
     data = download_geodata(output_data_folder=tmp_path, census_year=year, region_list=[3, 15])
@@ -24,6 +28,7 @@ def test_download_geodata(tmp_path: Path):
     assert isinstance(data, Path)
 
 
+@pytest.mark.download
 def test_download_administrative_boundaries(tmp_path: Path):
     print("test_download_administrative_boundaries")
     data = download_administrative_boundaries(
@@ -34,6 +39,7 @@ def test_download_administrative_boundaries(tmp_path: Path):
     assert isinstance(data, Path)
 
 
+@pytest.mark.download
 def test_download_all_census_data_2011(tmp_path: Path):
     print("test_download_all_census_data_2011")
     download_all_census_data_2011(output_data_folder=tmp_path, region_list=[2, 15])

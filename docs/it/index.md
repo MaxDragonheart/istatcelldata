@@ -7,7 +7,16 @@ E' possibile scaricare e processare i dati dal 1991 al 2021.
 
 ## Installazione
 
-`pip install istatcelldata`
+```bash
+pip install istat-census-data
+```
+
+Il nome della distribuzione PyPI è `istat-census-data`, mentre il package Python
+da importare resta `istatcelldata`:
+
+```python
+import istatcelldata
+```
 
 !!! INFO
 
