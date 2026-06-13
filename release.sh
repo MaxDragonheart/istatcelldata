@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 #
-# Script di rilascio per il progetto istat-census-data:
-# - build + pubblicazione del pacchetto su PyPI usando Poetry
-# - deploy documentazione su GitHub Pages tramite MkDocs
+# Script di verifica locale pre-rilascio per il progetto istat-census-data:
+# - controlla versione e tag
+# - installa/aggiorna le dipendenze
+# - esegue opzionalmente i test
+# - costruisce gli artifact locali
+#
+# La pubblicazione su PyPI avviene da GitHub Actions tramite PyPI Trusted
+# Publishing, non da questo script.
 #
 # Uso:
 #   ./release.sh
-#   RUN_TESTS=1 ./release.sh   # per eseguire i test
-#   PYPI_DRY_RUN=1 ./release.sh # build e publish dry-run, senza deploy docs
-#   DEPLOY_DOCS=0 ./release.sh  # pubblica su PyPI senza deploy docs
+#   RUN_TESTS=1 ./release.sh     # per eseguire i test prima della build
 #
 
 set -euo pipefail
@@ -64,46 +67,13 @@ fi
 echo "✅ Trovato tag git corretto: $TAG"
 
 # -------------------------------------------------------------
-# 3️⃣ Chiedere il token PyPI
-# -------------------------------------------------------------
-if [[ -z "${POETRY_PYPI_TOKEN_PYPI:-}" ]]; then
-    echo ""
-    echo "🔐 Nessun token PyPI trovato."
-    echo "Inserisci un token PyPI valido per il progetto '$PACKAGE_NAME'."
-    echo "Se usi un token project-scoped, deve essere scoped esattamente a '$PACKAGE_NAME'."
-    echo "Per la prima pubblicazione del progetto rinominato può servire un token account-wide."
-    echo "Il token deve iniziare per 'pypi-'."
-    read -rsp "Token: " TOKEN
-    echo ""
-
-    if [[ -z "$TOKEN" ]]; then
-        echo "❌ Nessun token inserito. Pubblicazione annullata."
-        exit 1
-    fi
-
-    echo "🔑 Token salvato per questa sessione."
-else
-    echo "🔑 Token PyPI rilevato dalla variabile d'ambiente."
-    TOKEN="$POETRY_PYPI_TOKEN_PYPI"
-fi
-
-if [[ "$TOKEN" != pypi-* ]]; then
-    echo "❌ Token PyPI non valido: deve iniziare per 'pypi-'."
-    exit 1
-fi
-
-export POETRY_PYPI_TOKEN_PYPI="$TOKEN"
-echo "🔐 Token usato solo da POETRY_PYPI_TOKEN_PYPI per questa sessione."
-echo "ℹ️ Non salvo il token nella config di Poetry per evitare credenziali persistenti."
-
-# -------------------------------------------------------------
-# 4️⃣ Installare dipendenze Poetry
+# 3️⃣ Installare dipendenze Poetry
 # -------------------------------------------------------------
 echo "📦 Installazione/aggiornamento dipendenze..."
 poetry install --no-interaction --no-root
 
 # -------------------------------------------------------------
-# 5️⃣ Esecuzione facoltativa dei test
+# 4️⃣ Esecuzione facoltativa dei test
 # -------------------------------------------------------------
 if [[ "${RUN_TESTS:-0}" == "1" ]]; then
   echo "🧪 Esecuzione test (RUN_TESTS=1)..."
@@ -113,72 +83,19 @@ else
 fi
 
 # -------------------------------------------------------------
-# 6️⃣ Build pulita + publish su PyPI (verbose)
+# 5️⃣ Build pulita degli artifact locali
 # -------------------------------------------------------------
 echo "🏗️ Build pulita del pacchetto..."
 poetry build --clean
 
-PUBLISH_ARGS=(publish --no-interaction -vvv)
-if [[ "${PYPI_DRY_RUN:-0}" == "1" ]]; then
-  echo "🧪 Dry run PyPI attivo: nessun file verrà caricato."
-  PUBLISH_ARGS+=(--dry-run)
-fi
-
-PUBLISH_LOG="$(mktemp "${TMPDIR:-/tmp}/istat-census-data-publish.XXXXXX.log")"
-cleanup_publish_log() {
-  rm -f "$PUBLISH_LOG"
-}
-trap cleanup_publish_log EXIT
-
-echo "🚀 Pubblicazione su PyPI..."
-set +e
-poetry "${PUBLISH_ARGS[@]}" 2>&1 | tee "$PUBLISH_LOG"
-PUBLISH_STATUS=${PIPESTATUS[0]}
-set -e
-
-if [[ "$PUBLISH_STATUS" -ne 0 ]]; then
-  echo ""
-  echo "❌ Pubblicazione PyPI fallita."
-
-  if grep -qi "project-scoped token is not valid for project" "$PUBLISH_LOG"; then
-    echo "💡 Il token PyPI inserito è project-scoped ma non è valido per '$PACKAGE_NAME'."
-    echo "   Crea un token scoped al progetto PyPI '$PACKAGE_NAME'."
-    echo "   Se '$PACKAGE_NAME' non esiste ancora su PyPI, usa un token account-wide"
-    echo "   per la prima pubblicazione, poi crea un token project-scoped per i rilasci successivi."
-  elif grep -qi "Invalid API Token" "$PUBLISH_LOG"; then
-    echo "💡 PyPI ha rifiutato il token. Verifica che non sia scaduto o revocato"
-    echo "   e che abbia permessi di pubblicazione per '$PACKAGE_NAME'."
-  fi
-
-  exit "$PUBLISH_STATUS"
-fi
-
-# -------------------------------------------------------------
-# 7️⃣ Deploy documentazione MkDocs
-# -------------------------------------------------------------
-DOCS_STATUS="Documentazione aggiornata su GitHub Pages"
-
-if [[ "${PYPI_DRY_RUN:-0}" == "1" ]]; then
-  DOCS_STATUS="Deploy documentazione saltato perché PYPI_DRY_RUN=1"
-  echo "⏭  $DOCS_STATUS."
-elif [[ "${DEPLOY_DOCS:-1}" == "1" ]]; then
-  echo "📚 Deploy documentazione su GitHub Pages..."
-  poetry run mkdocs gh-deploy --clean
-else
-  DOCS_STATUS="Deploy documentazione saltato perché DEPLOY_DOCS=0"
-  echo "⏭  $DOCS_STATUS."
-fi
-
-if [[ "${PYPI_DRY_RUN:-0}" == "1" ]]; then
-  PYPI_STATUS="Dry run PyPI completato (nessun upload)"
-else
-  PYPI_STATUS="Pubblicato su PyPI"
-fi
-
 echo ""
-echo "🎉 Rilascio completato con successo!"
+echo "✅ Verifica locale pre-rilascio completata."
 echo "   - Versione: $VERSION"
 echo "   - Tag git trovato: $TAG"
-echo "   - $PYPI_STATUS"
-echo "   - $DOCS_STATUS"
+echo "   - Artifact creati in: $PROJECT_ROOT/dist"
+echo ""
+echo "🚀 Per pubblicare su PyPI:"
+echo "   1. Configura su PyPI il pending Trusted Publisher per '$PACKAGE_NAME'."
+echo "   2. Crea una GitHub Release pubblicata sul tag '$TAG'."
+echo "   3. Il workflow '.github/workflows/release.yml' pubblicherà gli artifact su PyPI."
 echo ""

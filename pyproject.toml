@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "istat-census-data"
-version = "1.4.0"
+version = "1.4.1"
 description = "Python package to download and process ISTAT census grid cell data for Italian population censuses (1991-2021)"
 authors = ["Massimiliano Moraca <gis.massimilianomoraca@gmail.com>"]
 readme = "README.md"

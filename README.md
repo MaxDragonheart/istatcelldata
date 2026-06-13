@@ -34,6 +34,20 @@ nuove release. Aggiorna le dipendenze di installazione da `istatcelldata` a
 `istat-census-data`; il codice Python esistente può continuare a usare
 `import istatcelldata`.
 
+## Pubblicazione release
+
+Le nuove release PyPI devono essere pubblicate da GitHub Actions tramite PyPI Trusted
+Publishing. Il workflow di rilascio non usa token PyPI salvati in locale o nei GitHub
+secrets.
+
+Prima della prima pubblicazione, configura su PyPI un pending Trusted Publisher che
+corrisponda al workflow di rilascio del repository e usa un environment GitHub protetto
+per approvare la pubblicazione.
+
+Per pubblicare, crea una GitHub Release sul tag che corrisponde alla versione in
+`pyproject.toml`. Lo script `release.sh` resta solo una verifica locale pre-rilascio:
+non pubblica più su PyPI e non effettua il deploy della documentazione.
+
 !!! INFO
 
     Questo progetto non è collegato ad ISTAT nè supportato da ISTAT ed è una iniziativa autonoma di [Massimiliano Moraca](https://massimilianomoraca.me/).
