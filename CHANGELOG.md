@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Upgrade Notes
 - Install or upgrade with `pip install --upgrade istat-census-data`.
 - Existing Python code should continue importing `istatcelldata`.
+- `istat-census-data` is the maintained continuation of the previous `istatcelldata`
+  distribution.
+- The old `istatcelldata` distribution/repository is no longer maintained and will not
+  receive new releases. Update dependency declarations from `istatcelldata` to
+  `istat-census-data`.
 
 ## [1.3.0] - 2025-12-03
 
