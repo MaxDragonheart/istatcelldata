@@ -1,6 +1,6 @@
-"""ISTAT Cell Data - Italian census cell data processing library.
+"""ISTAT Census Data - Italian census cell data processing library.
 
-ISTAT Cell Data provides easy access to Italian National Institute of Statistics
+ISTAT Census Data provides easy access to Italian National Institute of Statistics
 (ISTAT) census data, including census grid cell datasets from complete population
 censuses.
 
@@ -9,7 +9,7 @@ including demographic data and geographic information (shapefiles, administrativ
 boundaries) for census sections across Italy.
 """
 
-__version__ = "1.3.0"
+__version__ = "1.5.0"
 __author__ = "Massimiliano Moraca"
 __email__ = "gis.massimilianomoraca@gmail.com"
 

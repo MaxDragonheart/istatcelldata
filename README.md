@@ -1,4 +1,4 @@
-# ISTAT Cell Data
+# ISTAT Census Data
 
 [![CI](https://github.com/MaxDragonheart/istat-census-data/actions/workflows/ci.yml/badge.svg)](https://github.com/MaxDragonheart/istat-census-data/actions/workflows/ci.yml)
 [![Documentation](https://github.com/MaxDragonheart/istat-census-data/actions/workflows/docs.yml/badge.svg)](https://maxdragonheart.github.io/istat-census-data/)
@@ -6,7 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/istat-census-data.svg)](https://badge.fury.io/py/istat-census-data)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Con **ISTAT Cell Data** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati
+Con **ISTAT Census Data** puoi ottenere facilmente il set di dati riferiti ai censimenti ISTAT in cui sono stati
 rilasciati anche i dati delle celle censuarie.
 
 E' possibile scaricare e processare i dati dal 1991 al 2021.
@@ -19,20 +19,24 @@ pip install istat-census-data
 
 ## Rinomina del progetto e manutenzione
 
-`istat-census-data` è la distribuzione PyPI mantenuta a partire dalla versione 1.4.0
-ed è la continuazione del precedente progetto `istatcelldata`.
+`istat-census-data` è la distribuzione PyPI mantenuta.
 
-Il nome della distribuzione PyPI è `istat-census-data`, mentre il package Python
-da importare resta `istatcelldata`:
+Il nome della distribuzione PyPI è `istat-census-data`. A partire dalla versione
+1.5.0, il package Python consigliato da importare è `istat_census_data`:
 
 ```python
-import istatcelldata
+import istat_census_data
 ```
 
-La vecchia distribuzione/repository `istatcelldata` non è più mantenuta e non riceverà
-nuove release. Aggiorna le dipendenze di installazione da `istatcelldata` a
-`istat-census-data`; il codice Python esistente può continuare a usare
-`import istatcelldata`.
+La vecchia pagina PyPI
+[`istatcelldata`](https://pypi.org/project/istatcelldata/) non è più mantenuta e non
+riceverà nuove release, perché il progetto si è spostato su
+[`istat-census-data`](https://pypi.org/project/istat-census-data/).
+
+Aggiorna le dipendenze di installazione a `istat-census-data`.
+
+Il vecchio import `istatcelldata` resta disponibile per compatibilità, così il codice
+Python esistente continua a funzionare durante la migrazione.
 
 ## Pubblicazione release
 

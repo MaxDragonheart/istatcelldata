@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
-from istatcelldata.executor.process import finalize_census_data
-from istatcelldata.logger_config import configure_logging
+from istat_census_data.executor.process import finalize_census_data
+from istat_census_data.logger_config import configure_logging
 
 main_path = Path("/home/max/Desktop/census")
 

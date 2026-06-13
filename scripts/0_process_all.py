@@ -2,11 +2,11 @@ import datetime
 import logging
 from pathlib import Path
 
-from istatcelldata.config import PREPROCESSING_FOLDER
-from istatcelldata.executor.download import download_census
-from istatcelldata.executor.preprocess import preprocess_census
-from istatcelldata.executor.process import finalize_census_data
-from istatcelldata.logger_config import configure_logging
+from istat_census_data.config import PREPROCESSING_FOLDER
+from istat_census_data.executor.download import download_census
+from istat_census_data.executor.preprocess import preprocess_census
+from istat_census_data.executor.process import finalize_census_data
+from istat_census_data.logger_config import configure_logging
 
 main_path = Path("/home/max/Desktop/census")
 list_year = [1991, 2001, 2011, 2021]
