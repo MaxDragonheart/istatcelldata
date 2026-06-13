@@ -1,4 +1,7 @@
 # GeoData Module
 The Geodata module provides tools for managing and preprocessing geographic data, including administrative boundaries and census data. The functions in this module facilitate reading, filtering, and converting data into formats suitable for geographic analysis, such as GeoDataFrame and GeoPackage.
 
-::: istat_census_data.geodata
+New code should import from `istat_census_data`. The reference below is generated
+from the implementation module so the full function documentation remains visible.
+
+::: istatcelldata.geodata

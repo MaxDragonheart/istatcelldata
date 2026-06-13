@@ -2,6 +2,10 @@
 Il modulo Process e Pre-process si concentra sulla gestione avanzata e sull'elaborazione dei dati del censimento, 
 integrando informazioni amministrative e combinando dati geografici e tabellari per ottenere dataset arricchiti. 
 
-::: istat_census_data.executor.process
-::: istat_census_data.executor.preprocess
-::: istat_census_data.census1991.process
+Il codice nuovo dovrebbe importare da `istat_census_data`. Il riferimento qui sotto
+è generato dai moduli di implementazione per mantenere visibile la documentazione
+completa delle funzioni.
+
+::: istatcelldata.executor.process
+::: istatcelldata.executor.preprocess
+::: istatcelldata.census1991.process
