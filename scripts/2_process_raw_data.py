@@ -1,8 +1,8 @@
 import logging
 from pathlib import Path
 
-from istatcelldata.executor.preprocess import preprocess_census
-from istatcelldata.logger_config import configure_logging
+from istat_census_data.executor.preprocess import preprocess_census
+from istat_census_data.logger_config import configure_logging
 
 main_path = Path("/home/max/Desktop/census/preprocessing")
 

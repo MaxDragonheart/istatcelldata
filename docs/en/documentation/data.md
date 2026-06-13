@@ -1,4 +1,4 @@
 # Data Module
 This module handles non-geographic data.
 
-::: istatcelldata.data
+::: istat_census_data.data

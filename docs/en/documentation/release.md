@@ -20,7 +20,7 @@ reserve the project name before that first publish.
 
 1. Ensure `pyproject.toml` contains the release version.
 2. Ensure the Git tag is exactly the version or the version prefixed with `v`, for
-   example `1.4.0` or `v1.4.0`.
+   example `1.5.0` or `v1.5.0`.
 3. Create and publish a GitHub Release for that tag.
 4. GitHub Actions runs the release workflow.
 5. The workflow builds the source distribution and wheel, checks them with Twine, and

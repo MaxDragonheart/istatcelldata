@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-06-13
+
+### Added
+- Added the preferred `istat_census_data` Python import facade for the
+  `istat-census-data` distribution.
+- Added regression tests to verify that `istat_census_data` and `istatcelldata`
+  expose the same metadata, public objects, and submodules without import warnings.
+
+### Changed
+- Updated scripts, tutorials, documentation, and CI examples to use
+  `istat_census_data` as the preferred import path.
+- Kept the existing `istatcelldata` import path available for compatibility during
+  the migration period.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- New code should import `istat_census_data`.
+- Existing code that imports `istatcelldata` continues to work in this release.
+
 ## [1.4.0] - 2026-06-12
 
 ### Changed
@@ -103,7 +122,7 @@ pip install --upgrade istat-census-data
 poetry update istat-census-data
 
 # Verify installation
-python -c "import istatcelldata; print(istatcelldata.__version__)"
+python -c "import istat_census_data; print(istat_census_data.__version__)"
 ```
 
 ---
