@@ -38,19 +38,6 @@ Aggiorna le dipendenze di installazione a `istat-census-data`.
 Il vecchio import `istatcelldata` resta disponibile per compatibilità, così il codice
 Python esistente continua a funzionare durante la migrazione.
 
-## Pubblicazione release
-
-Le nuove release PyPI devono essere pubblicate da GitHub Actions tramite PyPI Trusted
-Publishing. Il workflow di rilascio non usa token PyPI salvati in locale o nei GitHub
-secrets.
-
-Prima della prima pubblicazione, configura su PyPI un pending Trusted Publisher che
-corrisponda al workflow di rilascio del repository e usa un environment GitHub protetto
-per approvare la pubblicazione.
-
-Per pubblicare, crea una GitHub Release sul tag che corrisponde alla versione in
-`pyproject.toml`. Lo script `release.sh` resta solo una verifica locale pre-rilascio:
-non pubblica più su PyPI e non effettua il deploy della documentazione.
 
 !!! INFO
 
