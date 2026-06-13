@@ -14,7 +14,6 @@ nav:
         - GeoData: documentation/geodata.md
         - Process: documentation/process.md
         - Utils: documentation/utils.md
-      - Release: documentation/release.md
       - Tutorial: tutorial/intro.md
   - License: LICENSE.md
   - Issues: https://github.com/MaxDragonheart/istat-census-data/issues
@@ -64,7 +63,6 @@ plugins:
               GeoData: GeoData
               Process: Process
               Utils: Utils
-              Release: Rilascio
               Tutorial: Tutorial
               License: Licenza
     - mkdocstrings:
