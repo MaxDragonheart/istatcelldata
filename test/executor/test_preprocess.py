@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from istatcelldata.config import DOWNLOAD_RAW_DATA
-from istatcelldata.executor.preprocess import preprocess_census
+from istat_census_data.config import DOWNLOAD_RAW_DATA
+from istat_census_data.executor.preprocess import preprocess_census
 
 
 def test_preprocess_census(tmp_path: Path):

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from istatcelldata.executor.download import download_census
+from istat_census_data.executor.download import download_census
 
 
 @pytest.mark.download

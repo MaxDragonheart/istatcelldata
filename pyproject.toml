@@ -1,13 +1,12 @@
 [tool.poetry]
 name = "istat-census-data"
-version = "1.5.0"
+version = "2.0.0"
 description = "Python package to download and process ISTAT census grid cell data for Italian population censuses (1991-2021)"
 authors = ["Massimiliano Moraca <gis.massimilianomoraca@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 include = ["LICENSE"]
 packages = [
-    { include = "istatcelldata" },
     { include = "istat_census_data" },
 ]
 homepage = "https://maxdragonheart.github.io/istat-census-data/"
@@ -66,13 +65,13 @@ testpaths = ["test"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
-addopts = "-v --cov=istatcelldata --cov=istat_census_data --cov-report=html --cov-report=term-missing"
+addopts = "-v --cov=istat_census_data --cov-report=html --cov-report=term-missing"
 markers = [
     "download: marks tests that perform real network downloads (deselect with '-m \"not download\"')"
 ]
 
 [tool.coverage.run]
-source = ["istatcelldata", "istat_census_data"]
+source = ["istat_census_data"]
 omit = ["*/test/*", "*/tests/*"]
 
 [tool.coverage.report]

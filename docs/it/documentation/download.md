@@ -7,9 +7,9 @@ Il codice nuovo dovrebbe importare da `istat_census_data`. Il riferimento qui so
 è generato dai moduli di implementazione per mantenere visibile la documentazione
 completa delle funzioni.
 
-::: istatcelldata.download
-::: istatcelldata.census1991.download
-::: istatcelldata.census2001.download
-::: istatcelldata.census2011.download
-::: istatcelldata.census2021.download
-::: istatcelldata.executor.download
+::: istat_census_data.download
+::: istat_census_data.census1991.download
+::: istat_census_data.census2001.download
+::: istat_census_data.census2011.download
+::: istat_census_data.census2021.download
+::: istat_census_data.executor.download

@@ -6,6 +6,6 @@ Il codice nuovo dovrebbe importare da `istat_census_data`. Il riferimento qui so
 è generato dai moduli di implementazione per mantenere visibile la documentazione
 completa delle funzioni.
 
-::: istatcelldata.executor.process
-::: istatcelldata.executor.preprocess
-::: istatcelldata.census1991.process
+::: istat_census_data.executor.process
+::: istat_census_data.executor.preprocess
+::: istat_census_data.census1991.process

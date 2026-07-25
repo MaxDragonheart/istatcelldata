@@ -4,6 +4,6 @@ The Process and Pre-process module focuses on advanced management and processing
 New code should import from `istat_census_data`. The reference below is generated
 from the implementation modules so the full function documentation remains visible.
 
-::: istatcelldata.executor.process
-::: istatcelldata.executor.preprocess
-::: istatcelldata.census1991.process
+::: istat_census_data.executor.process
+::: istat_census_data.executor.preprocess
+::: istat_census_data.census1991.process

@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from shapely.geometry import Point
 
-from istatcelldata.executor.process import finalize_census_data
+from istat_census_data.executor.process import finalize_census_data
 
 main_folder = Path("/home/max/Desktop/census")
 

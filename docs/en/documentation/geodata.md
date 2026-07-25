@@ -4,4 +4,4 @@ The Geodata module provides tools for managing and preprocessing geographic data
 New code should import from `istat_census_data`. The reference below is generated
 from the implementation module so the full function documentation remains visible.
 
-::: istatcelldata.geodata
+::: istat_census_data.geodata

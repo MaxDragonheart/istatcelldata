@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from istatcelldata.census2021.utils import read_xlsx
-from istatcelldata.config import DEMO_DATA_FOLDER
+from istat_census_data.census2021.utils import read_xlsx
+from istat_census_data.config import DEMO_DATA_FOLDER
 
 
 @pytest.mark.skipif(

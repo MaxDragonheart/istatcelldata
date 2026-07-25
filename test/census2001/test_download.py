@@ -3,10 +3,13 @@ from unittest.mock import patch
 
 import pytest
 
-from istatcelldata.census1991.download import download_data
-from istatcelldata.census2001.download import download_all_census_data_2001
-from istatcelldata.census2011.download import download_administrative_boundaries, download_geodata
-from istatcelldata.config import PREPROCESSING_FOLDER
+from istat_census_data.census1991.download import download_data
+from istat_census_data.census2001.download import download_all_census_data_2001
+from istat_census_data.census2011.download import (
+    download_administrative_boundaries,
+    download_geodata,
+)
+from istat_census_data.config import PREPROCESSING_FOLDER
 
 year = 2001
 
@@ -47,9 +50,9 @@ def test_download_all_census_data_2001(tmp_path: Path):
 # Mock-based unit tests for coverage
 
 
-@patch("istatcelldata.census2001.download.download_administrative_boundaries")
-@patch("istatcelldata.census2001.download.download_geodata")
-@patch("istatcelldata.census2001.download.download_data")
+@patch("istat_census_data.census2001.download.download_administrative_boundaries")
+@patch("istat_census_data.census2001.download.download_geodata")
+@patch("istat_census_data.census2001.download.download_data")
 def test_download_all_census_data_2001_unit(
     mock_download_data, mock_download_geodata, mock_download_admin, tmp_path: Path
 ):
@@ -83,9 +86,9 @@ def test_download_all_census_data_2001_unit(
     assert result == output_folder
 
 
-@patch("istatcelldata.census2001.download.download_administrative_boundaries")
-@patch("istatcelldata.census2001.download.download_geodata")
-@patch("istatcelldata.census2001.download.download_data")
+@patch("istat_census_data.census2001.download.download_administrative_boundaries")
+@patch("istat_census_data.census2001.download.download_geodata")
+@patch("istat_census_data.census2001.download.download_data")
 def test_download_all_census_data_2001_empty_region_list_unit(
     mock_download_data, mock_download_geodata, mock_download_admin, tmp_path: Path
 ):

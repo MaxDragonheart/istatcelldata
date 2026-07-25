@@ -4,9 +4,9 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from istatcelldata.census1991.process import add_administrative_info
-from istatcelldata.config import census_data
-from istatcelldata.utils import check_encoding
+from istat_census_data.census1991.process import add_administrative_info
+from istat_census_data.config import census_data
+from istat_census_data.utils import check_encoding
 
 year = 1991
 
@@ -68,7 +68,7 @@ def test_add_administrative_info_handles_cod_prov_without_cod_pro(tmp_path: Path
         raise AssertionError(f"Unexpected target columns: {target_columns}")
 
     with patch(
-        "istatcelldata.census1991.process.read_administrative_boundaries",
+        "istat_census_data.census1991.process.read_administrative_boundaries",
         side_effect=fake_read_boundaries,
     ):
         data = add_administrative_info(

@@ -3,9 +3,9 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from istatcelldata.census1991.process import add_administrative_info
-from istatcelldata.config import census_data
-from istatcelldata.utils import check_encoding
+from istat_census_data.census1991.process import add_administrative_info
+from istat_census_data.config import census_data
+from istat_census_data.utils import check_encoding
 
 year = 2001
 

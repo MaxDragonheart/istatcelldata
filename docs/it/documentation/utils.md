@@ -7,6 +7,6 @@ Il codice nuovo dovrebbe importare da `istat_census_data`. Il riferimento qui so
 è generato dai moduli di implementazione per mantenere visibile la documentazione
 completa delle funzioni.
 
-::: istatcelldata.utils
-::: istatcelldata.census1991.utils
-::: istatcelldata.census2021.utils
+::: istat_census_data.utils
+::: istat_census_data.census1991.utils
+::: istat_census_data.census2021.utils

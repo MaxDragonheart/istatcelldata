@@ -1,21 +1,20 @@
 import importlib
+import importlib.util
 import warnings
 
 import istat_census_data
-import istatcelldata
 
 
-def test_preferred_and_legacy_import_paths_share_metadata():
-    """The new import facade and legacy package expose the same package metadata."""
-    assert istat_census_data.__version__ == "1.5.0"
-    assert istat_census_data.__version__ == istatcelldata.__version__
-    assert istat_census_data.__author__ == istatcelldata.__author__
-    assert istat_census_data.__email__ == istatcelldata.__email__
-    assert istat_census_data.__all__ == istatcelldata.__all__
+def test_canonical_import_path_exposes_metadata():
+    """The canonical package exposes the expected 2.0.0 metadata."""
+    assert istat_census_data.__version__ == "2.0.0"
+    assert istat_census_data.__author__ == "Massimiliano Moraca"
+    assert istat_census_data.__email__ == "gis.massimilianomoraca@gmail.com"
+    assert "download_base" in istat_census_data.__all__
 
 
-def test_preferred_import_path_emits_no_warning_on_import():
-    """Importing the preferred facade should be quiet during the coexistence phase."""
+def test_canonical_import_path_emits_no_warning_on_import():
+    """Importing the canonical package should be quiet."""
     with warnings.catch_warnings(record=True) as captured_warnings:
         warnings.simplefilter("always")
         importlib.reload(istat_census_data)
@@ -23,25 +22,13 @@ def test_preferred_import_path_emits_no_warning_on_import():
     assert captured_warnings == []
 
 
-def test_preferred_import_path_reuses_public_objects():
-    """Public top-level objects stay identical across both import paths."""
-    public_names = [
-        "census_data",
-        "DOWNLOAD_RAW_DATA",
-        "download_base",
-        "preprocess_data",
-        "read_administrative_boundaries",
-        "read_census",
-        "preprocess_geodata",
-        "finalize_census_data",
-    ]
-
-    for public_name in public_names:
-        assert getattr(istat_census_data, public_name) is getattr(istatcelldata, public_name)
+def test_legacy_import_path_is_removed():
+    """The legacy package name is no longer importable in 2.0.0."""
+    assert importlib.util.find_spec("istatcelldata") is None
 
 
-def test_preferred_submodule_imports_reexport_legacy_public_api():
-    """Submodule imports through the new facade expose the existing implementation."""
+def test_canonical_submodule_imports_expose_public_api():
+    """Submodule imports through the canonical package expose the public API."""
     submodules = {
         "config": [
             "BOUNDARIES_DATA_FOLDER",
@@ -96,10 +83,9 @@ def test_preferred_submodule_imports_reexport_legacy_public_api():
     }
 
     for submodule_name, public_names in submodules.items():
-        preferred_module = importlib.import_module(f"istat_census_data.{submodule_name}")
-        legacy_module = importlib.import_module(f"istatcelldata.{submodule_name}")
+        canonical_module = importlib.import_module(f"istat_census_data.{submodule_name}")
 
-        assert preferred_module.__name__ == f"istat_census_data.{submodule_name}"
+        assert canonical_module.__name__ == f"istat_census_data.{submodule_name}"
 
         for public_name in public_names:
-            assert getattr(preferred_module, public_name) is getattr(legacy_module, public_name)
+            assert hasattr(canonical_module, public_name)

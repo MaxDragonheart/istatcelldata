@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from istatcelldata.census1991.utils import census_trace, read_xls
-from istatcelldata.config import DEMO_DATA_FOLDER
+from istat_census_data.census1991.utils import census_trace, read_xls
+from istat_census_data.config import DEMO_DATA_FOLDER
 
 
 @pytest.mark.skip(reason="Column name mismatch in demo data - needs investigation")
@@ -31,7 +31,7 @@ def test_census_trace(tmp_path: Path):
     assert isinstance(data, Path) or isinstance(data, pd.DataFrame)
 
 
-@patch("istatcelldata.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
+@patch("istat_census_data.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
 @patch("xlrd.open_workbook")
 def test_read_xls_returns_dataframe(mock_open_workbook, mock_tqdm, tmp_path: Path):
     """Test reading xls file and returning DataFrame when output_path is None."""
@@ -70,7 +70,7 @@ def test_read_xls_returns_dataframe(mock_open_workbook, mock_tqdm, tmp_path: Pat
     assert result.index.name == "sez"
 
 
-@patch("istatcelldata.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
+@patch("istat_census_data.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
 @patch("xlrd.open_workbook")
 def test_read_xls_saves_csv(mock_open_workbook, mock_tqdm, tmp_path: Path):
     """Test reading xls file and saving as CSV when output_path is provided."""
@@ -114,7 +114,7 @@ def test_read_xls_saves_csv(mock_open_workbook, mock_tqdm, tmp_path: Path):
     assert len(saved_df) == 1
 
 
-@patch("istatcelldata.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
+@patch("istat_census_data.census1991.utils.tqdm", side_effect=lambda x, **kwargs: x)
 @patch("xlrd.open_workbook")
 def test_read_xls_ignores_metadati_sheet(mock_open_workbook, mock_tqdm, tmp_path: Path):
     """Test that read_xls ignores 'Metadati' sheet and uses first data sheet."""

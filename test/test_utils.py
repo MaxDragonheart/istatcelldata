@@ -6,8 +6,8 @@ import pytest
 import requests
 import xlrd
 
-from istatcelldata.config import DEMO_DATA_FOLDER
-from istatcelldata.utils import (
+from istat_census_data.config import DEMO_DATA_FOLDER
+from istat_census_data.utils import (
     census_folder,
     check_encoding,
     csv_from_excel,
@@ -115,7 +115,7 @@ def test_get_census_dictionary():
     assert isinstance(data, dict)
 
 
-@patch("istatcelldata.utils.tqdm", side_effect=lambda x, **kwargs: x)
+@patch("istat_census_data.utils.tqdm", side_effect=lambda x, **kwargs: x)
 @patch("xlrd.open_workbook")
 def test_csv_from_excel_no_metadata(mock_open_workbook, mock_tqdm, tmp_path: Path):
     """Test csv_from_excel with metadata=False and Metadati sheet present."""

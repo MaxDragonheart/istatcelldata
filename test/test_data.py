@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pandas as pd
 import pytest
 
-from istatcelldata.config import DOWNLOAD_RAW_DATA, census_data
-from istatcelldata.data import preprocess_data
+from istat_census_data.config import DOWNLOAD_RAW_DATA, census_data
+from istat_census_data.data import preprocess_data
 
 year = 1991
 
@@ -47,8 +47,8 @@ def test_preprocess_data_no_csv_files(tmp_path: Path):
         preprocess_data(data_folder=empty_folder)
 
 
-@patch("istatcelldata.data.tqdm", side_effect=lambda x, **kwargs: x)
-@patch("istatcelldata.data.check_encoding")
+@patch("istat_census_data.data.tqdm", side_effect=lambda x, **kwargs: x)
+@patch("istat_census_data.data.check_encoding")
 @patch("pandas.read_csv")
 def test_preprocess_data_with_output_folder(
     mock_read_csv, mock_check_encoding, mock_tqdm, tmp_path: Path

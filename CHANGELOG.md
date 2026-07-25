@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-25
+
+### Removed
+- Removed the legacy `istatcelldata` Python import package.
+- Removed the compatibility facade that re-exported the implementation through
+  `istatcelldata`.
+
+### Changed
+- Moved the implementation package to `istat_census_data`.
+- Updated package metadata, tests, CI coverage, mypy, docs, and mkdocstrings to use
+  `istat_census_data` only.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- Replace Python imports from `istatcelldata` with `istat_census_data`.
+- This is a breaking change and requires code updates for users still importing
+  `istatcelldata`.
+
 ## [1.5.0] - 2026-06-13
 
 ### Added

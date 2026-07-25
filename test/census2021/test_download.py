@@ -2,8 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from istatcelldata.census2011.download import download_administrative_boundaries, download_geodata
-from istatcelldata.census2021.download import download_all_census_data_2021, download_data
+from istat_census_data.census2011.download import (
+    download_administrative_boundaries,
+    download_geodata,
+)
+from istat_census_data.census2021.download import download_all_census_data_2021, download_data
 
 year = 2021
 

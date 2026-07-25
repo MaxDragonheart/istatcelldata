@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from istatcelldata.download import download_base
+from istat_census_data.download import download_base
 
 
 def test_download_mock_success(tmp_path: Path):
@@ -33,7 +33,7 @@ def test_download_mock_success(tmp_path: Path):
         zip_data[i : i + chunk_size] for i in range(0, len(zip_data), chunk_size)
     ]
 
-    with patch("istatcelldata.download.requests.get", return_value=mock_response):
+    with patch("istat_census_data.download.requests.get", return_value=mock_response):
         result = download_base(
             data_link="https://example.com/data.zip",
             data_file_path_destination=download_folder / "data.zip",
@@ -67,7 +67,7 @@ def test_mock_http_error(tmp_path: Path):
     mock_response = Mock()
     mock_response.status_code = 404
 
-    with patch("istatcelldata.download.requests.get", return_value=mock_response):
+    with patch("istat_census_data.download.requests.get", return_value=mock_response):
         with pytest.raises(Exception, match="returned status code 404"):
             download_base(
                 data_link="https://example.com/notfound.zip",
@@ -86,7 +86,7 @@ def test_mock_network_error(tmp_path: Path):
     destination_folder = tmp_path / "destination"
 
     # Mock a network error
-    with patch("istatcelldata.download.requests.get", side_effect=Exception("Network error")):
+    with patch("istat_census_data.download.requests.get", side_effect=Exception("Network error")):
         with pytest.raises(Exception, match="Network error"):
             download_base(
                 data_link="https://example.com/data.zip",
@@ -119,7 +119,7 @@ def test_mock_no_content_length(tmp_path: Path):
     mock_response.headers = {}  # No Content-Length
     mock_response.iter_content = lambda chunk_size: [zip_data]
 
-    with patch("istatcelldata.download.requests.get", return_value=mock_response):
+    with patch("istat_census_data.download.requests.get", return_value=mock_response):
         result = download_base(
             data_link="https://example.com/data.zip",
             data_file_path_destination=download_folder / "data.zip",
@@ -144,7 +144,10 @@ def test_download_base_real_integration(tmp_path: Path):
     destination_folder = tmp_path.joinpath("destination")
     destination_folder.mkdir(parents=True, exist_ok=True)
 
-    download_url = "https://www.istat.it/storage/cartografia/basi_territoriali/WGS_84_UTM/1991/R15_91_WGS84.zip"
+    download_url = (
+        "https://www.istat.it/storage/cartografia/basi_territoriali/WGS_84_UTM/1991/"
+        "R15_91_WGS84.zip"
+    )
     data_file_name = Path(download_url).stem + Path(download_url).suffix
     print(data_file_name)
 

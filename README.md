@@ -22,21 +22,19 @@ pip install istat-census-data
 `istat-census-data` è la distribuzione PyPI mantenuta.
 
 Il nome della distribuzione PyPI è `istat-census-data`. A partire dalla versione
-1.5.0, il package Python consigliato da importare è `istat_census_data`:
+2.0.0, l'unico package Python supportato da importare è `istat_census_data`:
 
 ```python
 import istat_census_data
 ```
 
-La vecchia pagina PyPI
-[`istatcelldata`](https://pypi.org/project/istatcelldata/) non è più mantenuta e non
-riceverà nuove release, perché il progetto si è spostato su
+La vecchia pagina PyPI [`istatcelldata`](https://pypi.org/project/istatcelldata/)
+non è più mantenuta e non riceverà nuove release, perché il progetto si è spostato su
 [`istat-census-data`](https://pypi.org/project/istat-census-data/).
 
 Aggiorna le dipendenze di installazione a `istat-census-data`.
-
-Il vecchio import `istatcelldata` resta disponibile per compatibilità, così il codice
-Python esistente continua a funzionare durante la migrazione.
+Aggiorna anche il codice Python sostituendo `import istatcelldata` con
+`import istat_census_data`.
 
 
 !!! INFO

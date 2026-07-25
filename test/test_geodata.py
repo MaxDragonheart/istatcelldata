@@ -3,8 +3,12 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
-from istatcelldata.config import DOWNLOAD_RAW_DATA, GEOMETRY_COLUMN_NAME, census_data
-from istatcelldata.geodata import preprocess_geodata, read_administrative_boundaries, read_census
+from istat_census_data.config import DOWNLOAD_RAW_DATA, GEOMETRY_COLUMN_NAME, census_data
+from istat_census_data.geodata import (
+    preprocess_geodata,
+    read_administrative_boundaries,
+    read_census,
+)
 
 year = 2011
 
