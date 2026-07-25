@@ -1,27 +1,29 @@
 # Documentazione
 
-Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro interezza.
-È possibile infatti effettuare il download del dato e del geodato e successivamente processarlo.
+Le funzioni sviluppate consentono di gestire sia i dati che i geodati censuari nella loro
+interezza. È possibile effettuare il download del dato e del geodato e successivamente processarlo.
 
 ## Il dato sulle celle censuarie negli anni
 
-I dati censuari risultano essere differenti tra anno ed anno non solo per il loro contenuto ma anche e soprattutto 
-per la struttura dati con cui sono stati condivisi da ISTAT stessa.
+I dati censuari risultano differenti tra anno e anno non solo per il loro contenuto ma anche per la
+struttura dati con cui sono stati condivisi da ISTAT.
 
-In particolare gli anni 1991 e 2001 risultano avere una struttura dati uguale ma differente rispetto a quella degli 
-anni 2011 e 2021 che a loro volta sono simili tra loro.
+In particolare gli anni 1991 e 2001 hanno una struttura dati simile, ma diversa da quella degli anni
+2011 e 2021, che a loro volta sono simili tra loro.
 
-Per il 2021 inoltre c'è un totale cambio di nomenclatura dei file oltre che di url per il download dei soli dati.
+Per il 2021 inoltre c'è un cambio completo della nomenclatura dei file e degli URL di download per
+i soli dati.
 
 ## Codice Regione
-A partire dalla versione `0.6.0` è possibile elaborare i dati non per forza di tutta l'Italia ma anche solo di una o più 
-regioni, l'utente può scegliere. La scelta della o delle regioni da elaborare va fatta usado il codice della Regione di 
-interesse.
+
+A partire dalla versione `0.6.0` è possibile elaborare i dati non per forza per tutta l'Italia ma
+anche solo per una o più regioni. La scelta della regione o delle regioni da elaborare va fatta
+usando il codice della Regione di interesse.
 
 | **Codice** | **Regione**                  |
 |------------|------------------------------|
 | 01         | Piemonte                     |
-| 02         | Valle d’Aosta/Vallée d’Aoste |
+| 02         | Valle d'Aosta/Vallée d'Aoste |
 | 03         | Lombardia                    |
 | 04         | Trentino-Alto Adige/Südtirol |
 | 05         | Veneto                       |
@@ -43,202 +45,66 @@ interesse.
 
 La fonte della tabella precedente è [questa](https://www.istat.it/it/archivio/104317).
 
+## Catalogo degli indicatori censuari
 
-## Shared data
-*[DA RIVEDERE PER I DATI 2021](https://github.com/MaxDragonheart/istat-census-data/issues/42)*
+Il pacchetto espone un catalogo leggibile da codice per gli indicatori delle sezioni di censimento
+ISTAT. Il catalogo sostituisce il precedente elenco statico dei campi condivisi con un unico
+catalogo JSON incluso nel pacchetto, generato dai tracciati locali di 1991, 2001, 2011 e 2021 e
+arricchito da una mappatura semantica curata per i campi confrontabili.
 
-Analizzando i tracciati dei censimenti 1991, 2001 e 2011 si è evidenziata la presenza di campi che hanno mantenuto
-il loro codice. Questi campi sono stati definiti `SHARED_DATA` ed è possibile ottenerli scartando quelli che
-negli anni hanno cambiato codice. I campi condivisi sono i seguenti:
+```python
+from istat_census_data import (
+    get_census_index_catalog,
+    get_comparable_indexes,
+    list_census_indexes,
+)
+
+codici_2021 = list_census_indexes(year=2021)
+catalogo_2021 = get_census_index_catalog(year=2021)
+indicatori_popolazione = get_comparable_indexes(
+    years=[1991, 2001, 2011, 2021],
+    strict=True,
+)
 ```
-SHARED_DATA = {
-    'pop_tot': {
-        'descrizione': 'Popolazione residente - TOTALE',
-        'codice': 'P1'
-    },
-    'pop_tot_m': {
-        'descrizione': 'Popolazione residente - Maschi',
-        'codice': 'P2'
-    },
-    'pop_tot_f': {
-        'descrizione': 'Popolazione residente - Femmine',
-        'codice': 'P3'
-    },
-    'pop_meno_5_anni': {
-        'descrizione': 'Popolazione residente - età < 5 anni',
-        'codice': 'P14'
-    },
-    'pop_5_9_anni': {
-        'descrizione': 'Popolazione residente - età 5 - 9 anni',
-        'codice': 'P15'
-    },
-    'pop_10_14_anni': {
-        'descrizione': 'Popolazione residente - età 10 - 14 anni',
-        'codice': 'P16'
-    },
-    'pop_15_19_anni': {
-        'descrizione': 'Popolazione residente - età 15 - 19 anni',
-        'codice': 'P17'
-    },
-    'pop_20_24_anni': {
-        'descrizione': 'Popolazione residente - età 20 - 24 anni',
-        'codice': 'P18'
-    },
-    'pop_25_29_anni': {
-        'descrizione': 'Popolazione residente - età 25 - 29 anni',
-        'codice': 'P19'
-    },
-    'pop_30_34_anni': {
-        'descrizione': 'Popolazione residente - età 30 - 34 anni',
-        'codice': 'P20'
-    },
-    'pop_35_39_anni': {
-        'descrizione': 'Popolazione residente - età 35 - 39 anni',
-        'codice': 'P21'
-    },
-    'pop_40_44_anni': {
-        'descrizione': 'Popolazione residente - età 40 - 44 anni',
-        'codice': 'P22'
-    },
-    'pop_45_49_anni': {
-        'descrizione': 'Popolazione residente - età 15 - 19 anni',
-        'codice': 'P23'
-    },
-    'pop_50_54_anni': {
-        'descrizione': 'Popolazione residente - età 20 - 24 anni',
-        'codice': 'P24'
-    },
-    'pop_55_59_anni': {
-        'descrizione': 'Popolazione residente - età 25 - 29 anni',
-        'codice': 'P25'
-    },
-    'pop_60_64_anni': {
-        'descrizione': 'Popolazione residente - età 30 - 34 anni',
-        'codice': 'P26'
-    },
-    'pop_65_69_anni': {
-        'descrizione': 'Popolazione residente - età 35 - 39 anni',
-        'codice': 'P27'
-    },
-    'pop_70_74_anni': {
-        'descrizione': 'Popolazione residente - età 40 - 44 anni',
-        'codice': 'P28'
-    },
-    'pop_maggiore_74_anni': {
-        'descrizione': 'Popolazione residente - età > 74 anni',
-        'codice': 'P29'
-    },
-    'pop_meno_5_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età < 5 anni',
-        'codice': 'P30'
-    },
-    'pop_5_9_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 5 - 9 anni',
-        'codice': 'P31'
-    },
-    'pop_10_14_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 10 - 14 anni',
-        'codice': 'P32'
-    },
-    'pop_15_19_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
-        'codice': 'P33'
-    },
-    'pop_20_24_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
-        'codice': 'P34'
-    },
-    'pop_25_29_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
-        'codice': 'P35'
-    },
-    'pop_30_34_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
-        'codice': 'P36'
-    },
-    'pop_35_39_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
-        'codice': 'P37'
-    },
-    'pop_40_44_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
-        'codice': 'P38'
-    },
-    'pop_45_49_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 15 - 19 anni',
-        'codice': 'P39'
-    },
-    'pop_50_54_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 20 - 24 anni',
-        'codice': 'P40'
-    },
-    'pop_55_59_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 25 - 29 anni',
-        'codice': 'P41'
-    },
-    'pop_60_64_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 30 - 34 anni',
-        'codice': 'P42'
-    },
-    'pop_65_69_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 35 - 39 anni',
-        'codice': 'P43'
-    },
-    'pop_70_74_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età 40 - 44 anni',
-        'codice': 'P44'
-    },
-    'pop_maggiore_74_anni_m': {
-        'descrizione': 'Popolazione residente - Maschi - età > 74 anni',
-        'codice': 'P45'
-    },
-    'lavoratori_tot': {
-        'descrizione': 'Forze lavoro - TOTALE',
-        'codice': 'P60'
-    },
-    'lavoratori_occupati': {
-        'descrizione': 'Forze lavoro - Occupati',
-        'codice': 'P61'
-    },
-    'lavoratori_disoccupati': {
-        'descrizione': 'Forze lavoro - Disoccupati e altre persone in cerca di occupazione',
-        'codice': 'P62'
-    },
-    'famiglie_tot': {
-        'descrizione': 'Famiglie totale',
-        'codice': 'PF1'
-    },
-    'famiglie_componenti_tot': {
-        'descrizione': 'Totale componenti delle famiglie',
-        'codice': 'PF2'
-    },
-    'famiglie_1_componente': {
-        'descrizione': 'Famiglie 1 componente',
-        'codice': 'PF3'
-    },
-    'famiglie_2_componenti': {
-        'descrizione': 'Famiglie 2 componenti',
-        'codice': 'PF4'
-    },
-    'famiglie_3_componenti': {
-        'descrizione': 'Famiglie 3 componenti',
-        'codice': 'PF5'
-    },
-    'famiglie_4_componenti': {
-        'descrizione': 'Famiglie 4 componenti',
-        'codice': 'PF6'
-    },
-    'famiglie_5_componenti': {
-        'descrizione': 'Famiglie 5 componenti',
-        'codice': 'PF7'
-    },
-    'famiglie_6_componenti_e_oltre': {
-        'descrizione': 'Famiglie 6 e oltre componenti',
-        'codice': 'PF8'
-    },
-    'famiglie_residenti_oltre_6_componenti': {
-        'descrizione': 'Componenti delle famiglie residenti di 6 e oltre componenti',
-        'codice': 'PF9'
-    },
-}
-```
+
+`get_census_index_catalog()` restituisce una riga per ogni coppia `(year, source_code)` con questi
+campi:
+
+- `canonical_id`
+- `year`
+- `source_code`
+- `label_it`
+- `theme`
+- `measure_type`
+- `is_additive`
+- `is_population_count`
+- `comparable_group`
+- `comparability_note`
+- `source`
+
+Usare `is_additive` per identificare le variabili di conteggio che possono essere considerate nei
+workflow con pesatura areale. Identificativi, colonne testuali e campi sconosciuti sono marcati
+come non additivi.
+
+## Avvertenze sulla comparabilità
+
+L'uguaglianza del codice non è sufficiente per confrontare gli indicatori tra anni. Per esempio,
+`P18` mantiene lo stesso significato di classe di età della popolazione residente in tutti gli anni
+supportati, quindi è mappato nel gruppo stabile `resident_population_age_20_24`.
+
+Altri codici hanno cambiato significato. Nel tracciato locale 2021, da `P67` a `P82` sono classi di
+età femminili. Nei tracciati locali più vecchi, lo stesso intervallo di codici indicava variabili
+sul lavoro o sull'occupazione. Il catalogo quindi mappa quei campi 2021 semanticamente e non li
+confronta usando solo il codice.
+
+I campi sulle forze di lavoro come `P60`, `P61` e `P62` sono mappati per 1991, 2001 e 2011, ma
+riportano `2021` in `missing_years` quando si richiede la comparabilità non stretta su tutti e
+quattro gli anni.
+
+Il censimento 2021 appartiene al sistema del censimento permanente e usa un processo di
+geocodifica diverso dai censimenti tradizionali precedenti. I gruppi confrontabili devono quindi
+essere letti come metadati documentati, non come prova che ogni dettaglio metodologico sia
+identico.
+
+ISTAT ha pubblicato anche dati 2023 per sezione, ma il pacchetto attualmente supporta solo 1991,
+2001, 2011 e 2021. L'aggiunta del supporto 2023 è fuori dallo scope attuale del pacchetto.

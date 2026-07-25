@@ -4,4 +4,278 @@ The Geodata module provides tools for managing and preprocessing geographic data
 New code should import from `istat_census_data`. The reference below is generated
 from the implementation module so the full function documentation remains visible.
 
+## H3 census estimates
+
+Use `estimate_h3_census_indexes()` after creating the finalized `census_data.gpkg`
+with `finalize_census_data()`. By default, the function reads layer `census<year>`,
+uses the packaged census catalogue to select additive indicators available in the
+layer, generates level-11 H3 cells for the AOI, and distributes source census-section values
+by area-weighted interpolation.
+
+```python
+from pathlib import Path
+
+import geopandas as gpd
+from shapely.geometry import box
+
+from istat_census_data import estimate_h3_census_indexes
+
+aoi = gpd.GeoDataFrame(
+    geometry=[box(12.0, 41.0, 12.2, 41.2)],
+    crs="EPSG:4326",
+)
+
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    h3_resolution=11,
+    indexes=["P1", "P2"],
+    workers=4,
+    chunk_size=5000,
+    output_path=Path("h3_census_2021.gpkg"),
+)
+```
+
+The estimator enforces H3 resolution 11. The `h3_resolution` argument can be
+omitted because level 11 is the default, but any other value is rejected.
+
+The same workflow can be run from the command line with the packaged script:
+
+```bash
+poetry run python scripts/estimate_h3_census.py \
+  --census-data census_data.gpkg \
+  --year 2021 \
+  --aoi aoi.gpkg \
+  --aoi-layer aoi \
+  --indexes P1 P2 \
+  --workers 4 \
+  --chunk-size 5000 \
+  --output h3_census_2021.gpkg
+```
+
+Omit `--indexes` to estimate every additive index from the catalogue that is present
+in the source layer. Add `--municipality-code` one or more times to filter source
+rows before the H3 overlay.
+
+## Parallel execution and benchmarking
+
+H3 estimation is serial by default: `workers=1`. For larger AOIs, set `workers`
+above 1 and choose a `chunk_size` to split the H3 grid into deterministic
+cell-owned chunks. Each H3 cell is processed by exactly one chunk, so parallel
+results contain the same cells as the serial path and should match serial totals
+within the estimator tolerance.
+
+```python
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    indexes=["P1", "P2"],
+    workers=4,
+    chunk_size=5000,
+)
+```
+
+The default `parallel_backend="thread"` shares the prepared GeoDataFrames between
+workers and avoids copying a large source layer into multiple processes. Use
+`parallel_backend="process"` only after benchmarking on your machine: it can help
+CPU-bound overlays, but it also serializes GeoDataFrames and usually needs more
+memory.
+
+Use the optional Dask backend when you want Dask to schedule the same deterministic
+H3 chunks locally:
+
+```bash
+pip install "istat-census-data[dask]"
+```
+
+```python
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    indexes=["P1", "P2"],
+    workers=4,
+    chunk_size=5000,
+    parallel_backend="dask",
+)
+```
+
+The Dask backend currently uses Dask's local threaded scheduler. It is an optional
+runtime path, not a required dependency for normal package installs.
+
+Start with `workers` no higher than the physical CPU cores available to the
+process. For H3 level 11, `chunk_size` values between 2,000 and 10,000 cells are
+a practical first range. Smaller chunks give earlier progress updates but create
+more scheduling overhead; larger chunks reduce overhead but can leave workers
+idle near the end of a run.
+
+Use the benchmark script on finalized data to compare settings before running a
+large production AOI:
+
+```bash
+poetry run python scripts/benchmark_h3_estimation.py \
+  --census-data census_data.gpkg \
+  --year 2021 \
+  --aoi aoi.gpkg \
+  --aoi-layer aoi \
+  --indexes P1 P2 \
+  --workers 1 2 4 \
+  --chunk-size 2000 5000 \
+  --parallel-backend dask \
+  --runs 3 \
+  --output-json h3_benchmark.json
+```
+
+The benchmark output reports elapsed seconds, H3 cell count, and whether total
+validation passed for each worker/chunk setting. Treat small AOI timings as a
+correctness and overhead check; medium or large AOIs are more useful for deciding
+whether parallel execution actually helps.
+
+## End-to-end H3 workflow
+
+Use `run_h3_census_workflow()` or `scripts/run_h3_census_analysis.py` when you
+want the selected census years to drive the whole pipeline. The workflow downloads
+only the requested years, preprocesses them, finalizes `census_data.gpkg`, and then
+writes one H3 level-11 output layer per year.
+
+```bash
+poetry run python scripts/run_h3_census_analysis.py \
+  --years 2011 2021 \
+  --data-dir ./census \
+  --aoi aoi.gpkg \
+  --aoi-layer aoi \
+  --indexes P1 P2 \
+  --workers 4 \
+  --chunk-size 5000 \
+  --parallel-backend thread \
+  --output h3_census_analysis.gpkg
+```
+
+The command above writes layers named `h3_census2011_r11` and `h3_census2021_r11`.
+Omit `--indexes` to estimate all additive indicators available in each selected
+year. Use `--region-code` to limit downloaded geodata and `--municipality-code` to
+filter preprocessing and H3 estimation. The H3 level is fixed at 11 and the
+special/fictitious section policy defaults to `exclude`.
+
+The end-to-end workflow exposes the same PRP-012 performance controls as the
+finalized-data estimator. Use `--workers`, `--chunk-size`, and
+`--parallel-backend` to tune large jobs. After installing
+`istat-census-data[dask]`, set `--parallel-backend dask` to use the optional local
+Dask backend.
+
+If the data already exists, skip any completed stage:
+
+```bash
+poetry run python scripts/run_h3_census_analysis.py \
+  --years 2021 \
+  --data-dir ./census \
+  --aoi aoi.gpkg \
+  --skip-download \
+  --skip-preprocess \
+  --skip-finalize
+```
+
+When `--skip-finalize` is used, `<data-dir>/census_data.gpkg` must already exist.
+
+The same process is available from Python:
+
+```python
+from pathlib import Path
+
+import geopandas as gpd
+
+from istat_census_data import run_h3_census_workflow
+
+aoi = gpd.read_file("aoi.gpkg", layer="aoi")
+
+result = run_h3_census_workflow(
+    years=[2021],
+    data_folder=Path("./census"),
+    aoi=aoi,
+    indexes=["P1", "P2"],
+    municipality_codes=[58091],
+    workers=4,
+    chunk_size=5000,
+    parallel_backend="thread",
+)
+
+print(result.output_path)
+print(result.layers)
+```
+
+The method assumes uniform density inside each source census section. This is
+transparent and preserves additive totals against the clipped source-cell total,
+but it is not a dasymetric model and should not be interpreted as exact household
+or building-level placement.
+
+## Special and fictitious census sections
+
+`estimate_h3_census_indexes()` flags source census sections whose section code
+contains one of these markers:
+
+| Marker | Meaning | Data delivered in those rows | H3 interpretation |
+|---|---|---|---|
+| `888888` | Fictitious sections for people without housing or without a fixed address who are registered in the municipal registry. ISTAT also documents their use for people registered through associations or reception facilities. | The rows can carry the same census variables released for section-level files. For these sections, population and person/family indicators may be meaningful, while dwelling or building indicators should not be read as physical conditions at the drawn polygon. | The geometry is conventional. ISTAT notes that these sections are drawn in uninhabited areas, preferably near the town hall. H3 densities over that polygon are therefore an allocation device, not a residential-location estimate. |
+| `999999` | Fictitious sections related to contested zones claimed by two or more municipalities. | The rows can carry resident-individual counts for the municipality to which the contested geography was not assigned for census purposes. They can also flow through the normal section-level variable schema when present in the finalized layer. | Treat the result as an administrative allocation. Do not interpret the H3 cell as a precise location of residence unless the contested-zone geometry is analytically appropriate for your use case. |
+| `7777777` | 2011 Abruzzo-only fictitious sections for municipalities affected by the April 2009 earthquake. | ISTAT documents these sections as the placement for families that, at the census date, were temporarily domiciled in a municipality different from their registry municipality. Additive population/family indicators may therefore be present, but their geometry is not ordinary residence geography. | Use care in local density maps and overlays: the rows preserve census accounting, but the geometry encodes a post-earthquake administrative convention. |
+
+These markers are not treated as missing data, but H3 estimation excludes them by
+default because their conventional geometries can create misleading local
+densities. With `special_section_policy="exclude"`, the estimator removes these
+source rows before the area-weighted overlay; totals in the result therefore
+exclude those records.
+
+Use `special_section_policy="include"` only when you need full census accounting
+inside the AOI and accept that conventional polygons can receive people who are
+not physically distributed there. In that mode, the estimator includes their
+values in the area-weighted overlay and sets `intersects_special_section=True`
+for any H3 cell receiving area from one of them.
+
+Use a stricter policy when that convention is not acceptable:
+
+```python
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    indexes=["P1"],
+    special_section_policy="raise",
+)
+```
+
+- `exclude`: default for H3 processes; remove these source rows before estimating,
+  so totals exclude those records.
+- `include`: keep the rows and flag intersecting H3 cells.
+- `raise`: stop with an error if any special or fictitious section intersects the
+  AOI.
+
+Inspect flagged output cells with:
+
+```python
+flagged_cells = h3_estimates[h3_estimates["intersects_special_section"]]
+```
+
+The command-line script exposes the same policy:
+
+```bash
+poetry run python scripts/estimate_h3_census.py \
+  --census-data census_data.gpkg \
+  --year 2021 \
+  --aoi aoi.gpkg \
+  --special-section-policy raise \
+  --output h3_census_2021.gpkg
+```
+
+Sources: ISTAT documents `888888x` and `999999x` in
+[Dati per sezioni di censimento](https://www.istat.it/notizia/dati-per-sezioni-di-censimento/).
+ISTAT documents zones in contestation, sections for people without housing, and
+the 2011 Abruzzo `7777777` convention in
+[Basi territoriali: anni 1991, 2001, 2011 e 2021](https://www.istat.it/wp-content/uploads/2024/07/Descrizione-dei-dati-Basi-territoriali.pdf).
+
 ::: istat_census_data.geodata
+
+::: istat_census_data.h3_estimation
+
+::: istat_census_data.h3_workflow

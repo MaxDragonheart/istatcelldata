@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "istat-census-data"
-version = "2.0.0"
+version = "2.1.0"
 description = "Python package to download and process ISTAT census grid cell data for Italian population censuses (1991-2021)"
 authors = ["Massimiliano Moraca <gis.massimilianomoraca@gmail.com>"]
 readme = "README.md"
 license = "MIT"
-include = ["LICENSE"]
+include = ["LICENSE", "istat_census_data/resources/*.json"]
 packages = [
     { include = "istat_census_data" },
 ]
@@ -37,6 +37,11 @@ chardet = "^5.2.0"
 openpyxl = "^3.1.5"
 xlrd = "^2.0.1"
 requests = "^2.32.0"
+h3 = "^4.5.0"
+dask = { version = ">=2024.8.0", optional = true }
+
+[tool.poetry.extras]
+dask = ["dask"]
 
 
 [tool.poetry.group.dev.dependencies]

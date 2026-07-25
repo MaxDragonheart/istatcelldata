@@ -17,6 +17,12 @@ E' possibile scaricare e processare i dati dal 1991 al 2021.
 pip install istat-census-data
 ```
 
+Per usare il backend opzionale Dask nelle elaborazioni H3 parallele:
+
+```bash
+pip install "istat-census-data[dask]"
+```
+
 ## Rinomina del progetto e manutenzione
 
 `istat-census-data` è la distribuzione PyPI mantenuta.

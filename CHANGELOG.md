@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-25
+
+### Added
+- Added a packaged census indicator catalogue with public APIs for listing indexes and
+  selecting comparable cross-year census indicators.
+- Added fixed level-11 H3 grid generation and area-weighted census estimation APIs.
+- Added user-facing H3 estimation and selected-year end-to-end workflow scripts.
+- Added deterministic H3 overlay chunking with thread, process, and optional Dask
+  backends, plus benchmark tooling.
+
+### Changed
+- H3 estimation workflows default to excluding special/fictitious census sections and
+  document the interpretation limits for those records.
+- The selected-year H3 workflow exposes worker count, chunk size, and backend controls.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- Install optional Dask support with `pip install "istat-census-data[dask]"`.
+- This release adds public functionality without breaking the 2.0.0
+  `istat_census_data` import path.
+
 ## [2.0.0] - 2026-07-25
 
 ### Removed

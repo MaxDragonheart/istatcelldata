@@ -6,8 +6,8 @@ import istat_census_data
 
 
 def test_canonical_import_path_exposes_metadata():
-    """The canonical package exposes the expected 2.0.0 metadata."""
-    assert istat_census_data.__version__ == "2.0.0"
+    """The canonical package exposes the expected 2.1.0 metadata."""
+    assert istat_census_data.__version__ == "2.1.0"
     assert istat_census_data.__author__ == "Massimiliano Moraca"
     assert istat_census_data.__email__ == "gis.massimilianomoraca@gmail.com"
     assert "download_base" in istat_census_data.__all__
@@ -44,11 +44,25 @@ def test_canonical_submodule_imports_expose_public_api():
             "census_data",
         ],
         "data": ["preprocess_data"],
+        "catalog": [
+            "get_census_index_catalog",
+            "get_comparable_indexes",
+            "list_census_indexes",
+        ],
         "download": ["download_base"],
         "geodata": [
             "preprocess_geodata",
             "read_administrative_boundaries",
             "read_census",
+        ],
+        "h3_estimation": [
+            "REQUIRED_H3_RESOLUTION",
+            "estimate_h3_census_indexes",
+            "generate_h3_grid",
+        ],
+        "h3_workflow": [
+            "H3CensusWorkflowResult",
+            "run_h3_census_workflow",
         ],
         "logger_config": ["configure_logging", "get_log_filename"],
         "utils": [

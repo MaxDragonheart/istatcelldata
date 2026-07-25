@@ -6,3 +6,5 @@ Il codice nuovo dovrebbe importare da `istat_census_data`. Il riferimento qui so
 completa delle funzioni.
 
 ::: istat_census_data.data
+
+::: istat_census_data.catalog
