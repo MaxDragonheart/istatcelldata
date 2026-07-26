@@ -102,7 +102,7 @@ select = [
 ignore = []
 
 [tool.ruff.lint.per-file-ignores]
-"scripts/*.py" = ["N999"]  # Allow non-standard module names in standalone scripts
+"scripts/*.py" = ["N999", "F401"]  # Allow non-standard module names in standalone scripts
 
 [tool.mypy]
 python_version = "3.10"
