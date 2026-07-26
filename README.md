@@ -42,6 +42,12 @@ Aggiorna le dipendenze di installazione a `istat-census-data`.
 Aggiorna anche il codice Python sostituendo `import istatcelldata` con
 `import istat_census_data`.
 
+## Tutorial notebook
+
+I notebook sotto `notebooks/tutorial/` mostrano download, preprocessamento,
+finalizzazione, catalogo degli indicatori, comparabilita' tra anni e workflow H3. I
+notebook inglesi sono in `notebooks/tutorial/en/`.
+
 
 !!! INFO
 

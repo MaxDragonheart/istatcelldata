@@ -9,7 +9,7 @@ including demographic data and geographic information (shapefiles, administrativ
 boundaries) for census sections across Italy.
 """
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 __author__ = "Massimiliano Moraca"
 __email__ = "gis.massimilianomoraca@gmail.com"
 

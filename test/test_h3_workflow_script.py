@@ -13,7 +13,6 @@ WGS84_CRS = "EPSG:4326"
 def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
 ):
     captured_kwargs: dict[str, object] = {}
     aoi_path = _write_aoi(tmp_path=tmp_path)
@@ -39,45 +38,34 @@ def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
         fake_run_h3_census_workflow,
     )
 
-    exit_code = run_h3_census_analysis.main(
-        [
-            "--years",
-            "2011",
-            "2021",
-            "--data-dir",
-            str(data_dir),
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--indexes",
-            "P1",
-            "P2",
-            "--region-code",
-            "1",
-            "2",
-            "--municipality-code",
-            "58091",
-            "--skip-download",
-            "--workers",
-            "2",
-            "--chunk-size",
-            "3",
-            "--parallel-backend",
-            "dask",
-            "--output",
-            str(output_path),
-        ]
+    result = run_h3_census_analysis.run(
+        years=[2011, 2021],
+        regions=[1, 2],
+        data_dir=data_dir,
+        aoi_path=aoi_path,
+        indexes=[],
+        output_path=output_path,
+        output_layer_prefix="h3_census",
+        aoi_layer="aoi",
+        aoi_crs=None,
+        municipality_codes=["58091"],
+        special_section_policy="exclude",
+        area_crs="EPSG:3035",
+        clip_output=False,
+        workers=2,
+        chunk_size=3,
+        parallel_backend="dask",
+        run_download=False,
+        run_preprocess=True,
+        run_finalize=True,
+        delete_download_folder=False,
+        delete_preprocessed_data=False,
     )
-    captured = capsys.readouterr()
 
-    assert exit_code == 0
-    assert "H3 census workflow completed" in captured.out
-    assert "2011" in captured.out
-    assert "2021" in captured.out
+    assert result.years == (2011, 2021)
     assert captured_kwargs["years"] == [2011, 2021]
     assert captured_kwargs["data_folder"] == data_dir
-    assert captured_kwargs["indexes"] == ["P1", "P2"]
+    assert captured_kwargs["indexes"] == []
     assert captured_kwargs["region_list"] == [1, 2]
     assert captured_kwargs["municipality_codes"] == ["58091"]
     assert captured_kwargs["special_section_policy"] == "exclude"
@@ -90,77 +78,36 @@ def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
     assert captured_kwargs["output_path"] == output_path
 
 
-def test_run_h3_census_analysis_script_defaults_to_all_additive_indexes(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-):
-    captured_kwargs: dict[str, object] = {}
-    aoi_path = _write_aoi(tmp_path=tmp_path)
-
-    def fake_run_h3_census_workflow(**kwargs: object) -> H3CensusWorkflowResult:
-        captured_kwargs.update(kwargs)
-        data_folder = Path(kwargs["data_folder"])
-        return H3CensusWorkflowResult(
-            data_folder=data_folder,
-            census_data_path=data_folder / "census_data.gpkg",
-            output_path=data_folder / "h3_census_data.gpkg",
-            years=(2021,),
-            layers={2021: "h3_census2021_r11"},
-            results={2021: _result_frame(year=2021)},
-        )
-
-    monkeypatch.setattr(
-        run_h3_census_analysis,
-        "run_h3_census_workflow",
-        fake_run_h3_census_workflow,
-    )
-
-    exit_code = run_h3_census_analysis.main(
-        [
-            "--years",
-            "2021",
-            "--data-dir",
-            str(tmp_path / "data"),
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-        ]
-    )
-
-    assert exit_code == 0
-    assert captured_kwargs["indexes"] == "all_additive"
-    assert captured_kwargs["output_path"] is None
-
-
-def test_run_h3_census_analysis_script_reports_missing_aoi_crs(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-):
+def test_run_h3_census_analysis_script_reports_missing_aoi_crs(tmp_path: Path):
     aoi_path = tmp_path / "aoi_without_crs.gpkg"
     gpd.GeoDataFrame(
         geometry=[box(12.0, 41.0, 12.02, 41.01)],
     ).to_file(aoi_path, layer="aoi", driver="GPKG")
 
-    exit_code = run_h3_census_analysis.main(
-        [
-            "--years",
-            "2021",
-            "--data-dir",
-            str(tmp_path / "data"),
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--skip-download",
-            "--skip-preprocess",
-            "--skip-finalize",
-        ]
-    )
-    captured = capsys.readouterr()
-
-    assert exit_code == 1
-    assert "AOI file has no CRS" in captured.err
+    with pytest.raises(ValueError, match="AOI file has no CRS"):
+        run_h3_census_analysis.run(
+            years=[2021],
+            regions=[],
+            data_dir=tmp_path / "data",
+            aoi_path=aoi_path,
+            indexes=[],
+            output_path=tmp_path / "h3_output.gpkg",
+            output_layer_prefix="h3_census",
+            aoi_layer="aoi",
+            aoi_crs=None,
+            municipality_codes=None,
+            special_section_policy="exclude",
+            area_crs="EPSG:3035",
+            clip_output=False,
+            workers=1,
+            chunk_size=5000,
+            parallel_backend="thread",
+            run_download=False,
+            run_preprocess=False,
+            run_finalize=False,
+            delete_download_folder=False,
+            delete_preprocessed_data=False,
+        )
 
 
 def _write_aoi(tmp_path: Path) -> Path:

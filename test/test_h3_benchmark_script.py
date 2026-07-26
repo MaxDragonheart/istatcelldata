@@ -13,11 +13,9 @@ WGS84_CRS = "EPSG:4326"
 def test_benchmark_h3_estimation_script_records_worker_and_chunk_settings(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
 ):
     captured_calls: list[dict[str, object]] = []
     aoi_path = _write_aoi(tmp_path=tmp_path)
-    output_json = tmp_path / "benchmark.json"
 
     def fake_estimate_h3_census_indexes(**kwargs: object) -> gpd.GeoDataFrame:
         captured_calls.append(kwargs)
@@ -35,60 +33,48 @@ def test_benchmark_h3_estimation_script_records_worker_and_chunk_settings(
         fake_estimate_h3_census_indexes,
     )
 
-    exit_code = benchmark_h3_estimation.main(
-        [
-            "--census-data",
-            str(tmp_path / "census_data.gpkg"),
-            "--year",
-            "2021",
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--indexes",
-            "P1",
-            "--workers",
-            "1",
-            "2",
-            "--chunk-size",
-            "2",
-            "--parallel-backend",
-            "dask",
-            "--runs",
-            "1",
-            "--output-json",
-            str(output_json),
-        ]
+    records = benchmark_h3_estimation.run_benchmark(
+        census_data_path=tmp_path / "census_data.gpkg",
+        year=2021,
+        aoi_path=aoi_path,
+        indexes=[],
+        aoi_layer="aoi",
+        aoi_crs=None,
+        municipality_codes=None,
+        special_section_policy="exclude",
+        area_crs="EPSG:3035",
+        workers=[1, 2],
+        chunk_sizes=[2],
+        parallel_backend="dask",
+        runs=1,
     )
-    captured = capsys.readouterr()
 
-    assert exit_code == 0
-    assert "workers chunk_size backend run seconds h3_cells validation" in captured.out
-    assert output_json.exists()
+    assert len(records) == 2
     assert [call["workers"] for call in captured_calls] == [1, 2]
     assert [call["chunk_size"] for call in captured_calls] == [2, 2]
     assert all(call["parallel_backend"] == "dask" for call in captured_calls)
+    assert all(call["indexes"] == [] for call in captured_calls)
 
 
 def test_benchmark_h3_estimation_script_rejects_invalid_runs(tmp_path: Path):
     aoi_path = _write_aoi(tmp_path=tmp_path)
 
-    exit_code = benchmark_h3_estimation.main(
-        [
-            "--census-data",
-            str(tmp_path / "census_data.gpkg"),
-            "--year",
-            "2021",
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--runs",
-            "0",
-        ]
-    )
-
-    assert exit_code == 1
+    with pytest.raises(ValueError, match="runs must be greater than or equal to 1"):
+        benchmark_h3_estimation.run_benchmark(
+            census_data_path=tmp_path / "census_data.gpkg",
+            year=2021,
+            aoi_path=aoi_path,
+            indexes=[],
+            aoi_layer="aoi",
+            aoi_crs=None,
+            municipality_codes=None,
+            special_section_policy="exclude",
+            area_crs="EPSG:3035",
+            workers=[1],
+            chunk_sizes=[5000],
+            parallel_backend="thread",
+            runs=0,
+        )
 
 
 def _write_aoi(tmp_path: Path) -> Path:

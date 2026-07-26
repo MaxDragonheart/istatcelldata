@@ -45,23 +45,11 @@ Lo stimatore usa obbligatoriamente la risoluzione H3 11. L'argomento
 `h3_resolution` puo essere omesso perché il livello 11 e il valore predefinito,
 ma qualsiasi altro valore viene rifiutato.
 
-Lo stesso workflow puo essere eseguito da terminale con lo script incluso:
-
-```bash
-poetry run python scripts/estimate_h3_census.py \
-  --census-data census_data.gpkg \
-  --year 2021 \
-  --aoi aoi.gpkg \
-  --aoi-layer aoi \
-  --indexes P1 P2 \
-  --workers 4 \
-  --chunk-size 5000 \
-  --output h3_census_2021.gpkg
-```
-
-Ometti `--indexes` per stimare tutti gli indicatori additivi del catalogo presenti
-nel layer sorgente. Aggiungi `--municipality-code` una o piu volte per filtrare le
-righe sorgenti prima dell'overlay H3.
+Lo stesso workflow e disponibile come script di esempio modificabile in
+`scripts/estimate_h3_census.py`. Imposta i valori di modulo come
+`census_data_path`, `aoi_path`, `selected_year`, `selected_indexes`, `workers` e
+`chunk_size`, poi esegui lo script. Usa `selected_indexes = []` per stimare tutti
+gli indicatori additivi del catalogo presenti nel layer sorgente.
 
 ## Esecuzione parallela e benchmark
 
@@ -118,22 +106,11 @@ intervallo pratico. Chunk piu piccoli danno aggiornamenti di avanzamento piu
 frequenti ma aumentano l'overhead; chunk piu grandi riducono l'overhead ma
 possono lasciare worker inattivi verso la fine dell'elaborazione.
 
-Usa lo script di benchmark su dati gia finalizzati per confrontare le impostazioni
-prima di eseguire una grande AOI di produzione:
-
-```bash
-poetry run python scripts/benchmark_h3_estimation.py \
-  --census-data census_data.gpkg \
-  --year 2021 \
-  --aoi aoi.gpkg \
-  --aoi-layer aoi \
-  --indexes P1 P2 \
-  --workers 1 2 4 \
-  --chunk-size 2000 5000 \
-  --parallel-backend dask \
-  --runs 3 \
-  --output-json h3_benchmark.json
-```
+Usa `scripts/benchmark_h3_estimation.py` su dati gia finalizzati per confrontare
+le impostazioni prima di eseguire una grande AOI di produzione. Modifica
+`worker_counts`, `chunk_sizes`, `parallel_backend` e `runs` nello script. Mantieni
+`selected_indexes = []` quando vuoi stimare tutti gli indicatori additivi presenti
+nel layer sorgente.
 
 L'output del benchmark riporta secondi trascorsi, numero di celle H3 e stato
 della validazione dei totali per ogni combinazione worker/chunk. Usa i tempi di
@@ -147,43 +124,21 @@ che gli anni censuari scelti guidino l'intera pipeline. Il workflow scarica solo
 gli anni richiesti, li preprocessa, finalizza `census_data.gpkg` e poi scrive un
 layer H3 di livello 11 per ogni anno.
 
-```bash
-poetry run python scripts/run_h3_census_analysis.py \
-  --years 2011 2021 \
-  --data-dir ./census \
-  --aoi aoi.gpkg \
-  --aoi-layer aoi \
-  --indexes P1 P2 \
-  --workers 4 \
-  --chunk-size 5000 \
-  --parallel-backend thread \
-  --output h3_census_analysis.gpkg
-```
-
-Il comando sopra scrive i layer `h3_census2011_r11` e `h3_census2021_r11`.
-Ometti `--indexes` per stimare tutti gli indicatori additivi disponibili in ogni
-anno selezionato. Usa `--region-code` per limitare i geodati scaricati e
-`--municipality-code` per filtrare preprocessing e stima H3. Il livello H3 e
-fisso a 11 e la policy sulle sezioni speciali/fittizie ha valore predefinito
-`exclude`.
+Lo script di esempio modificabile `scripts/run_h3_census_analysis.py` espone lo
+stesso workflow con valori di modulo. Imposta `list_year`, `main_path`,
+`aoi_path`, `list_region`, `municipalities_code` e i controlli di performance
+nello script. Usa `selected_indexes = []` per stimare tutti gli indicatori
+additivi disponibili in ogni anno selezionato. Il livello H3 e fisso a 11 e la
+policy sulle sezioni speciali/fittizie ha valore predefinito `exclude`.
 
 Il workflow end-to-end espone gli stessi controlli di performance di PRP-012
-disponibili nello stimatore su dati finalizzati. Usa `--workers`, `--chunk-size`
-e `--parallel-backend` per tarare elaborazioni grandi. Dopo aver installato
-`istat-census-data[dask]`, imposta `--parallel-backend dask` per usare il backend
-Dask locale opzionale.
+disponibili nello stimatore su dati finalizzati. Modifica `workers`,
+`chunk_size` e `parallel_backend` nello script per tarare elaborazioni grandi.
+Dopo aver installato `istat-census-data[dask]`, imposta
+`parallel_backend = "dask"` per usare il backend Dask locale opzionale.
 
-Se i dati esistono gia, puoi saltare gli stadi completati:
-
-```bash
-poetry run python scripts/run_h3_census_analysis.py \
-  --years 2021 \
-  --data-dir ./census \
-  --aoi aoi.gpkg \
-  --skip-download \
-  --skip-preprocess \
-  --skip-finalize
-```
+Se i dati esistono gia, salta gli stadi completati impostando `run_download`,
+`run_preprocess` o `run_finalize` a `False` nello script.
 
 Quando usi `--skip-finalize`, `<data-dir>/census_data.gpkg` deve gia esistere.
 
@@ -266,16 +221,8 @@ Puoi ispezionare le celle H3 segnalate con:
 flagged_cells = h3_estimates[h3_estimates["intersects_special_section"]]
 ```
 
-Lo script da terminale espone la stessa policy:
-
-```bash
-poetry run python scripts/estimate_h3_census.py \
-  --census-data census_data.gpkg \
-  --year 2021 \
-  --aoi aoi.gpkg \
-  --special-section-policy raise \
-  --output h3_census_2021.gpkg
-```
+Lo script di esempio espone la stessa policy tramite l'argomento
+`special_section_policy` passato a `run()`.
 
 Fonti: ISTAT documenta `888888x` e `999999x` in
 [Dati per sezioni di censimento](https://www.istat.it/notizia/dati-per-sezioni-di-censimento/).

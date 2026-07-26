@@ -74,7 +74,8 @@ def run_h3_census_workflow(
         aoi: Area of interest for H3 estimation.
         indexes: Source index codes or canonical catalogue IDs to estimate. The
             default `"all_additive"` estimates every additive index present in each
-            finalized source layer.
+            finalized source layer. An empty iterable has the same all-additive
+            behavior.
         output_path: Optional H3 output GeoPackage. Defaults to
             `<data_folder>/h3_census_data.gpkg`.
         output_layer_prefix: Prefix for output layers. Layer names are

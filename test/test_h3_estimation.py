@@ -90,6 +90,23 @@ def test_estimate_h3_census_indexes_uses_catalogue_additive_default(tmp_path: Pa
     assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
 
 
+def test_estimate_h3_census_indexes_empty_index_list_uses_all_additive(tmp_path: Path):
+    source = _source_cells()
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
+    aoi = box(12.0, 41.0, 12.02, 41.01)
+
+    result = estimate_h3_census_indexes(
+        census_data_path=census_path,
+        year=2021,
+        aoi=aoi,
+        indexes=[],
+    )
+
+    assert {"P1", "P2"}.issubset(result.columns)
+    assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
+    assert result["P2"].sum() == pytest.approx(120.0, rel=1e-4)
+
+
 def test_estimate_h3_census_indexes_handles_partial_aoi_overlap(tmp_path: Path):
     source = _source_cells()
     census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)

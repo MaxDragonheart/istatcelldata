@@ -153,7 +153,8 @@ def estimate_h3_census_indexes(
             only level 11.
         indexes: Source index codes or canonical catalogue IDs to estimate. The
             default `"all_additive"` selects additive source codes present in the
-            layer using the packaged census index catalogue.
+            layer using the packaged census index catalogue. An empty iterable
+            also selects all available additive indexes.
         aoi_crs: CRS to use when `aoi` is a plain Shapely geometry or lacks CRS.
         area_crs: Projected CRS used for area calculations.
         layer_name: Optional source layer name. Defaults to `census<year>`.
@@ -751,20 +752,19 @@ def _resolve_index_columns(
     additive_catalog = catalog[catalog["is_additive"].astype(bool)].copy()
 
     if indexes is None or indexes == "all_additive":
-        available_indexes = [
-            str(source_code)
-            for source_code in additive_catalog["source_code"].tolist()
-            if source_code in source.columns
-        ]
-        if not available_indexes:
-            raise ValueError(
-                f"Layer does not contain additive catalogue indexes for census year {year}."
-            )
-        return available_indexes
+        return _available_additive_indexes(
+            source=source,
+            year=year,
+            additive_catalog=additive_catalog,
+        )
 
     requested_indexes = [indexes] if isinstance(indexes, str) else list(indexes)
     if not requested_indexes:
-        raise ValueError("At least one index must be requested.")
+        return _available_additive_indexes(
+            source=source,
+            year=year,
+            additive_catalog=additive_catalog,
+        )
 
     resolved_indexes: list[str] = []
     for requested_index in requested_indexes:
@@ -777,6 +777,23 @@ def _resolve_index_columns(
             resolved_indexes.append(source_code)
 
     return resolved_indexes
+
+
+def _available_additive_indexes(
+    source: gpd.GeoDataFrame,
+    year: int,
+    additive_catalog: pd.DataFrame,
+) -> list[str]:
+    available_indexes = [
+        str(source_code)
+        for source_code in additive_catalog["source_code"].tolist()
+        if source_code in source.columns
+    ]
+    if not available_indexes:
+        raise ValueError(
+            f"Layer does not contain additive catalogue indexes for census year {year}."
+        )
+    return available_indexes
 
 
 def _resolve_single_index(

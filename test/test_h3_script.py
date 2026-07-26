@@ -4,118 +4,125 @@ import geopandas as gpd
 import pytest
 from shapely.geometry import box
 
-from scripts.estimate_h3_census import main
+from scripts import estimate_h3_census
 
 WGS84_CRS = "EPSG:4326"
 
 
-def test_estimate_h3_census_script_writes_level_11_output(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-):
+def test_estimate_h3_census_script_run_writes_level_11_output(tmp_path: Path):
     census_path = _write_census_geopackage(tmp_path=tmp_path, source=_source_cells())
     aoi_path = _write_aoi(tmp_path=tmp_path, geometry=box(12.0, 41.0, 12.02, 41.01))
     output_path = tmp_path / "h3_estimates.gpkg"
 
-    exit_code = main(
-        [
-            "--census-data",
-            str(census_path),
-            "--year",
-            "2021",
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--indexes",
-            "P1",
-            "P2",
-            "--workers",
-            "2",
-            "--chunk-size",
-            "2",
-            "--output",
-            str(output_path),
-            "--output-layer",
-            "h3_test",
-        ]
+    result = estimate_h3_census.run(
+        census_data_path=census_path,
+        year=2021,
+        aoi_path=aoi_path,
+        output_path=output_path,
+        indexes=["P1", "P2"],
+        aoi_layer="aoi",
+        aoi_crs=None,
+        municipality_codes=None,
+        special_section_policy="exclude",
+        area_crs="EPSG:3035",
+        clip_output=False,
+        workers=2,
+        chunk_size=2,
+        parallel_backend="thread",
+        output_layer="h3_test",
     )
-    captured = capsys.readouterr()
     saved = gpd.read_file(output_path, layer="h3_test")
 
-    assert exit_code == 0
     assert output_path.exists()
-    assert "H3 level-11 cells" in captured.out
-    assert "within tolerance" in captured.out
+    assert len(result) == len(saved)
     assert saved["h3_resolution"].unique().tolist() == [11]
     assert saved["year"].unique().tolist() == [2021]
     assert saved["P1"].sum() == pytest.approx(300.0, rel=1e-4)
     assert saved["P2"].sum() == pytest.approx(120.0, rel=1e-4)
 
 
-def test_estimate_h3_census_script_filters_municipality_codes(
-    tmp_path: Path,
-):
+def test_estimate_h3_census_script_empty_indexes_use_all_additive(tmp_path: Path):
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=_source_cells())
+    aoi_path = _write_aoi(tmp_path=tmp_path, geometry=box(12.0, 41.0, 12.02, 41.01))
+    output_path = tmp_path / "h3_estimates.gpkg"
+
+    result = estimate_h3_census.run(
+        census_data_path=census_path,
+        year=2021,
+        aoi_path=aoi_path,
+        output_path=output_path,
+        indexes=[],
+        aoi_layer="aoi",
+        aoi_crs=None,
+        municipality_codes=None,
+        special_section_policy="exclude",
+        area_crs="EPSG:3035",
+        clip_output=False,
+        workers=1,
+        chunk_size=5000,
+        parallel_backend="thread",
+        output_layer="h3_test",
+    )
+
+    assert {"P1", "P2"}.issubset(result.columns)
+    assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
+    assert result["P2"].sum() == pytest.approx(120.0, rel=1e-4)
+
+
+def test_estimate_h3_census_script_filters_municipality_codes(tmp_path: Path):
     source = _source_cells()
     source.loc[1, "PRO_COM"] = "58092"
     census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
     aoi_path = _write_aoi(tmp_path=tmp_path, geometry=box(12.0, 41.0, 12.02, 41.01))
     output_path = tmp_path / "h3_estimates.gpkg"
 
-    exit_code = main(
-        [
-            "--census-data",
-            str(census_path),
-            "--year",
-            "2021",
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--indexes",
-            "P1",
-            "--municipality-code",
-            "58091",
-            "--output",
-            str(output_path),
-        ]
+    estimate_h3_census.run(
+        census_data_path=census_path,
+        year=2021,
+        aoi_path=aoi_path,
+        output_path=output_path,
+        indexes=["P1"],
+        aoi_layer="aoi",
+        aoi_crs=None,
+        municipality_codes=["58091"],
+        special_section_policy="exclude",
+        area_crs="EPSG:3035",
+        clip_output=False,
+        workers=1,
+        chunk_size=5000,
+        parallel_backend="thread",
+        output_layer=None,
     )
     saved = gpd.read_file(output_path, layer="h3_census2021_r11")
 
-    assert exit_code == 0
     assert saved["P1"].sum() == pytest.approx(100.0, rel=1e-4)
 
 
-def test_estimate_h3_census_script_reports_missing_aoi_crs(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-):
+def test_estimate_h3_census_script_reports_missing_aoi_crs(tmp_path: Path):
     census_path = _write_census_geopackage(tmp_path=tmp_path, source=_source_cells())
     aoi_path = tmp_path / "aoi_without_crs.gpkg"
     gpd.GeoDataFrame(
         geometry=[box(12.0, 41.0, 12.02, 41.01)],
     ).to_file(aoi_path, layer="aoi", driver="GPKG")
 
-    exit_code = main(
-        [
-            "--census-data",
-            str(census_path),
-            "--year",
-            "2021",
-            "--aoi",
-            str(aoi_path),
-            "--aoi-layer",
-            "aoi",
-            "--indexes",
-            "P1",
-            "--output",
-            str(tmp_path / "h3_estimates.gpkg"),
-        ]
-    )
-    captured = capsys.readouterr()
-
-    assert exit_code == 1
-    assert "AOI file has no CRS" in captured.err
+    with pytest.raises(ValueError, match="AOI file has no CRS"):
+        estimate_h3_census.run(
+            census_data_path=census_path,
+            year=2021,
+            aoi_path=aoi_path,
+            output_path=tmp_path / "h3_estimates.gpkg",
+            indexes=["P1"],
+            aoi_layer="aoi",
+            aoi_crs=None,
+            municipality_codes=None,
+            special_section_policy="exclude",
+            area_crs="EPSG:3035",
+            clip_output=False,
+            workers=1,
+            chunk_size=5000,
+            parallel_backend="thread",
+            output_layer=None,
+        )
 
 
 def _source_cells() -> gpd.GeoDataFrame:

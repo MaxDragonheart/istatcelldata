@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-07-26
+
+### Added
+- Added expanded tutorial notebooks with study-first guidance before running the
+  download, preprocessing, finalization, catalogue, H3 estimation, workflow, and
+  benchmarking procedures.
+- Added English tutorial notebooks for the advanced catalogue and H3 procedures.
+- Added Italian tutorial notebooks `d_*`, `e_*`, and `f_*` for catalogue
+  comparability, H3 estimation, and H3 workflow/benchmarking.
+- Added regression coverage for tutorial notebook structure and expected content.
+
+### Changed
+- Aligned the post-2.0.0 H3 scripts with the syntax style of the older project
+  scripts by using editable module-level configuration instead of CLI-first
+  argument parsing.
+- Changed H3 index selection so `selected_indexes = []` in the example scripts,
+  and an empty index iterable in the public H3 API, selects all additive indexes
+  available for the layer.
+- Updated H3 documentation and tutorial guidance to describe editable script
+  settings and the empty-selection convention.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- Use `selected_indexes = []` in H3 scripts when all additive census indexes should
+  be estimated.
+- H3 scripts remain editable processing examples; configure their module-level
+  variables before running them directly.
+
 ## [2.1.0] - 2026-07-25
 
 ### Added

@@ -1,14 +1,17 @@
 # Tutorial
 
-## Download dei dati grezzi
-    
-  Viene mostrato come effettuare il download dei dati grezzi. [link](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/a_download.ipynb)
+I notebook tutorial descrivono il workflow censuario principale e le procedure piu'
+recenti relative a catalogo, comparabilita' e H3.
 
-## Preprocessamento dei dati grezzi
-    
-  Viene mostrato come preprocessare i dati grezzi. Dati preprocessati e dati grezzi sono contenuti nello stesso path. [link](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/b_preprocessamento.ipynb)
+## Workflow principale
 
-## Raggruppamento
-    
-  Viene mostrato come ottenere un unico [GeoPackage](https://massimilianomoraca.it/blog/gis/il-geopackage-una-valida-alternativa-al-formato-shape/) per anno censuario. E' possibile mantenere i dati grezzi e 
-  preprocessati, oppure eliminarli. [link](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/c_processamento.ipynb)
+- Download dei dati grezzi: [notebooks/tutorial/a_download.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/a_download.ipynb)
+- Preprocessamento dei dati grezzi: [notebooks/tutorial/b_preprocessamento.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/b_preprocessamento.ipynb)
+- Creazione del GeoPackage finale: [notebooks/tutorial/c_processamento.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/c_processamento.ipynb)
+
+## Procedure avanzate
+
+- Catalogo e comparabilita': [notebooks/tutorial/d_catalogo_e_comparabilita.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/d_catalogo_e_comparabilita.ipynb)
+- Stima H3: [notebooks/tutorial/e_stima_h3.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/e_stima_h3.ipynb)
+- Workflow H3 e benchmark: [notebooks/tutorial/f_workflow_h3_e_benchmark.ipynb](https://github.com/MaxDragonheart/istat-census-data/blob/main/notebooks/tutorial/f_workflow_h3_e_benchmark.ipynb)
+
