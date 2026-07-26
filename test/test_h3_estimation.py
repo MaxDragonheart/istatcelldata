@@ -1,13 +1,19 @@
+import importlib
+import warnings
 from pathlib import Path
 from types import SimpleNamespace
 
 import geopandas as gpd
+import pandas as pd
 import pytest
 from shapely.geometry import Polygon, box
 
 import istat_census_data
+from istat_census_data.catalog import get_census_index_catalog
 from istat_census_data.h3_estimation import (
     DEFAULT_AREA_CRS,
+    DEFAULT_BOUNDARY_RING_SIZE,
+    DEFAULT_INTERMEDIATE_STORAGE,
     REQUIRED_H3_RESOLUTION,
     estimate_h3_census_indexes,
     generate_h3_grid,
@@ -20,9 +26,13 @@ def test_root_package_exports_h3_estimation_api():
     assert "estimate_h3_census_indexes" in istat_census_data.__all__
     assert "generate_h3_grid" in istat_census_data.__all__
     assert "REQUIRED_H3_RESOLUTION" in istat_census_data.__all__
+    assert "DEFAULT_BOUNDARY_RING_SIZE" in istat_census_data.__all__
+    assert "DEFAULT_INTERMEDIATE_STORAGE" in istat_census_data.__all__
     assert callable(istat_census_data.estimate_h3_census_indexes)
     assert callable(istat_census_data.generate_h3_grid)
     assert istat_census_data.REQUIRED_H3_RESOLUTION == REQUIRED_H3_RESOLUTION
+    assert istat_census_data.DEFAULT_BOUNDARY_RING_SIZE == DEFAULT_BOUNDARY_RING_SIZE
+    assert istat_census_data.DEFAULT_INTERMEDIATE_STORAGE == DEFAULT_INTERMEDIATE_STORAGE
 
 
 def test_generate_h3_grid_returns_intersecting_cells_with_area_metadata():
@@ -37,6 +47,19 @@ def test_generate_h3_grid_returns_intersecting_cells_with_area_metadata():
     assert grid["h3_index"].is_unique
     assert (grid["h3_cell_area_sqm"] > 0).all()
     assert grid.intersects(aoi).all()
+
+
+def test_generate_h3_grid_uses_robust_boundary_ring_by_default():
+    aoi = box(12.0, 41.0, 12.02, 41.01)
+
+    default_grid = generate_h3_grid(aoi=aoi)
+    explicit_grid = generate_h3_grid(
+        aoi=aoi,
+        boundary_ring_size=DEFAULT_BOUNDARY_RING_SIZE,
+    )
+
+    assert DEFAULT_BOUNDARY_RING_SIZE == 3
+    assert default_grid["h3_index"].tolist() == explicit_grid["h3_index"].tolist()
 
 
 def test_generate_h3_grid_rejects_non_level_11_resolution():
@@ -69,9 +92,13 @@ def test_estimate_h3_census_indexes_preserves_totals_for_complete_aoi(tmp_path: 
     assert result["year"].unique().tolist() == [2021]
     assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
     assert result["P2"].sum() == pytest.approx(120.0, rel=1e-4)
+    assert pd.api.types.is_integer_dtype(result["P1"])
+    assert pd.api.types.is_integer_dtype(result["P2"])
     assert result.attrs["source_totals"]["P1"] == pytest.approx(300.0, rel=1e-4)
     assert result.attrs["h3_totals"]["P2"] == pytest.approx(120.0, rel=1e-4)
     assert result.attrs["total_validation"]["within_tolerance"].all()
+    assert result.attrs["integer_total_validation"]["within_tolerance"].all()
+    assert result.attrs["boundary_ring_size"] == DEFAULT_BOUNDARY_RING_SIZE
 
 
 def test_estimate_h3_census_indexes_uses_catalogue_additive_default(tmp_path: Path):
@@ -88,6 +115,7 @@ def test_estimate_h3_census_indexes_uses_catalogue_additive_default(tmp_path: Pa
     assert {"P1", "P2"}.issubset(result.columns)
     assert "SEZ2021" not in result.columns
     assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
+    assert pd.api.types.is_integer_dtype(result["P1"])
 
 
 def test_estimate_h3_census_indexes_empty_index_list_uses_all_additive(tmp_path: Path):
@@ -105,6 +133,8 @@ def test_estimate_h3_census_indexes_empty_index_list_uses_all_additive(tmp_path:
     assert {"P1", "P2"}.issubset(result.columns)
     assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
     assert result["P2"].sum() == pytest.approx(120.0, rel=1e-4)
+    assert pd.api.types.is_integer_dtype(result["P1"])
+    assert pd.api.types.is_integer_dtype(result["P2"])
 
 
 def test_estimate_h3_census_indexes_handles_partial_aoi_overlap(tmp_path: Path):
@@ -121,9 +151,11 @@ def test_estimate_h3_census_indexes_handles_partial_aoi_overlap(tmp_path: Path):
     )
 
     assert 0 < result["P1"].sum() < 100
-    assert result["P1"].sum() == pytest.approx(expected_total)
+    assert result["P1"].sum() == int(expected_total + 0.5)
+    assert pd.api.types.is_integer_dtype(result["P1"])
     assert result.attrs["source_totals"]["P1"] == pytest.approx(expected_total)
     assert result.attrs["total_validation"]["within_tolerance"].all()
+    assert result.attrs["integer_total_validation"]["within_tolerance"].all()
 
 
 def test_estimate_h3_census_indexes_reprojects_source_and_aoi(tmp_path: Path):
@@ -242,7 +274,27 @@ def test_estimate_h3_census_indexes_filters_municipality_codes_and_writes_output
 
     assert result["P1"].sum() == pytest.approx(100.0, rel=1e-4)
     assert output_path.exists()
+    assert pd.api.types.is_integer_dtype(result["P1"])
+    assert pd.api.types.is_integer_dtype(saved["P1"])
     assert saved["P1"].sum() == pytest.approx(100.0, rel=1e-4)
+
+
+def test_estimate_h3_census_indexes_filters_float_municipality_codes(tmp_path: Path):
+    source = _source_cells()
+    source["PRO_COM"] = [58091.0, 58092.0]
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
+
+    result = estimate_h3_census_indexes(
+        census_data_path=census_path,
+        year=2021,
+        aoi=box(12.0, 41.0, 12.02, 41.01),
+        indexes=["P1"],
+        municipality_codes=[58091],
+    )
+
+    assert result["P1"].sum() == pytest.approx(100.0, rel=1e-4)
+    assert pd.api.types.is_integer_dtype(result["P1"])
+    assert result.attrs["integer_total_validation"]["within_tolerance"].all()
 
 
 def test_estimate_h3_census_indexes_parallel_matches_serial(tmp_path: Path):
@@ -285,6 +337,102 @@ def test_estimate_h3_census_indexes_parallel_matches_serial(tmp_path: Path):
     assert parallel.attrs["total_validation"]["within_tolerance"].all()
 
 
+def test_estimate_h3_census_indexes_default_parquet_retains_intermediates(tmp_path: Path):
+    source = _source_cells()
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
+    intermediate_dir = tmp_path / "h3_intermediates"
+
+    result = estimate_h3_census_indexes(
+        census_data_path=census_path,
+        year=2021,
+        aoi=box(12.0, 41.0, 12.02, 41.01),
+        indexes=["P1", "P2"],
+        workers=2,
+        chunk_size=2,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=True,
+    )
+
+    retained_dir = Path(result.attrs["h3_intermediate_dir"])
+    assert result.attrs["intermediate_storage"] == "parquet"
+    assert result.attrs["h3_intermediates_retained"] is True
+    assert result.attrs["boundary_ring_size"] == DEFAULT_BOUNDARY_RING_SIZE
+    assert retained_dir.parent == intermediate_dir
+    assert (retained_dir / "metadata.json").exists()
+    assert (retained_dir / "prepared_source.parquet").exists()
+    assert (retained_dir / "h3_grid.parquet").exists()
+    assert list((retained_dir / "grid_chunks").glob("grid_chunk_*.parquet"))
+    assert list((retained_dir / "result_chunks").glob("result_chunk_*.parquet"))
+    assert result["P1"].sum() == pytest.approx(300.0, rel=1e-4)
+
+
+def test_estimate_h3_census_indexes_reuses_retained_parquet_chunks(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    source = _source_cells()
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
+    intermediate_dir = tmp_path / "h3_intermediates"
+    aoi = box(12.0, 41.0, 12.02, 41.01)
+
+    first = estimate_h3_census_indexes(
+        census_data_path=census_path,
+        year=2021,
+        aoi=aoi,
+        indexes=["P1", "P2"],
+        workers=2,
+        chunk_size=2,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=True,
+    )
+
+    def fail_recalculation(**kwargs: object) -> gpd.GeoDataFrame:
+        raise AssertionError(f"chunk should have been reused: {kwargs}")
+
+    monkeypatch.setattr(
+        "istat_census_data.h3_estimation._estimate_intersections_serial",
+        fail_recalculation,
+    )
+    second = estimate_h3_census_indexes(
+        census_data_path=census_path,
+        year=2021,
+        aoi=aoi,
+        indexes=["P1", "P2"],
+        workers=2,
+        chunk_size=2,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=True,
+        reuse_intermediates=True,
+    )
+
+    assert second.attrs["h3_intermediate_dir"] == first.attrs["h3_intermediate_dir"]
+    assert second["P1"].sum() == pytest.approx(first["P1"].sum(), rel=1e-9)
+
+
+def test_estimate_h3_census_indexes_memory_path_avoids_fragmentation_warning(tmp_path: Path):
+    source = _source_cells_with_many_indexes()
+    census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
+
+    with warnings.catch_warnings(record=True) as captured_warnings:
+        warnings.simplefilter("always", pd.errors.PerformanceWarning)
+        result = estimate_h3_census_indexes(
+            census_data_path=census_path,
+            year=2021,
+            aoi=box(12.0, 41.0, 12.002, 41.002),
+            indexes=[],
+            intermediate_storage="memory",
+        )
+
+    performance_warnings = [
+        warning
+        for warning in captured_warnings
+        if issubclass(warning.category, pd.errors.PerformanceWarning)
+    ]
+    assert performance_warnings == []
+    assert "P1" in result.columns
+    assert "P1_density_per_sq_km" in result.columns
+
+
 def test_estimate_h3_census_indexes_dask_backend_matches_serial(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -303,11 +451,16 @@ def test_estimate_h3_census_indexes_dask_backend_matches_serial(
         assert kwargs == {"scheduler": "threads", "num_workers": 2}
         return tuple(task() for task in tasks)
 
+    real_import_module = importlib.import_module
+
+    def fake_import_module(name: str):
+        if name == "dask":
+            return SimpleNamespace(delayed=fake_delayed, compute=fake_compute)
+        return real_import_module(name)
+
     monkeypatch.setattr(
         "istat_census_data.h3_estimation.importlib.import_module",
-        lambda name: SimpleNamespace(delayed=fake_delayed, compute=fake_compute)
-        if name == "dask"
-        else None,
+        fake_import_module,
     )
 
     serial = estimate_h3_census_indexes(
@@ -393,6 +546,22 @@ def test_estimate_h3_census_indexes_rejects_invalid_parallel_options(tmp_path: P
             indexes=["P1"],
             parallel_backend="invalid",
         )
+    with pytest.raises(ValueError, match="intermediate_storage"):
+        estimate_h3_census_indexes(
+            census_data_path=census_path,
+            year=2021,
+            aoi=aoi,
+            indexes=["P1"],
+            intermediate_storage="invalid",
+        )
+    with pytest.raises(ValueError, match="reuse_intermediates"):
+        estimate_h3_census_indexes(
+            census_data_path=census_path,
+            year=2021,
+            aoi=aoi,
+            indexes=["P1"],
+            reuse_intermediates=True,
+        )
 
 
 def _source_cells() -> gpd.GeoDataFrame:
@@ -406,6 +575,29 @@ def _source_cells() -> gpd.GeoDataFrame:
         geometry=[
             box(12.0, 41.0, 12.01, 41.01),
             box(12.01, 41.0, 12.02, 41.01),
+        ],
+        crs=WGS84_CRS,
+    )
+
+
+def _source_cells_with_many_indexes() -> gpd.GeoDataFrame:
+    catalog = get_census_index_catalog(year=2021)
+    index_columns = [
+        str(source_code)
+        for source_code in catalog[catalog["is_additive"].astype(bool)]["source_code"].tolist()
+    ]
+    data: dict[str, list[float] | list[str]] = {
+        "SEZ2021": ["5809100001", "5809100002"],
+        "PRO_COM": ["58091", "58091"],
+    }
+    for position, index_column in enumerate(index_columns, start=1):
+        data[index_column] = [float(position), float(position * 2)]
+
+    return gpd.GeoDataFrame(
+        data,
+        geometry=[
+            box(12.0, 41.0, 12.001, 41.002),
+            box(12.001, 41.0, 12.002, 41.002),
         ],
         crs=WGS84_CRS,
     )

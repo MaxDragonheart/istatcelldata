@@ -8,9 +8,10 @@ from istat_census_data.executor.preprocess import preprocess_census
 from istat_census_data.executor.process import finalize_census_data
 from istat_census_data.logger_config import configure_logging
 
-main_path = Path("/home/max/Desktop/census")
+main_path = Path("/home/max/Desktop/census_test")
 list_year = [1991, 2001, 2011, 2021]
-list_region = []
+list_region = [15]
+municipalities_code = [63049]
 
 
 # Configure logging at the start of the script
@@ -127,5 +128,5 @@ if __name__ == "__main__":
         data_dir=main_path,
         delete_download_folder=True,
         delete_preprocessed_data=True,
-        # municipalities_code=[1136, 2088, 85007]
+        municipalities_code=municipalities_code
     )

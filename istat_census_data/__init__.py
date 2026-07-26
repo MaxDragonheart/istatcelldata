@@ -9,7 +9,7 @@ including demographic data and geographic information (shapefiles, administrativ
 boundaries) for census sections across Italy.
 """
 
-__version__ = "2.2.0"
+__version__ = "2.4.1"
 __author__ = "Massimiliano Moraca"
 __email__ = "gis.massimilianomoraca@gmail.com"
 
@@ -30,6 +30,8 @@ from istat_census_data.geodata import (
     read_census,
 )
 from istat_census_data.h3_estimation import (
+    DEFAULT_BOUNDARY_RING_SIZE,
+    DEFAULT_INTERMEDIATE_STORAGE,
     REQUIRED_H3_RESOLUTION,
     estimate_h3_census_indexes,
     generate_h3_grid,
@@ -64,6 +66,8 @@ __all__ = [
     "preprocess_geodata",
     "finalize_census_data",
     "REQUIRED_H3_RESOLUTION",
+    "DEFAULT_BOUNDARY_RING_SIZE",
+    "DEFAULT_INTERMEDIATE_STORAGE",
     "generate_h3_grid",
     "estimate_h3_census_indexes",
     "H3CensusWorkflowResult",

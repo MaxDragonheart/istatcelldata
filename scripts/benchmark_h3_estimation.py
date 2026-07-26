@@ -8,7 +8,9 @@ import geopandas as gpd
 
 from istat_census_data.h3_estimation import (
     DEFAULT_AREA_CRS,
+    DEFAULT_BOUNDARY_RING_SIZE,
     DEFAULT_H3_CHUNK_SIZE,
+    DEFAULT_INTERMEDIATE_STORAGE,
     DEFAULT_PARALLEL_BACKEND,
     DEFAULT_SPECIAL_SECTION_POLICY,
     REQUIRED_H3_RESOLUTION,
@@ -25,9 +27,14 @@ selected_indexes: list[str] = []
 municipalities_code: list[str] | None = None
 aoi_layer: str | None = None
 aoi_crs: str | None = None
-worker_counts = [1, 2, 4]
+boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
+worker_counts = [1, 2, 4]  # [1]
 chunk_sizes = [DEFAULT_H3_CHUNK_SIZE]
-parallel_backend = DEFAULT_PARALLEL_BACKEND
+parallel_backend = "dask"  # DEFAULT_PARALLEL_BACKEND
+intermediate_storage = DEFAULT_INTERMEDIATE_STORAGE
+intermediate_dir = main_path / "h3_intermediates"
+keep_intermediates = True
+reuse_intermediates = False
 runs = 1
 
 
@@ -50,6 +57,7 @@ class BenchmarkRecord:
     workers: int
     chunk_size: int
     parallel_backend: str
+    boundary_ring_size: int
     run: int
     seconds: float
     h3_cells: int
@@ -70,6 +78,12 @@ def run_benchmark(
     chunk_sizes: list[int],
     parallel_backend: str,
     runs: int,
+    intermediate_storage: str = DEFAULT_INTERMEDIATE_STORAGE,
+    intermediate_dir: Path | None = None,
+    keep_intermediates: bool = False,
+    reuse_intermediates: bool = False,
+    output_path: Path | None = None,
+    boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
 ) -> list[BenchmarkRecord]:
     """Run H3 estimation for each requested worker/chunk setting."""
     if runs < 1:
@@ -80,6 +94,17 @@ def run_benchmark(
     for worker_count in workers:
         for chunk_size in chunk_sizes:
             for run_number in range(1, runs + 1):
+                logger.info(
+                    "Starting H3 benchmark: workers=%s chunk_size=%s backend=%s "
+                    "storage=%s boundary_ring_size=%s run=%s/%s.",
+                    worker_count,
+                    chunk_size,
+                    parallel_backend,
+                    intermediate_storage,
+                    boundary_ring_size,
+                    run_number,
+                    runs,
+                )
                 started_at = perf_counter()
                 result = estimate_h3_census_indexes(
                     census_data_path=census_data_path,
@@ -91,22 +116,43 @@ def run_benchmark(
                     area_crs=area_crs,
                     municipality_codes=municipality_codes,
                     special_section_policy=special_section_policy,
+                    boundary_ring_size=boundary_ring_size,
                     workers=worker_count,
                     chunk_size=chunk_size,
                     parallel_backend=parallel_backend,
+                    intermediate_storage=intermediate_storage,
+                    intermediate_dir=intermediate_dir,
+                    keep_intermediates=keep_intermediates,
+                    reuse_intermediates=reuse_intermediates,
                 )
                 seconds = perf_counter() - started_at
-                records.append(
-                    BenchmarkRecord(
-                        workers=worker_count,
-                        chunk_size=chunk_size,
-                        parallel_backend=parallel_backend,
-                        run=run_number,
-                        seconds=seconds,
-                        h3_cells=len(result),
-                        validation_passed=_validation_passed(result),
-                    )
+                record = BenchmarkRecord(
+                    workers=worker_count,
+                    chunk_size=chunk_size,
+                    parallel_backend=parallel_backend,
+                    boundary_ring_size=boundary_ring_size,
+                    run=run_number,
+                    seconds=seconds,
+                    h3_cells=len(result),
+                    validation_passed=_validation_passed(result),
                 )
+                records.append(record)
+                logger.info(
+                    "Completed H3 benchmark: workers=%s chunk_size=%s backend=%s "
+                    "storage=%s boundary_ring_size=%s run=%s seconds=%.6f "
+                    "h3_cells=%s validation=%s.",
+                    record.workers,
+                    record.chunk_size,
+                    record.parallel_backend,
+                    intermediate_storage,
+                    record.boundary_ring_size,
+                    record.run,
+                    record.seconds,
+                    record.h3_cells,
+                    "ok" if record.validation_passed else "failed",
+                )
+                if output_path is not None:
+                    _write_records_json(records=records, output_path=output_path)
     _log_records(records)
     return records
 
@@ -129,20 +175,23 @@ def _validation_passed(result: gpd.GeoDataFrame) -> bool:
 
 def _write_records_json(records: list[BenchmarkRecord], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
+    temporary_path = output_path.with_suffix(f"{output_path.suffix}.tmp")
+    temporary_path.write_text(
         json.dumps([asdict(record) for record in records], indent=2),
         encoding="utf-8",
     )
+    temporary_path.replace(output_path)
 
 
 def _log_records(records: list[BenchmarkRecord]) -> None:
-    logger.info("workers chunk_size backend run seconds h3_cells validation")
+    logger.info("workers chunk_size backend boundary_ring_size run seconds h3_cells validation")
     for record in records:
         logger.info(
-            "%s %s %s %s %.6f %s %s",
+            "%s %s %s %s %s %.6f %s %s",
             record.workers,
             record.chunk_size,
             record.parallel_backend,
+            record.boundary_ring_size,
             record.run,
             record.seconds,
             record.h3_cells,
@@ -162,9 +211,15 @@ if __name__ == "__main__":
         municipality_codes=municipalities_code,
         special_section_policy=DEFAULT_SPECIAL_SECTION_POLICY,
         area_crs=DEFAULT_AREA_CRS,
+        boundary_ring_size=boundary_ring_size,
         workers=worker_counts,
         chunk_sizes=chunk_sizes,
         parallel_backend=parallel_backend,
+        intermediate_storage=intermediate_storage,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=keep_intermediates,
+        reuse_intermediates=reuse_intermediates,
         runs=runs,
+        output_path=benchmark_output_path,
     )
     _write_records_json(records=benchmark_records, output_path=benchmark_output_path)

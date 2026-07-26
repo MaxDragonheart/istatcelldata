@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib
+import json
 import logging
+import math
+import tempfile
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TypeAlias
 
@@ -40,8 +45,12 @@ SECTION_CODE_COLUMNS = (
 MUNICIPALITY_CODE_COLUMNS = ("PRO_COM", "PROCOM", "PRO_COM_T", "CODCOM", "COD_COM")
 DEFAULT_H3_WORKERS = 1
 DEFAULT_H3_CHUNK_SIZE = 5000
+DEFAULT_BOUNDARY_RING_SIZE = 3
 DEFAULT_PARALLEL_BACKEND = "thread"
 PARALLEL_BACKENDS = ("thread", "process", "dask")
+DEFAULT_INTERMEDIATE_STORAGE = "parquet"
+INTERMEDIATE_STORAGE_MODES = ("memory", "parquet")
+INTERMEDIATE_SCHEMA_VERSION = 2
 
 GeoInput: TypeAlias = BaseGeometry | gpd.GeoDataFrame | gpd.GeoSeries
 
@@ -54,14 +63,14 @@ def generate_h3_grid(
     *,
     aoi_crs: str | int | None = WGS84_CRS,
     area_crs: str | int = DEFAULT_AREA_CRS,
-    boundary_ring_size: int = 1,
+    boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
     output_crs: str | int = WGS84_CRS,
 ) -> gpd.GeoDataFrame:
     """Generate H3 cell polygons intersecting an area of interest.
 
     H3 polygon filling uses cell centres. This function expands the filled cells
-    by one neighbour ring by default and then keeps only cells that intersect the
-    AOI, so boundary cells are retained for area-weighted overlays.
+    by neighbour rings and then keeps only cells that intersect the AOI, so
+    boundary cells are retained for area-weighted overlays.
 
     Args:
         aoi: Area of interest as a Shapely geometry, GeoSeries, or GeoDataFrame.
@@ -71,7 +80,8 @@ def generate_h3_grid(
             GeoSeries/GeoDataFrame has no CRS. Defaults to EPSG:4326.
         area_crs: Projected CRS used to calculate `h3_cell_area_sqm`.
         boundary_ring_size: Number of H3 neighbour rings added around filled
-            cells before final AOI intersection filtering.
+            cells before final AOI intersection filtering. Defaults to 3 to
+            retain boundary cells reliably for real administrative AOIs.
         output_crs: CRS for returned cell geometries. Defaults to EPSG:4326.
 
     Returns:
@@ -124,7 +134,7 @@ def estimate_h3_census_indexes(
     layer_name: str | None = None,
     municipality_codes: Iterable[int | str] | None = None,
     special_section_policy: str = DEFAULT_SPECIAL_SECTION_POLICY,
-    boundary_ring_size: int = 1,
+    boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
     include_density: bool = True,
     clip_output: bool = False,
     output_crs: str | int = WGS84_CRS,
@@ -134,6 +144,10 @@ def estimate_h3_census_indexes(
     workers: int = DEFAULT_H3_WORKERS,
     chunk_size: int = DEFAULT_H3_CHUNK_SIZE,
     parallel_backend: str = DEFAULT_PARALLEL_BACKEND,
+    intermediate_storage: str = DEFAULT_INTERMEDIATE_STORAGE,
+    intermediate_dir: str | Path | None = None,
+    keep_intermediates: bool = False,
+    reuse_intermediates: bool = False,
 ) -> gpd.GeoDataFrame:
     """Estimate additive census indicators on an H3 grid.
 
@@ -164,7 +178,8 @@ def estimate_h3_census_indexes(
             default `"exclude"` removes them before estimation. Use `"include"`
             to keep and flag them, or `"raise"` to fail if any intersects the AOI.
         boundary_ring_size: H3 neighbour rings added around filled cells before
-            final AOI filtering.
+            final AOI filtering. Defaults to 3 to avoid missing boundary cells in
+            real administrative AOIs.
         include_density: If True, add `<index>_density_per_sq_km` columns based
             on the H3/AOI intersection area.
         clip_output: If True, output geometries are clipped to the AOI. Otherwise
@@ -181,11 +196,22 @@ def estimate_h3_census_indexes(
             Use `"thread"` to avoid copying GeoDataFrames between processes,
             `"process"` for process-based execution when serialization overhead
             is acceptable, or `"dask"` after installing the optional Dask extra.
+        intermediate_storage: Intermediate execution mode. Use `"parquet"` to
+            store prepared GeoParquet inputs and Parquet chunk outputs on disk,
+            or `"memory"` for the legacy in-memory path. Defaults to `"parquet"`.
+        intermediate_dir: Optional directory used for H3 intermediate files. When
+            omitted, a temporary directory is created automatically.
+        keep_intermediates: If True, keep generated intermediate files after the
+            run. Temporary files are removed by default.
+        reuse_intermediates: If True, reuse matching chunk result files in
+            `intermediate_dir` when they already exist.
 
     Returns:
-        GeoDataFrame with one row per H3 cell, estimated index columns, density
-        columns when requested, and coverage metadata. The `attrs` dictionary
-        contains `source_totals`, `h3_totals`, and `total_validation`.
+        GeoDataFrame with one row per H3 cell, integer estimated index columns,
+        density columns when requested, and coverage metadata. The `attrs`
+        dictionary contains continuous `source_totals`, `h3_totals`, and
+        `total_validation`, plus `integer_total_validation` for the final
+        integer output columns.
 
     Raises:
         FileNotFoundError: If `census_data_path` does not exist.
@@ -197,8 +223,18 @@ def estimate_h3_census_indexes(
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
     )
+    selected_storage = _normalize_intermediate_storage(intermediate_storage)
+    if reuse_intermediates and intermediate_dir is None:
+        raise ValueError("reuse_intermediates requires intermediate_dir.")
+
+    selected_municipality_codes = (
+        list(municipality_codes) if municipality_codes is not None else None
+    )
     source = _read_census_layer(census_data_path=census_data_path, year=year, layer_name=layer_name)
-    source = _filter_municipality_codes(source=source, municipality_codes=municipality_codes)
+    source = _filter_municipality_codes(
+        source=source,
+        municipality_codes=selected_municipality_codes,
+    )
     index_columns = _resolve_index_columns(source=source, year=year, indexes=indexes)
     source = _coerce_numeric_indexes(source=source, index_columns=index_columns)
 
@@ -224,6 +260,22 @@ def estimate_h3_census_indexes(
         aoi=aoi_gdf,
         area_crs=area_crs,
     )
+    intermediate_metadata = _build_intermediate_metadata(
+        census_data_path=census_data_path,
+        layer_name=layer_name or f"census{year}",
+        year=year,
+        h3_resolution=h3_resolution,
+        index_columns=index_columns,
+        municipality_codes=selected_municipality_codes,
+        special_section_policy=special_section_policy,
+        boundary_ring_size=boundary_ring_size,
+        include_density=include_density,
+        clip_output=clip_output,
+        area_crs=area_crs,
+        output_crs=output_crs,
+        source_area=source_area,
+        grid_area=grid_area,
+    )
 
     result_area = _estimate_intersections(
         source_area=source_area,
@@ -237,26 +289,57 @@ def estimate_h3_census_indexes(
         workers=selected_workers,
         chunk_size=selected_chunk_size,
         parallel_backend=selected_backend,
+        intermediate_storage=selected_storage,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=keep_intermediates,
+        reuse_intermediates=reuse_intermediates,
+        intermediate_metadata=intermediate_metadata,
     )
-    total_validation = _build_total_validation(
+    continuous_total_validation = _build_total_validation(
         source_area=source_area,
         result=result_area,
         index_columns=index_columns,
         tolerance=conservation_tolerance,
     )
+    result_area = _integerize_index_columns(
+        result=result_area,
+        index_columns=index_columns,
+        source_totals={
+            row["index"]: row["source_total"]
+            for row in continuous_total_validation.to_dict("records")
+        },
+    )
+    integer_total_validation = _build_integer_total_validation(
+        continuous_total_validation=continuous_total_validation,
+        result=result_area,
+        index_columns=index_columns,
+    )
+    if include_density:
+        result_area = _append_density_columns(result=result_area, index_columns=index_columns)
+    result_area_attrs = dict(result_area.attrs)
     result = result_area.to_crs(output_crs)
+    result.attrs.update(result_area_attrs)
     result.attrs["source_totals"] = {
-        row["index"]: row["source_total"] for row in total_validation.to_dict("records")
+        row["index"]: row["source_total"] for row in continuous_total_validation.to_dict("records")
     }
     result.attrs["h3_totals"] = {
-        row["index"]: row["h3_total"] for row in total_validation.to_dict("records")
+        row["index"]: row["h3_total"] for row in continuous_total_validation.to_dict("records")
     }
-    result.attrs["total_validation"] = total_validation
+    result.attrs["integer_source_totals"] = {
+        row["index"]: row["source_total"] for row in integer_total_validation.to_dict("records")
+    }
+    result.attrs["integer_h3_totals"] = {
+        row["index"]: row["h3_total"] for row in integer_total_validation.to_dict("records")
+    }
+    result.attrs["total_validation"] = continuous_total_validation
+    result.attrs["integer_total_validation"] = integer_total_validation
     result.attrs["estimation_method"] = "area_weighted_uniform_density"
     result.attrs["area_crs"] = str(area_crs)
+    result.attrs["boundary_ring_size"] = boundary_ring_size
     result.attrs["workers"] = selected_workers
     result.attrs["chunk_size"] = selected_chunk_size
     result.attrs["parallel_backend"] = selected_backend
+    result.attrs["intermediate_storage"] = selected_storage
 
     if output_path is not None:
         output_file = Path(output_path)
@@ -267,7 +350,9 @@ def estimate_h3_census_indexes(
             layer=output_layer or f"h3_census{year}_r{h3_resolution}",
         )
 
-    return result.reset_index(drop=True)
+    final_result = result.reset_index(drop=True)
+    final_result.attrs.update(result.attrs)
+    return final_result
 
 
 def _read_census_layer(
@@ -430,7 +515,31 @@ def _estimate_intersections(
     workers: int,
     chunk_size: int,
     parallel_backend: str,
+    intermediate_storage: str,
+    intermediate_dir: str | Path | None,
+    keep_intermediates: bool,
+    reuse_intermediates: bool,
+    intermediate_metadata: dict[str, Any],
 ) -> gpd.GeoDataFrame:
+    if intermediate_storage == "parquet":
+        return _estimate_intersections_parquet(
+            source_area=source_area,
+            grid_area=grid_area,
+            index_columns=index_columns,
+            year=year,
+            h3_resolution=h3_resolution,
+            special_section_policy=special_section_policy,
+            include_density=include_density,
+            clip_output=clip_output,
+            workers=workers,
+            chunk_size=chunk_size,
+            parallel_backend=parallel_backend,
+            intermediate_dir=intermediate_dir,
+            keep_intermediates=keep_intermediates,
+            reuse_intermediates=reuse_intermediates,
+            intermediate_metadata=intermediate_metadata,
+        )
+
     if workers == 1 or len(grid_area) <= chunk_size:
         return _estimate_intersections_serial(
             source_area=source_area,
@@ -474,50 +583,26 @@ def _estimate_intersections_serial(
         how="intersection",
         keep_geom_type=False,
     )
-    intersections["intersection_area_sqm"] = intersections.geometry.area
+    intersections = intersections.assign(intersection_area_sqm=intersections.geometry.area)
     intersections = intersections[intersections["intersection_area_sqm"] > 0].copy()
 
-    result = grid_area[
-        [
-            "h3_index",
-            "h3_resolution",
-            "h3_cell_area_sqm",
-            "aoi_intersection_area_sqm",
-            "h3_geometry",
-            "geometry",
-        ]
-    ].copy()
-    result["year"] = year
+    result = _base_h3_result(
+        grid_area=grid_area,
+        year=year,
+        special_section_policy=special_section_policy,
+    )
 
     if intersections.empty:
-        for index_column in index_columns:
-            result[index_column] = 0.0
-        result["source_intersection_area_sqm"] = 0.0
-        result["aoi_coverage_ratio"] = 0.0
-        result["intersects_special_section"] = False
-        result["special_section_policy"] = special_section_policy
-        if include_density:
-            for index_column in index_columns:
-                result[f"{index_column}_density_per_sq_km"] = 0.0
+        result = _append_zero_index_columns(
+            result=result,
+            index_columns=index_columns,
+            include_density=include_density,
+        )
         return _sort_result(_finalize_result_geometry(result=result, clip_output=clip_output))
 
-    contribution_columns = []
-    for index_column in index_columns:
-        contribution_column = f"__{index_column}_contribution"
-        intersections[contribution_column] = (
-            intersections[index_column]
-            * intersections["intersection_area_sqm"]
-            / intersections["source_cell_area_sqm"]
-        )
-        contribution_columns.append(contribution_column)
-
-    value_totals = intersections.groupby("h3_index", as_index=False)[contribution_columns].sum()
-    value_totals = value_totals.rename(
-        columns={
-            contribution_column: index_column
-            for contribution_column, index_column in zip(contribution_columns, index_columns)
-        }
-    )
+    weights = intersections["intersection_area_sqm"] / intersections["source_cell_area_sqm"]
+    contribution_values = intersections[index_columns].mul(weights, axis=0)
+    value_totals = contribution_values.groupby(intersections["h3_index"]).sum().reset_index()
     coverage = (
         intersections.groupby("h3_index", as_index=False)
         .agg(
@@ -529,23 +614,144 @@ def _estimate_intersections_serial(
 
     result = result.merge(value_totals, how="left", on="h3_index")
     result = result.merge(coverage, how="left", on="h3_index")
-    for index_column in index_columns:
-        result[index_column] = result[index_column].fillna(0.0)
+    result[index_columns] = result[index_columns].fillna(0.0)
     result["source_intersection_area_sqm"] = result["source_intersection_area_sqm"].fillna(0.0)
     result["intersects_special_section"] = result["intersects_special_section"].fillna(False)
-    result["aoi_coverage_ratio"] = (
+    coverage_ratio = (
         result["source_intersection_area_sqm"] / result["aoi_intersection_area_sqm"]
     ).fillna(0.0)
-    result["special_section_policy"] = special_section_policy
-
-    if include_density:
-        area_sq_km = result["aoi_intersection_area_sqm"] / 1_000_000
-        for index_column in index_columns:
-            result[f"{index_column}_density_per_sq_km"] = (result[index_column] / area_sq_km).where(
-                area_sq_km > 0, 0.0
-            )
+    coverage_ratio.name = "aoi_coverage_ratio"
+    result = gpd.GeoDataFrame(
+        pd.concat([result, coverage_ratio], axis=1),
+        geometry="geometry",
+        crs=result.crs,
+    )
 
     return _sort_result(_finalize_result_geometry(result=result, clip_output=clip_output))
+
+
+def _base_h3_result(
+    grid_area: gpd.GeoDataFrame,
+    year: int,
+    special_section_policy: str,
+) -> gpd.GeoDataFrame:
+    base = grid_area[
+        [
+            "h3_index",
+            "h3_resolution",
+            "h3_cell_area_sqm",
+            "aoi_intersection_area_sqm",
+            "h3_geometry",
+            "geometry",
+        ]
+    ].reset_index(drop=True)
+    metadata = pd.DataFrame(
+        {
+            "year": year,
+            "special_section_policy": special_section_policy,
+        },
+        index=base.index,
+    )
+    result = pd.concat([base, metadata], axis=1)
+    return gpd.GeoDataFrame(result, geometry="geometry", crs=grid_area.crs)
+
+
+def _append_zero_index_columns(
+    result: gpd.GeoDataFrame,
+    index_columns: list[str],
+    include_density: bool,
+) -> gpd.GeoDataFrame:
+    index_values = pd.DataFrame(0.0, index=result.index, columns=index_columns)
+    coverage = pd.DataFrame(
+        {
+            "source_intersection_area_sqm": 0.0,
+            "aoi_coverage_ratio": 0.0,
+            "intersects_special_section": False,
+        },
+        index=result.index,
+    )
+    frames: list[pd.DataFrame] = [result, index_values, coverage]
+    merged = pd.concat(frames, axis=1)
+    zero_result = gpd.GeoDataFrame(merged, geometry="geometry", crs=result.crs)
+    zero_result.attrs.update(result.attrs)
+    return zero_result
+
+
+def _append_density_columns(
+    result: gpd.GeoDataFrame,
+    index_columns: list[str],
+) -> gpd.GeoDataFrame:
+    area_sq_km = result["aoi_intersection_area_sqm"] / 1_000_000
+    density_values = result[index_columns].div(area_sq_km, axis=0).where(area_sq_km > 0, 0.0)
+    density_values.columns = [f"{index_column}_density_per_sq_km" for index_column in index_columns]
+    merged = pd.concat([result, density_values], axis=1)
+    density_result = gpd.GeoDataFrame(merged, geometry="geometry", crs=result.crs)
+    density_result.attrs.update(result.attrs)
+    return density_result
+
+
+def _estimate_intersections_parquet(
+    source_area: gpd.GeoDataFrame,
+    grid_area: gpd.GeoDataFrame,
+    index_columns: list[str],
+    year: int,
+    h3_resolution: int,
+    special_section_policy: str,
+    include_density: bool,
+    clip_output: bool,
+    workers: int,
+    chunk_size: int,
+    parallel_backend: str,
+    intermediate_dir: str | Path | None,
+    keep_intermediates: bool,
+    reuse_intermediates: bool,
+    intermediate_metadata: dict[str, Any],
+) -> gpd.GeoDataFrame:
+    metadata_fingerprint = _metadata_fingerprint(intermediate_metadata)
+    with _h3_intermediate_workspace(
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=keep_intermediates,
+        reuse_intermediates=reuse_intermediates,
+        metadata_fingerprint=metadata_fingerprint,
+    ) as workspace:
+        if parallel_backend == "dask" and workers > 1 and len(grid_area) > chunk_size:
+            _import_dask_module()
+        _write_intermediate_metadata(
+            workspace=workspace,
+            metadata=intermediate_metadata,
+            metadata_fingerprint=metadata_fingerprint,
+        )
+        source_path = workspace / "prepared_source.parquet"
+        grid_path = workspace / "h3_grid.parquet"
+        source_area.to_parquet(source_path, index=False)
+        grid_area.to_parquet(grid_path, index=False)
+
+        grid_chunk_paths = _write_grid_chunk_parquets(
+            grid_area=grid_area,
+            workspace=workspace,
+            chunk_size=chunk_size,
+        )
+        result_chunk_paths = _estimate_parquet_chunk_paths(
+            source_path=source_path,
+            grid_chunk_paths=grid_chunk_paths,
+            workspace=workspace,
+            index_columns=index_columns,
+            year=year,
+            h3_resolution=h3_resolution,
+            special_section_policy=special_section_policy,
+            include_density=include_density,
+            clip_output=clip_output,
+            workers=workers,
+            parallel_backend=parallel_backend,
+            reuse_intermediates=reuse_intermediates,
+        )
+        result_frames = [gpd.read_parquet(result_path) for result_path in result_chunk_paths]
+        merged = pd.concat(result_frames, ignore_index=True)
+        result = _sort_result(gpd.GeoDataFrame(merged, geometry="geometry", crs=grid_area.crs))
+        result.attrs["h3_intermediate_dir"] = str(workspace)
+        result.attrs["h3_intermediate_fingerprint"] = metadata_fingerprint
+        result.attrs["h3_intermediates_retained"] = keep_intermediates or reuse_intermediates
+        return result
 
 
 def _estimate_intersections_parallel(
@@ -666,14 +872,7 @@ def _estimate_intersections_with_dask(
     clip_output: bool,
     workers: int,
 ) -> list[gpd.GeoDataFrame]:
-    try:
-        dask_module = importlib.import_module("dask")
-    except ImportError as exc:
-        raise ImportError(
-            "parallel_backend='dask' requires Dask. Install it with "
-            "`pip install 'istat-census-data[dask]'`."
-        ) from exc
-
+    dask_module = _import_dask_module()
     delayed = dask_module.delayed
     compute = dask_module.compute
     tasks = [
@@ -690,6 +889,267 @@ def _estimate_intersections_with_dask(
         for chunk in chunks
     ]
     return list(compute(*tasks, scheduler="threads", num_workers=workers))
+
+
+def _estimate_parquet_chunk_paths(
+    source_path: Path,
+    grid_chunk_paths: list[Path],
+    workspace: Path,
+    index_columns: list[str],
+    year: int,
+    h3_resolution: int,
+    special_section_policy: str,
+    include_density: bool,
+    clip_output: bool,
+    workers: int,
+    parallel_backend: str,
+    reuse_intermediates: bool,
+) -> list[Path]:
+    result_dir = workspace / "result_chunks"
+    result_dir.mkdir(parents=True, exist_ok=True)
+    result_chunk_paths = [
+        result_dir / f"result_chunk_{chunk_index:05d}.parquet"
+        for chunk_index in range(len(grid_chunk_paths))
+    ]
+
+    if workers == 1 or len(grid_chunk_paths) == 1:
+        for chunk_index, grid_chunk_path in enumerate(grid_chunk_paths):
+            _estimate_intersections_chunk_to_parquet(
+                source_path=source_path,
+                grid_chunk_path=grid_chunk_path,
+                result_path=result_chunk_paths[chunk_index],
+                index_columns=index_columns,
+                year=year,
+                h3_resolution=h3_resolution,
+                special_section_policy=special_section_policy,
+                include_density=include_density,
+                clip_output=clip_output,
+                reuse_intermediates=reuse_intermediates,
+            )
+            logger.info(
+                "Completed H3 estimation chunk %s/%s.",
+                chunk_index + 1,
+                len(grid_chunk_paths),
+            )
+        return result_chunk_paths
+
+    active_workers = min(workers, len(grid_chunk_paths))
+    logger.info(
+        "Estimating H3 intersections with %s %s worker(s), chunk_size persisted, chunks=%s.",
+        active_workers,
+        parallel_backend,
+        len(grid_chunk_paths),
+    )
+
+    if parallel_backend == "dask":
+        return _estimate_parquet_chunk_paths_with_dask(
+            source_path=source_path,
+            grid_chunk_paths=grid_chunk_paths,
+            result_chunk_paths=result_chunk_paths,
+            index_columns=index_columns,
+            year=year,
+            h3_resolution=h3_resolution,
+            special_section_policy=special_section_policy,
+            include_density=include_density,
+            clip_output=clip_output,
+            workers=active_workers,
+            reuse_intermediates=reuse_intermediates,
+        )
+
+    return _estimate_parquet_chunk_paths_with_executor(
+        source_path=source_path,
+        grid_chunk_paths=grid_chunk_paths,
+        result_chunk_paths=result_chunk_paths,
+        index_columns=index_columns,
+        year=year,
+        h3_resolution=h3_resolution,
+        special_section_policy=special_section_policy,
+        include_density=include_density,
+        clip_output=clip_output,
+        workers=active_workers,
+        parallel_backend=parallel_backend,
+        reuse_intermediates=reuse_intermediates,
+    )
+
+
+def _estimate_parquet_chunk_paths_with_executor(
+    source_path: Path,
+    grid_chunk_paths: list[Path],
+    result_chunk_paths: list[Path],
+    index_columns: list[str],
+    year: int,
+    h3_resolution: int,
+    special_section_policy: str,
+    include_density: bool,
+    clip_output: bool,
+    workers: int,
+    parallel_backend: str,
+    reuse_intermediates: bool,
+) -> list[Path]:
+    executor_class = ThreadPoolExecutor if parallel_backend == "thread" else ProcessPoolExecutor
+    completed_paths: list[Path | None] = [None] * len(grid_chunk_paths)
+    with executor_class(max_workers=workers) as executor:
+        future_to_index = {
+            executor.submit(
+                _estimate_intersections_chunk_to_parquet,
+                source_path=source_path,
+                grid_chunk_path=grid_chunk_path,
+                result_path=result_chunk_paths[chunk_index],
+                index_columns=index_columns,
+                year=year,
+                h3_resolution=h3_resolution,
+                special_section_policy=special_section_policy,
+                include_density=include_density,
+                clip_output=clip_output,
+                reuse_intermediates=reuse_intermediates,
+            ): chunk_index
+            for chunk_index, grid_chunk_path in enumerate(grid_chunk_paths)
+        }
+        for completed_count, future in enumerate(as_completed(future_to_index), start=1):
+            chunk_index = future_to_index[future]
+            completed_paths[chunk_index] = future.result()
+            logger.info(
+                "Completed H3 estimation chunk %s/%s.",
+                completed_count,
+                len(grid_chunk_paths),
+            )
+
+    return [path for path in completed_paths if path is not None]
+
+
+def _estimate_parquet_chunk_paths_with_dask(
+    source_path: Path,
+    grid_chunk_paths: list[Path],
+    result_chunk_paths: list[Path],
+    index_columns: list[str],
+    year: int,
+    h3_resolution: int,
+    special_section_policy: str,
+    include_density: bool,
+    clip_output: bool,
+    workers: int,
+    reuse_intermediates: bool,
+) -> list[Path]:
+    dask_module = _import_dask_module()
+    delayed = dask_module.delayed
+    compute = dask_module.compute
+    tasks = [
+        delayed(_estimate_intersections_chunk_to_parquet)(
+            source_path=source_path,
+            grid_chunk_path=grid_chunk_path,
+            result_path=result_chunk_paths[chunk_index],
+            index_columns=index_columns,
+            year=year,
+            h3_resolution=h3_resolution,
+            special_section_policy=special_section_policy,
+            include_density=include_density,
+            clip_output=clip_output,
+            reuse_intermediates=reuse_intermediates,
+        )
+        for chunk_index, grid_chunk_path in enumerate(grid_chunk_paths)
+    ]
+    return list(compute(*tasks, scheduler="threads", num_workers=workers))
+
+
+def _import_dask_module() -> Any:
+    try:
+        return importlib.import_module("dask")
+    except ImportError as exc:
+        raise ImportError(
+            "parallel_backend='dask' requires Dask. Install it with "
+            "`pip install 'istat-census-data[dask]'`."
+        ) from exc
+
+
+def _estimate_intersections_chunk_to_parquet(
+    source_path: Path,
+    grid_chunk_path: Path,
+    result_path: Path,
+    index_columns: list[str],
+    year: int,
+    h3_resolution: int,
+    special_section_policy: str,
+    include_density: bool,
+    clip_output: bool,
+    reuse_intermediates: bool,
+) -> Path:
+    if reuse_intermediates and result_path.exists():
+        return result_path
+
+    source_area = gpd.read_parquet(source_path)
+    grid_chunk = gpd.read_parquet(grid_chunk_path)
+    result = _estimate_intersections_serial(
+        source_area=source_area,
+        grid_area=grid_chunk,
+        index_columns=index_columns,
+        year=year,
+        h3_resolution=h3_resolution,
+        special_section_policy=special_section_policy,
+        include_density=include_density,
+        clip_output=clip_output,
+    )
+    result.to_parquet(result_path, index=False)
+    return result_path
+
+
+def _write_grid_chunk_parquets(
+    grid_area: gpd.GeoDataFrame,
+    workspace: Path,
+    chunk_size: int,
+) -> list[Path]:
+    chunk_dir = workspace / "grid_chunks"
+    chunk_dir.mkdir(parents=True, exist_ok=True)
+    chunk_paths = []
+    chunks = _chunk_geodataframe(frame=grid_area, chunk_size=chunk_size)
+    for chunk_index, chunk in enumerate(chunks):
+        chunk_path = chunk_dir / f"grid_chunk_{chunk_index:05d}.parquet"
+        chunk.to_parquet(chunk_path, index=False)
+        chunk_paths.append(chunk_path)
+    return chunk_paths
+
+
+@contextmanager
+def _h3_intermediate_workspace(
+    intermediate_dir: str | Path | None,
+    keep_intermediates: bool,
+    reuse_intermediates: bool,
+    metadata_fingerprint: str,
+):
+    if intermediate_dir is None:
+        if keep_intermediates:
+            workspace = Path(tempfile.mkdtemp(prefix=f"istat_h3_{metadata_fingerprint[:12]}_"))
+            yield workspace
+            return
+        with tempfile.TemporaryDirectory(prefix=f"istat_h3_{metadata_fingerprint[:12]}_") as tmp:
+            yield Path(tmp)
+            return
+
+    root = Path(intermediate_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    if keep_intermediates or reuse_intermediates:
+        workspace = root / metadata_fingerprint
+        workspace.mkdir(parents=True, exist_ok=True)
+        yield workspace
+        return
+
+    with tempfile.TemporaryDirectory(prefix=f"{metadata_fingerprint[:12]}_", dir=root) as tmp:
+        yield Path(tmp)
+
+
+def _write_intermediate_metadata(
+    workspace: Path,
+    metadata: dict[str, Any],
+    metadata_fingerprint: str,
+) -> None:
+    metadata_path = workspace / "metadata.json"
+    metadata_record = {
+        "fingerprint": metadata_fingerprint,
+        "metadata": metadata,
+    }
+    metadata_path.write_text(
+        json.dumps(metadata_record, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
 
 
 def _chunk_geodataframe(frame: gpd.GeoDataFrame, chunk_size: int) -> list[gpd.GeoDataFrame]:
@@ -737,6 +1197,89 @@ def _build_total_validation(
                 "absolute_difference": absolute_difference,
                 "relative_difference": relative_difference,
                 "within_tolerance": abs(relative_difference) <= tolerance,
+            }
+        )
+
+    return pd.DataFrame.from_records(records)
+
+
+def _integerize_index_columns(
+    result: gpd.GeoDataFrame,
+    index_columns: list[str],
+    source_totals: dict[str, float],
+) -> gpd.GeoDataFrame:
+    integer_data = {}
+    for index_column in index_columns:
+        values = result[index_column].astype(float).fillna(0.0)
+        target_total = _round_half_up(source_totals[index_column])
+        integer_data[index_column] = _apportion_integer_values(
+            values=values,
+            target_total=target_total,
+        )
+
+    integer_values = pd.DataFrame(integer_data, index=result.index)
+    converted = result.copy()
+    converted[index_columns] = integer_values[index_columns]
+    integer_result = gpd.GeoDataFrame(converted, geometry="geometry", crs=result.crs)
+    integer_result.attrs.update(result.attrs)
+    return integer_result
+
+
+def _apportion_integer_values(values: pd.Series, target_total: int) -> pd.Series:
+    if values.empty:
+        return pd.Series(dtype="int64", index=values.index)
+    if (values < 0).any():
+        return values.round().astype("int64")
+
+    floored = values.map(math.floor).astype("int64")
+    remainder_count = target_total - int(floored.sum())
+    if remainder_count <= 0:
+        return floored
+
+    fractional_parts = (values - floored).sort_values(ascending=False, kind="mergesort")
+    apportioned = floored.copy()
+    while remainder_count > 0:
+        selected_indexes = fractional_parts.index[: min(remainder_count, len(fractional_parts))]
+        apportioned.loc[selected_indexes] = apportioned.loc[selected_indexes] + 1
+        remainder_count -= len(selected_indexes)
+
+    return apportioned.astype("int64")
+
+
+def _round_half_up(value: float) -> int:
+    numeric_value = float(value)
+    if numeric_value >= 0:
+        return int(math.floor(numeric_value + 0.5))
+    return int(math.ceil(numeric_value - 0.5))
+
+
+def _build_integer_total_validation(
+    continuous_total_validation: pd.DataFrame,
+    result: gpd.GeoDataFrame,
+    index_columns: list[str],
+) -> pd.DataFrame:
+    source_totals = {
+        str(row["index"]): _round_half_up(float(row["source_total"]))
+        for row in continuous_total_validation.to_dict("records")
+    }
+    records = []
+    for index_column in index_columns:
+        source_total = source_totals[index_column]
+        h3_total = int(result[index_column].sum())
+        absolute_difference = h3_total - source_total
+        relative_difference = (
+            abs(absolute_difference) / abs(source_total)
+            if source_total
+            else abs(absolute_difference)
+        )
+        records.append(
+            {
+                "index": index_column,
+                "source_total": source_total,
+                "h3_total": h3_total,
+                "absolute_difference": absolute_difference,
+                "relative_difference": relative_difference,
+                "within_tolerance": absolute_difference == 0,
             }
         )
 
@@ -844,7 +1387,11 @@ def _filter_municipality_codes(
     if municipality_codes is None:
         return source
 
-    code_values = {str(code).strip() for code in municipality_codes}
+    code_values = {
+        normalized_code
+        for code in municipality_codes
+        if (normalized_code := _normalize_municipality_code_value(code))
+    }
     if not code_values:
         raise ValueError("municipality_codes must contain at least one value when provided.")
 
@@ -853,11 +1400,30 @@ def _filter_municipality_codes(
         candidates = ", ".join(MUNICIPALITY_CODE_COLUMNS)
         raise ValueError(f"No municipality-code column found. Expected one of: {candidates}.")
 
-    filtered = source[source[municipality_column].astype(str).str.strip().isin(code_values)].copy()
+    source_codes = source[municipality_column].map(_normalize_municipality_code_value)
+    filtered = source[source_codes.isin(code_values)].copy()
     if filtered.empty:
         raise ValueError("No census rows match the requested municipality_codes.")
 
     return filtered
+
+
+def _normalize_municipality_code_value(value: object) -> str:
+    if pd.isna(value):
+        return ""
+
+    code = str(value).strip()
+    if not code:
+        return ""
+
+    try:
+        numeric_code = float(code)
+    except ValueError:
+        return code
+
+    if math.isfinite(numeric_code) and numeric_code.is_integer():
+        return str(int(numeric_code))
+    return code
 
 
 def _find_special_sections(source: gpd.GeoDataFrame, year: int) -> pd.Series:
@@ -897,6 +1463,71 @@ def _validate_h3_resolution(h3_resolution: int) -> None:
         raise ValueError("h3_resolution must be the integer 11.")
     if h3_resolution != REQUIRED_H3_RESOLUTION:
         raise ValueError("This estimator requires h3_resolution=11.")
+
+
+def _normalize_intermediate_storage(intermediate_storage: str) -> str:
+    if intermediate_storage not in INTERMEDIATE_STORAGE_MODES:
+        modes = ", ".join(INTERMEDIATE_STORAGE_MODES)
+        raise ValueError(f"intermediate_storage must be one of: {modes}.")
+    return intermediate_storage
+
+
+def _build_intermediate_metadata(
+    census_data_path: str | Path,
+    layer_name: str,
+    year: int,
+    h3_resolution: int,
+    index_columns: list[str],
+    municipality_codes: Iterable[int | str] | None,
+    special_section_policy: str,
+    boundary_ring_size: int,
+    include_density: bool,
+    clip_output: bool,
+    area_crs: str | int,
+    output_crs: str | int,
+    source_area: gpd.GeoDataFrame,
+    grid_area: gpd.GeoDataFrame,
+) -> dict[str, Any]:
+    source_path = Path(census_data_path)
+    source_stat = source_path.stat() if source_path.exists() else None
+    return {
+        "schema_version": INTERMEDIATE_SCHEMA_VERSION,
+        "census_data_path": str(source_path),
+        "census_data_size": source_stat.st_size if source_stat is not None else None,
+        "census_data_mtime_ns": source_stat.st_mtime_ns if source_stat is not None else None,
+        "layer_name": layer_name,
+        "year": year,
+        "h3_resolution": h3_resolution,
+        "index_columns": index_columns,
+        "municipality_codes": _metadata_sequence(municipality_codes),
+        "special_section_policy": special_section_policy,
+        "boundary_ring_size": boundary_ring_size,
+        "include_density": include_density,
+        "clip_output": clip_output,
+        "area_crs": str(area_crs),
+        "output_crs": str(output_crs),
+        "source_crs": str(source_area.crs),
+        "grid_crs": str(grid_area.crs),
+        "source_rows": len(source_area),
+        "grid_rows": len(grid_area),
+        "source_total_bounds": _metadata_bounds(source_area),
+        "grid_total_bounds": _metadata_bounds(grid_area),
+    }
+
+
+def _metadata_sequence(values: Iterable[Any] | None) -> list[str] | None:
+    if values is None:
+        return None
+    return sorted(str(value) for value in values)
+
+
+def _metadata_bounds(frame: gpd.GeoDataFrame) -> list[float]:
+    return [float(value) for value in frame.total_bounds.tolist()]
+
+
+def _metadata_fingerprint(metadata: dict[str, Any]) -> str:
+    serialized = json.dumps(metadata, sort_keys=True, default=str)
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
 def _normalize_parallel_options(

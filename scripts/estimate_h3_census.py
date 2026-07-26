@@ -5,8 +5,10 @@ import geopandas as gpd
 
 from istat_census_data.h3_estimation import (
     DEFAULT_AREA_CRS,
+    DEFAULT_BOUNDARY_RING_SIZE,
     DEFAULT_H3_CHUNK_SIZE,
     DEFAULT_H3_WORKERS,
+    DEFAULT_INTERMEDIATE_STORAGE,
     DEFAULT_PARALLEL_BACKEND,
     DEFAULT_SPECIAL_SECTION_POLICY,
     REQUIRED_H3_RESOLUTION,
@@ -25,9 +27,14 @@ aoi_layer: str | None = None
 aoi_crs: str | None = None
 output_layer: str | None = None
 clip_output = False
-workers = DEFAULT_H3_WORKERS
+boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
+workers = 4  # DEFAULT_H3_WORKERS
 chunk_size = DEFAULT_H3_CHUNK_SIZE
-parallel_backend = DEFAULT_PARALLEL_BACKEND
+parallel_backend = DEFAULT_PARALLEL_BACKEND  # "dask"
+intermediate_storage = DEFAULT_INTERMEDIATE_STORAGE
+intermediate_dir = main_path / "h3_intermediates"
+keep_intermediates = False
+reuse_intermediates = False
 
 
 # Configure logging at the start of the script.
@@ -58,6 +65,11 @@ def run(
     chunk_size: int,
     parallel_backend: str,
     output_layer: str | None,
+    intermediate_storage: str = DEFAULT_INTERMEDIATE_STORAGE,
+    intermediate_dir: Path | None = None,
+    keep_intermediates: bool = False,
+    reuse_intermediates: bool = False,
+    boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
 ) -> gpd.GeoDataFrame:
     """Run H3 estimation from finalized census data and an AOI file."""
     aoi = _read_aoi(path=aoi_path, layer=aoi_layer, fallback_crs=aoi_crs)
@@ -69,10 +81,15 @@ def run(
         area_crs=area_crs,
         municipality_codes=municipality_codes,
         special_section_policy=special_section_policy,
+        boundary_ring_size=boundary_ring_size,
         clip_output=clip_output,
         workers=workers,
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
+        intermediate_storage=intermediate_storage,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=keep_intermediates,
+        reuse_intermediates=reuse_intermediates,
         output_path=output_path,
         output_layer=output_layer,
     )
@@ -125,8 +142,13 @@ if __name__ == "__main__":
         special_section_policy=DEFAULT_SPECIAL_SECTION_POLICY,
         area_crs=DEFAULT_AREA_CRS,
         clip_output=clip_output,
+        boundary_ring_size=boundary_ring_size,
         workers=workers,
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
+        intermediate_storage=intermediate_storage,
+        intermediate_dir=intermediate_dir,
+        keep_intermediates=keep_intermediates,
+        reuse_intermediates=reuse_intermediates,
         output_layer=output_layer,
     )

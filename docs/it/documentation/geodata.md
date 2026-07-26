@@ -44,12 +44,59 @@ h3_estimates = estimate_h3_census_indexes(
 Lo stimatore usa obbligatoriamente la risoluzione H3 11. L'argomento
 `h3_resolution` puo essere omesso perché il livello 11 e il valore predefinito,
 ma qualsiasi altro valore viene rifiutato.
+Le celle H3 di bordo vengono espanse per impostazione predefinita con tre anelli
+di vicinato tramite `boundary_ring_size=3`, cosi da non perdere celle che
+intersecano bordi AOI complessi.
+
+Le colonne degli indicatori additivi nella tabella H3 restituita e nel GeoPackage
+scritto sono salvate come conteggi interi. Lo stimatore valida prima il calcolo
+continuo pesato per area in `total_validation`, poi distribuisce i valori interi
+con un passaggio a resto maggiore e registra i controlli post-allocazione in
+`integer_total_validation`. Le colonne di densita restano float.
 
 Lo stesso workflow e disponibile come script di esempio modificabile in
 `scripts/estimate_h3_census.py`. Imposta i valori di modulo come
-`census_data_path`, `aoi_path`, `selected_year`, `selected_indexes`, `workers` e
-`chunk_size`, poi esegui lo script. Usa `selected_indexes = []` per stimare tutti
-gli indicatori additivi del catalogo presenti nel layer sorgente.
+`census_data_path`, `aoi_path`, `selected_year`, `selected_indexes`,
+`boundary_ring_size`, `workers` e `chunk_size`, poi esegui lo script. Usa
+`selected_indexes = []` per stimare tutti gli indicatori additivi del catalogo
+presenti nel layer sorgente.
+
+## Storage intermedio H3
+
+La stima H3 usa per impostazione predefinita uno storage intermedio basato su
+Parquet/GeoParquet. `pyarrow` e una dipendenza obbligatoria del pacchetto, quindi
+non serve installare extra per questa modalita. Lo stimatore scrive sezioni
+censuarie preparate, chunk della griglia H3 e risultati compatti dei chunk in una
+workspace temporanea, poi rilegge i risultati dei chunk per costruire l'output
+finale GeoPackage.
+
+Questo riduce il picco di RAM perché i worker non devono restituire grandi
+GeoDataFrame al processo principale. Inoltre evita di costruire molte colonne una
+per volta quando `selected_indexes = []` si espande a tutti gli indicatori
+additivi.
+
+Usa `intermediate_dir` quando vuoi una posizione prevedibile per gli intermedi.
+Usa `keep_intermediates=True` per ispezionare i file conservati e
+`reuse_intermediates=True` per riusare risultati chunk compatibili dalla stessa
+directory.
+
+```python
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    indexes=[],
+    workers=4,
+    chunk_size=5000,
+    intermediate_dir=Path("h3_intermediates"),
+    keep_intermediates=True,
+)
+```
+
+Imposta `intermediate_storage="memory"` solo quando vuoi esplicitamente il
+percorso in memoria legacy per AOI piccole o debug. L'output utente finale resta
+GeoPackage, a meno che tu ometta `output_path` e lavori direttamente con il
+GeoDataFrame restituito.
 
 ## Esecuzione parallela e benchmark
 
@@ -71,11 +118,12 @@ h3_estimates = estimate_h3_census_indexes(
 )
 ```
 
-Il valore predefinito `parallel_backend="thread"` condivide i GeoDataFrame
-preparati tra i worker ed evita di copiare un layer sorgente grande in piu
-processi. Usa `parallel_backend="process"` solo dopo un benchmark sulla tua
-macchina: puo aiutare negli overlay dominati dalla CPU, ma serializza i
-GeoDataFrame e di solito richiede piu memoria.
+Con lo storage intermedio Parquet/GeoParquet predefinito, i worker thread,
+process e Dask scrivono un file risultato per ogni chunk e restituiscono path al
+processo principale. Il processo principale esegue la merge finale dopo il
+completamento dei chunk. Usa `parallel_backend="process"` solo dopo un benchmark
+sulla tua macchina: puo aiutare negli overlay dominati dalla CPU, ma aggiunge
+overhead di avvio worker e I/O su disco.
 
 Usa il backend opzionale Dask quando vuoi che Dask pianifichi localmente gli stessi
 chunk H3 deterministici:
@@ -96,9 +144,9 @@ h3_estimates = estimate_h3_census_indexes(
 )
 ```
 
-Il backend Dask usa attualmente lo scheduler locale a thread di Dask. E un percorso
-runtime opzionale, non una dipendenza richiesta per le installazioni normali del
-pacchetto.
+Il backend Dask usa attualmente lo scheduler locale a thread di Dask e lo stesso
+contratto a chunk Parquet dei backend standard. E un percorso runtime opzionale,
+non una dipendenza richiesta per le installazioni normali del pacchetto.
 
 Inizia con `workers` non superiore ai core fisici disponibili per il processo.
 Per H3 livello 11, valori di `chunk_size` tra 2.000 e 10.000 celle sono un primo
@@ -108,14 +156,62 @@ possono lasciare worker inattivi verso la fine dell'elaborazione.
 
 Usa `scripts/benchmark_h3_estimation.py` su dati gia finalizzati per confrontare
 le impostazioni prima di eseguire una grande AOI di produzione. Modifica
-`worker_counts`, `chunk_sizes`, `parallel_backend` e `runs` nello script. Mantieni
+`worker_counts`, `chunk_sizes`, `parallel_backend`, `boundary_ring_size`,
+`intermediate_storage`, `keep_intermediates`, `reuse_intermediates` e `runs`
+nello script. Mantieni
 `selected_indexes = []` quando vuoi stimare tutti gli indicatori additivi presenti
 nel layer sorgente.
 
 L'output del benchmark riporta secondi trascorsi, numero di celle H3 e stato
-della validazione dei totali per ogni combinazione worker/chunk. Usa i tempi di
-AOI piccole come controllo di correttezza e overhead; AOI medie o grandi sono piu
-utili per decidere se l'esecuzione parallela conviene davvero.
+della validazione dei totali per ogni combinazione worker/chunk. I record vengono
+loggati e scritti in JSON dopo ogni run completata, quindi le esecuzioni lunghe
+hanno avanzamento osservabile. Usa i tempi di AOI piccole come controllo di
+correttezza e overhead; AOI medie o grandi sono piu utili per decidere se
+l'esecuzione parallela conviene davvero.
+
+### Configurare lo script di benchmark
+
+`scripts/benchmark_h3_estimation.py` si configura modificando le variabili di
+modulo dentro il file. Non e pensato per essere usato tramite argomenti CLI.
+
+```python
+main_path = Path("/home/max/Desktop/census_test")
+census_data_path = main_path / "census_data.gpkg"
+aoi_path = main_path / "aoi.gpkg"
+benchmark_output_path = main_path / "h3_benchmark.json"
+
+selected_year = 2021
+selected_indexes: list[str] = []
+boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
+
+worker_counts = [1, 2, 4]
+chunk_sizes = [DEFAULT_H3_CHUNK_SIZE]
+parallel_backend = "thread"
+
+intermediate_storage = "parquet"
+intermediate_dir = main_path / "h3_intermediates"
+keep_intermediates = True
+reuse_intermediates = False
+
+runs = 1
+```
+
+Usa `worker_counts = [1]` per eseguire solo il percorso seriale. Inserisci valori
+maggiori di 1 per confrontare l'esecuzione parallela. Parti con
+`parallel_backend = "thread"`; prova `parallel_backend = "process"` o
+`parallel_backend = "dask"` solo dopo un benchmark di riferimento. Il backend
+Dask richiede l'installazione opzionale di Dask.
+
+Mantieni `boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE` a meno che tu stia
+studiando un caso specifico di bordo AOI. Il default attuale e 3 ed e incluso nei
+record JSON del benchmark, cosi le run con copertura di bordo diversa restano
+confrontabili.
+
+Imposta `reuse_intermediates = False` per una run cold che ricrea i file
+intermedi. Impostalo a `True` solo per una successiva run warm che deve riusare
+chunk compatibili mantenuti su disco. Mantieni `keep_intermediates = True` quando
+vuoi ispezionare o riusare i file Parquet/GeoParquet; impostalo a `False` per
+rimuoverli dopo la run.
 
 ## Workflow H3 end-to-end
 

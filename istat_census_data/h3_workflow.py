@@ -15,8 +15,10 @@ from istat_census_data.executor.preprocess import preprocess_census
 from istat_census_data.executor.process import finalize_census_data
 from istat_census_data.h3_estimation import (
     DEFAULT_AREA_CRS,
+    DEFAULT_BOUNDARY_RING_SIZE,
     DEFAULT_H3_CHUNK_SIZE,
     DEFAULT_H3_WORKERS,
+    DEFAULT_INTERMEDIATE_STORAGE,
     DEFAULT_PARALLEL_BACKEND,
     DEFAULT_SPECIAL_SECTION_POLICY,
     REQUIRED_H3_RESOLUTION,
@@ -51,9 +53,14 @@ def run_h3_census_workflow(
     area_crs: str | int = DEFAULT_AREA_CRS,
     aoi_crs: str | int | None = None,
     clip_output: bool = False,
+    boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
     workers: int = DEFAULT_H3_WORKERS,
     chunk_size: int = DEFAULT_H3_CHUNK_SIZE,
     parallel_backend: str = DEFAULT_PARALLEL_BACKEND,
+    intermediate_storage: str = DEFAULT_INTERMEDIATE_STORAGE,
+    intermediate_dir: str | Path | None = None,
+    keep_intermediates: bool = False,
+    reuse_intermediates: bool = False,
     run_download: bool = True,
     run_preprocess: bool = True,
     run_finalize: bool = True,
@@ -88,12 +95,21 @@ def run_h3_census_workflow(
         area_crs: Projected CRS used for area calculations.
         aoi_crs: CRS assigned to plain Shapely AOIs or AOIs without CRS.
         clip_output: If True, output geometries are clipped to the AOI.
+        boundary_ring_size: H3 neighbour rings added around filled cells before
+            final AOI filtering. Defaults to the package's robust boundary
+            setting.
         workers: Number of parallel H3 chunk workers. The default `1` keeps the
             serial path.
         chunk_size: Maximum number of H3 cells per parallel chunk.
         parallel_backend: Backend used for `workers > 1`. Supported values are
             `thread`, `process`, and `dask`. The `dask` backend requires the
             optional `istat-census-data[dask]` package extra.
+        intermediate_storage: H3 intermediate execution mode. Defaults to
+            Parquet/GeoParquet-backed processing.
+        intermediate_dir: Optional folder used for H3 intermediate files.
+        keep_intermediates: If True, retain intermediate files after each year.
+        reuse_intermediates: If True, reuse matching retained chunk outputs from
+            `intermediate_dir`.
         run_download: If True, run the selected-year download stage.
         run_preprocess: If True, run the selected-year preprocessing stage.
         run_finalize: If True, run the selected-year finalization stage.
@@ -165,10 +181,15 @@ def run_h3_census_workflow(
             area_crs=area_crs,
             municipality_codes=selected_municipalities,
             special_section_policy=special_section_policy,
+            boundary_ring_size=boundary_ring_size,
             clip_output=clip_output,
             workers=workers,
             chunk_size=chunk_size,
             parallel_backend=parallel_backend,
+            intermediate_storage=intermediate_storage,
+            intermediate_dir=intermediate_dir,
+            keep_intermediates=keep_intermediates,
+            reuse_intermediates=reuse_intermediates,
             output_path=h3_output_path,
             output_layer=output_layer,
         )

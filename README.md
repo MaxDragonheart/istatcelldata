@@ -17,6 +17,12 @@ E' possibile scaricare e processare i dati dal 1991 al 2021.
 pip install istat-census-data
 ```
 
+L'installazione base include `pyarrow`, usato per gli intermedi
+Parquet/GeoParquet nei workflow H3.
+
+Le elaborazioni H3 usano un bordo robusto `boundary_ring_size=3` e scrivono gli
+indicatori additivi come conteggi interi nella tabella attributi degli esagoni.
+
 Per usare il backend opzionale Dask nelle elaborazioni H3 parallele:
 
 ```bash

@@ -6,7 +6,10 @@ import pytest
 from shapely.geometry import box
 
 from istat_census_data.config import PREPROCESSING_FOLDER
-from istat_census_data.h3_estimation import DEFAULT_SPECIAL_SECTION_POLICY
+from istat_census_data.h3_estimation import (
+    DEFAULT_BOUNDARY_RING_SIZE,
+    DEFAULT_SPECIAL_SECTION_POLICY,
+)
 from istat_census_data.h3_workflow import (
     H3CensusWorkflowResult,
     run_h3_census_workflow,
@@ -106,6 +109,7 @@ def test_run_h3_census_workflow_orchestrates_selected_years(
     )
     assert all(call["municipality_codes"] == [58091] for call in estimate_calls)
     assert all(call["clip_output"] is True for call in estimate_calls)
+    assert all(call["boundary_ring_size"] == DEFAULT_BOUNDARY_RING_SIZE for call in estimate_calls)
     assert all(call["workers"] == 2 for call in estimate_calls)
     assert all(call["chunk_size"] == 3 for call in estimate_calls)
     assert all(call["parallel_backend"] == "dask" for call in estimate_calls)

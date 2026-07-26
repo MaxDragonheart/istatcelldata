@@ -72,6 +72,7 @@ def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
     assert captured_kwargs["run_download"] is False
     assert captured_kwargs["run_preprocess"] is True
     assert captured_kwargs["run_finalize"] is True
+    assert captured_kwargs["boundary_ring_size"] == 3
     assert captured_kwargs["workers"] == 2
     assert captured_kwargs["chunk_size"] == 3
     assert captured_kwargs["parallel_backend"] == "dask"

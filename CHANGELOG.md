@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.1] - 2026-07-26
+
+### Fixed
+- Fixed H3 municipality filtering when finalized historical census layers store
+  `PRO_COM` as an integral floating-point value such as `63049.0`. The H3 direct
+  estimator and end-to-end workflow now treat equivalent integer municipality
+  code representations consistently.
+
+## [2.4.0] - 2026-07-26
+
+### Added
+- Added exported `DEFAULT_BOUNDARY_RING_SIZE` for H3 level-11 workflows and scripts.
+- Added `integer_total_validation` metadata for post-allocation H3 integer counts.
+- Added `boundary_ring_size` configuration to the editable H3 benchmark, direct
+  estimation, and end-to-end workflow scripts.
+
+### Changed
+- H3 grid generation now defaults to `boundary_ring_size=3` to keep boundary
+  cells that intersect complex AOI edges and avoid total-validation failures
+  caused by under-covered AOI borders.
+- H3 additive index columns are now written as integer counts in returned
+  GeoDataFrames and final GeoPackage outputs. The continuous area-weighted
+  validation remains available in `total_validation`; density columns remain
+  floating-point values.
+- H3 Parquet intermediate metadata schema was bumped so retained caches are
+  separated from earlier boundary-ring and chunk-column behavior.
+
+## [2.3.0] - 2026-07-26
+
+### Added
+- Added mandatory `pyarrow` support for H3 Parquet/GeoParquet intermediate
+  processing.
+- Added Parquet/GeoParquet-backed H3 intermediate execution with retained and
+  reusable chunk result files.
+- Added H3 controls for `intermediate_storage`, `intermediate_dir`,
+  `keep_intermediates`, and `reuse_intermediates`.
+- Added benchmark progress logging before and after every worker/chunk/run
+  combination.
+- Added incremental benchmark JSON writing after every completed run.
+- Added tests for retained intermediates, Dask Parquet chunk execution,
+  incremental benchmark output, and fragmentation-warning avoidance.
+
+### Changed
+- H3 estimation now defaults to Parquet/GeoParquet-backed intermediates while
+  keeping GeoPackage as the default final output format.
+- H3 contribution and density columns are built in batches to avoid Pandas/
+  GeoPandas frame fragmentation on all-additive index runs.
+- Thread, process, and optional Dask H3 workers now exchange chunk result paths
+  instead of returning large GeoDataFrames in the default storage mode.
+- H3 scripts expose editable module-level intermediate-storage settings.
+
+### Upgrade Notes
+- Install or upgrade with `pip install --upgrade istat-census-data`.
+- `pyarrow` is now installed with the base package because it is required for the
+  default H3 intermediate storage mode.
+- Dask remains optional; install it with `pip install "istat-census-data[dask]"`.
+- Set `intermediate_storage="memory"` only when you explicitly need the legacy
+  in-memory path for small AOIs or debugging.
+
 ## [2.2.0] - 2026-07-26
 
 ### Added
