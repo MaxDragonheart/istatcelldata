@@ -29,6 +29,7 @@ def test_estimate_h3_census_script_run_writes_level_11_output(tmp_path: Path):
         workers=2,
         chunk_size=2,
         parallel_backend="thread",
+        max_in_flight_chunks=2,
         output_layer="h3_test",
     )
     saved = gpd.read_file(output_path, layer="h3_test")
@@ -61,6 +62,7 @@ def test_estimate_h3_census_script_empty_indexes_use_all_additive(tmp_path: Path
         workers=1,
         chunk_size=5000,
         parallel_backend="thread",
+        max_in_flight_chunks=None,
         output_layer="h3_test",
     )
 
@@ -91,6 +93,7 @@ def test_estimate_h3_census_script_filters_municipality_codes(tmp_path: Path):
         workers=1,
         chunk_size=5000,
         parallel_backend="thread",
+        max_in_flight_chunks=None,
         output_layer=None,
     )
     saved = gpd.read_file(output_path, layer="h3_census2021_r11")
@@ -121,6 +124,7 @@ def test_estimate_h3_census_script_reports_missing_aoi_crs(tmp_path: Path):
             workers=1,
             chunk_size=5000,
             parallel_backend="thread",
+            max_in_flight_chunks=None,
             output_layer=None,
         )
 

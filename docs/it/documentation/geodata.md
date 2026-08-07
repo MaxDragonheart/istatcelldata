@@ -22,7 +22,7 @@ from pathlib import Path
 import geopandas as gpd
 from shapely.geometry import box
 
-from istat_census_data import estimate_h3_census_indexes
+from istat_census_data import estimate_h3_census_indexes, generate_h3_grid
 
 aoi = gpd.GeoDataFrame(
     geometry=[box(12.0, 41.0, 12.2, 41.2)],
@@ -37,6 +37,7 @@ h3_estimates = estimate_h3_census_indexes(
     indexes=["P1", "P2"],
     workers=4,
     chunk_size=5000,
+    max_in_flight_chunks=4,
     output_path=Path("h3_census_2021.gpkg"),
 )
 ```
@@ -47,6 +48,33 @@ ma qualsiasi altro valore viene rifiutato.
 Le celle H3 di bordo vengono espanse per impostazione predefinita con tre anelli
 di vicinato tramite `boundary_ring_size=3`, cosi da non perdere celle che
 intersecano bordi AOI complessi.
+
+`generate_h3_grid()` salva metadata di riuso e un fingerprint negli attributi del
+GeoDataFrame restituito. Il fingerprint include CRS normalizzato dell'AOI,
+risoluzione H3, `boundary_ring_size`, `area_crs`, CRS della griglia, bounds
+dell'AOI, area dell'AOI e hash della geometria AOI validata e unificata. I
+caller avanzati possono passare quella griglia a `h3_grid` per evitare di
+rigenerare celle identiche:
+
+```python
+h3_grid = generate_h3_grid(
+    aoi=aoi,
+    h3_resolution=11,
+    boundary_ring_size=3,
+)
+
+h3_estimates = estimate_h3_census_indexes(
+    census_data_path=Path("census_data.gpkg"),
+    year=2021,
+    aoi=aoi,
+    indexes=["P1", "P2"],
+    h3_grid=h3_grid,
+)
+```
+
+Lo stimatore valida il fingerprint prima del riuso. Una geometria AOI diversa,
+anche con lo stesso bounding box, o un parametro che definisce la griglia diverso
+produce un errore chiaro invece di riusare celle non valide.
 
 Le colonne degli indicatori additivi nella tabella H3 restituita e nel GeoPackage
 scritto sono salvate come conteggi interi. Lo stimatore valida prima il calcolo
@@ -66,14 +94,25 @@ presenti nel layer sorgente.
 La stima H3 usa per impostazione predefinita uno storage intermedio basato su
 Parquet/GeoParquet. `pyarrow` e una dipendenza obbligatoria del pacchetto, quindi
 non serve installare extra per questa modalita. Lo stimatore scrive sezioni
-censuarie preparate, chunk della griglia H3 e risultati compatti dei chunk in una
-workspace temporanea, poi rilegge i risultati dei chunk per costruire l'output
-finale GeoPackage.
+censuarie preparate, chunk preparati della griglia H3 e risultati compatti dei
+chunk in una workspace temporanea, poi rilegge i risultati dei chunk per
+costruire l'output finale GeoPackage.
 
 Questo riduce il picco di RAM perché i worker non devono restituire grandi
 GeoDataFrame al processo principale. Inoltre evita di costruire molte colonne una
 per volta quando `selected_indexes = []` si espande a tutti gli indicatori
 additivi.
+
+Il percorso Parquet predefinito ritaglia anche la griglia H3 sulla AOI un chunk
+alla volta prima dell'inizio della stima. Le AOI grandi producono quindi file
+osservabili in `grid_chunks/` invece di attendere la fine di una griglia H3
+ritagliata completamente in memoria. Le directory di intermedi conservate non
+includono piu un file completo `h3_grid.parquet`.
+
+La pianificazione parallela dei chunk e limitata da `max_in_flight_chunks`.
+Quando il valore e omesso, lo stimatore pianifica al massimo il numero di worker
+attivi. Questo default evita che Dask, thread e process mettano in coda tutti i
+chunk dell'AOI in memoria nello stesso momento.
 
 Usa `intermediate_dir` quando vuoi una posizione prevedibile per gli intermedi.
 Usa `keep_intermediates=True` per ispezionare i file conservati e
@@ -88,6 +127,7 @@ h3_estimates = estimate_h3_census_indexes(
     indexes=[],
     workers=4,
     chunk_size=5000,
+    max_in_flight_chunks=4,
     intermediate_dir=Path("h3_intermediates"),
     keep_intermediates=True,
 )
@@ -115,15 +155,21 @@ h3_estimates = estimate_h3_census_indexes(
     indexes=["P1", "P2"],
     workers=4,
     chunk_size=5000,
+    max_in_flight_chunks=4,
 )
 ```
 
 Con lo storage intermedio Parquet/GeoParquet predefinito, i worker thread,
 process e Dask scrivono un file risultato per ogni chunk e restituiscono path al
-processo principale. Il processo principale esegue la merge finale dopo il
-completamento dei chunk. Usa `parallel_backend="process"` solo dopo un benchmark
-sulla tua macchina: puo aiutare negli overlay dominati dalla CPU, ma aggiunge
-overhead di avvio worker e I/O su disco.
+processo principale. Per impostazione predefinita, il processo principale esegue
+la merge finale dopo il completamento dei chunk. Quando usi
+`stream_output=True` insieme a `output_path`, la finalizzazione scrive quei
+chunk direttamente nel GeoPackage, crea lo spatial index del layer e un indice
+tabellare unico su `h3_index`, e restituisce un GeoDataFrame solo di metadati con
+`row_count` e tabelle di validazione negli `attrs`. Usa
+`parallel_backend="process"` solo dopo un benchmark sulla tua macchina: puo
+aiutare negli overlay dominati dalla CPU, ma aggiunge overhead di avvio worker e
+I/O su disco.
 
 Usa il backend opzionale Dask quando vuoi che Dask pianifichi localmente gli stessi
 chunk H3 deterministici:
@@ -141,6 +187,7 @@ h3_estimates = estimate_h3_census_indexes(
     workers=4,
     chunk_size=5000,
     parallel_backend="dask",
+    max_in_flight_chunks=4,
 )
 ```
 
@@ -154,11 +201,19 @@ intervallo pratico. Chunk piu piccoli danno aggiornamenti di avanzamento piu
 frequenti ma aumentano l'overhead; chunk piu grandi riducono l'overhead ma
 possono lasciare worker inattivi verso la fine dell'elaborazione.
 
+Mantieni `max_in_flight_chunks` uguale a `workers` per la prima elaborazione
+grande. Aumentalo solo dopo un benchmark che mostri che l'overhead di
+pianificazione pesa piu della pressione sulla memoria. Per AOI grandi come una
+regione intera, preferisci `intermediate_storage="parquet"` ed evita impostazioni
+Dask che mettano in coda piu chunk di quelli che la macchina puo gestire. In
+modalita Parquet, `chunk_size` controlla anche quante celle H3 vengono proiettate
+e ritagliate sulla AOI in ogni batch di preparazione della griglia.
+
 Usa `scripts/benchmark_h3_estimation.py` su dati gia finalizzati per confrontare
 le impostazioni prima di eseguire una grande AOI di produzione. Modifica
-`worker_counts`, `chunk_sizes`, `parallel_backend`, `boundary_ring_size`,
-`intermediate_storage`, `keep_intermediates`, `reuse_intermediates` e `runs`
-nello script. Mantieni
+`worker_counts`, `chunk_sizes`, `parallel_backend`, `max_in_flight_chunks`,
+`boundary_ring_size`, `intermediate_storage`, `keep_intermediates`,
+`reuse_intermediates` e `runs` nello script. Mantieni
 `selected_indexes = []` quando vuoi stimare tutti gli indicatori additivi presenti
 nel layer sorgente.
 
@@ -187,6 +242,7 @@ boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
 worker_counts = [1, 2, 4]
 chunk_sizes = [DEFAULT_H3_CHUNK_SIZE]
 parallel_backend = "thread"
+max_in_flight_chunks = None
 
 intermediate_storage = "parquet"
 intermediate_dir = main_path / "h3_intermediates"
@@ -201,6 +257,9 @@ maggiori di 1 per confrontare l'esecuzione parallela. Parti con
 `parallel_backend = "thread"`; prova `parallel_backend = "process"` o
 `parallel_backend = "dask"` solo dopo un benchmark di riferimento. Il backend
 Dask richiede l'installazione opzionale di Dask.
+Lascia `max_in_flight_chunks = None` per pianificare al massimo il numero di
+worker attivi, oppure imposta un intero positivo quando vuoi una dimensione batch
+ripetibile.
 
 Mantieni `boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE` a meno che tu stia
 studiando un caso specifico di bordo AOI. Il default attuale e 3 ed e incluso nei
@@ -220,6 +279,11 @@ che gli anni censuari scelti guidino l'intera pipeline. Il workflow scarica solo
 gli anni richiesti, li preprocessa, finalizza `census_data.gpkg` e poi scrive un
 layer H3 di livello 11 per ogni anno.
 
+Per run multi-anno sulla stessa AOI, il workflow genera la griglia H3 una sola
+volta prima del ciclo sugli anni e la passa a ogni stima annuale. Preparazione
+delle sorgenti censuarie, overlay, validazione e scrittura layer restano comunque
+indipendenti per ogni anno.
+
 Lo script di esempio modificabile `scripts/run_h3_census_analysis.py` espone lo
 stesso workflow con valori di modulo. Imposta `list_year`, `main_path`,
 `aoi_path`, `list_region`, `municipalities_code` e i controlli di performance
@@ -229,9 +293,15 @@ policy sulle sezioni speciali/fittizie ha valore predefinito `exclude`.
 
 Il workflow end-to-end espone gli stessi controlli di performance di PRP-012
 disponibili nello stimatore su dati finalizzati. Modifica `workers`,
-`chunk_size` e `parallel_backend` nello script per tarare elaborazioni grandi.
-Dopo aver installato `istat-census-data[dask]`, imposta
+`chunk_size`, `parallel_backend` e `max_in_flight_chunks` nello script per tarare
+elaborazioni grandi. Dopo aver installato `istat-census-data[dask]`, imposta
 `parallel_backend = "dask"` per usare il backend Dask locale opzionale.
+
+Per run regionali multi-anno, imposta `retain_results=False`. Con lo storage
+intermedio Parquet predefinito, il workflow scrive allora ogni layer annuale nel
+GeoPackage facendo streaming da `result_chunks/`, senza materializzare il
+GeoDataFrame annuale completo. Il risultato del workflow conserva comunque
+`row_counts`, `total_validations` e `integer_total_validations` per ogni anno.
 
 Se i dati esistono gia, salta gli stadi completati impostando `run_download`,
 `run_preprocess` o `run_finalize` a `False` nello script.
@@ -258,6 +328,8 @@ result = run_h3_census_workflow(
     workers=4,
     chunk_size=5000,
     parallel_backend="thread",
+    max_in_flight_chunks=4,
+    retain_results=False,
 )
 
 print(result.output_path)

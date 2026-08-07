@@ -53,6 +53,7 @@ def test_benchmark_h3_estimation_script_records_worker_and_chunk_settings(
         chunk_sizes=[2],
         parallel_backend="dask",
         runs=1,
+        max_in_flight_chunks=2,
         output_path=output_path,
     )
 
@@ -60,9 +61,11 @@ def test_benchmark_h3_estimation_script_records_worker_and_chunk_settings(
     written_records = json.loads(output_path.read_text(encoding="utf-8"))
     assert len(written_records) == 2
     assert all(record["boundary_ring_size"] == 3 for record in written_records)
+    assert all(record["max_in_flight_chunks"] == 2 for record in written_records)
     assert [call["workers"] for call in captured_calls] == [1, 2]
     assert [call["chunk_size"] for call in captured_calls] == [2, 2]
     assert all(call["parallel_backend"] == "dask" for call in captured_calls)
+    assert all(call["max_in_flight_chunks"] == 2 for call in captured_calls)
     assert all(call["boundary_ring_size"] == 3 for call in captured_calls)
     assert all(call["indexes"] == [] for call in captured_calls)
     assert all(call["intermediate_storage"] == "parquet" for call in captured_calls)

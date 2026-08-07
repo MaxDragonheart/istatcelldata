@@ -22,6 +22,12 @@ Parquet/GeoParquet nei workflow H3.
 
 Le elaborazioni H3 usano un bordo robusto `boundary_ring_size=3` e scrivono gli
 indicatori additivi come conteggi interi nella tabella attributi degli esagoni.
+Nei workflow multi-anno la griglia H3 dell'AOI viene generata una sola volta e
+riusata per ogni anno censuario, con fingerprint di AoI e parametri per evitare
+riusi non validi.
+I backend paralleli H3 pianificano i chunk in batch limitati con
+`max_in_flight_chunks`; lo script multi-anno scarta di default i GeoDataFrame
+annuali dopo la scrittura per ridurre il picco di RAM su AOI grandi.
 
 Per usare il backend opzionale Dask nelle elaborazioni H3 parallele:
 

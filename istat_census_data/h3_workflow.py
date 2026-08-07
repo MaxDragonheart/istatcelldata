@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 
 from istat_census_data.catalog import SUPPORTED_CENSUS_YEARS
 from istat_census_data.config import PREPROCESSING_FOLDER
@@ -24,7 +26,10 @@ from istat_census_data.h3_estimation import (
     REQUIRED_H3_RESOLUTION,
     GeoInput,
     estimate_h3_census_indexes,
+    generate_h3_grid,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -37,6 +42,9 @@ class H3CensusWorkflowResult:
     years: tuple[int, ...]
     layers: dict[int, str]
     results: dict[int, gpd.GeoDataFrame]
+    row_counts: dict[int, int] = field(default_factory=dict)
+    total_validations: dict[int, pd.DataFrame] = field(default_factory=dict)
+    integer_total_validations: dict[int, pd.DataFrame] = field(default_factory=dict)
 
 
 def run_h3_census_workflow(
@@ -61,6 +69,8 @@ def run_h3_census_workflow(
     intermediate_dir: str | Path | None = None,
     keep_intermediates: bool = False,
     reuse_intermediates: bool = False,
+    max_in_flight_chunks: int | None = None,
+    retain_results: bool = True,
     run_download: bool = True,
     run_preprocess: bool = True,
     run_finalize: bool = True,
@@ -71,7 +81,8 @@ def run_h3_census_workflow(
 
     This workflow downloads and prepares only the selected census years, finalizes
     them into `census_data.gpkg`, and writes one fixed level-11 H3 output layer
-    per year.
+    per year. The H3 grid for the workflow AOI is generated once and reused for
+    every selected year after fingerprint validation.
 
     Args:
         years: One or more supported census years to download, process, finalize,
@@ -110,6 +121,13 @@ def run_h3_census_workflow(
         keep_intermediates: If True, retain intermediate files after each year.
         reuse_intermediates: If True, reuse matching retained chunk outputs from
             `intermediate_dir`.
+        max_in_flight_chunks: Maximum H3 chunks submitted or computed at once.
+            Defaults to the active worker count in the estimator.
+        retain_results: If True, retain every yearly result GeoDataFrame in the
+            returned metadata. Set to False for large output-writing workflows to
+            stream Parquet-backed chunk finalization directly to GeoPackage and
+            keep only row counts and validation metadata after each layer is
+            written.
         run_download: If True, run the selected-year download stage.
         run_preprocess: If True, run the selected-year preprocessing stage.
         run_finalize: If True, run the selected-year finalization stage.
@@ -117,7 +135,10 @@ def run_h3_census_workflow(
         delete_preprocessed_data: Passed to `finalize_census_data()`.
 
     Returns:
-        Workflow metadata and one result GeoDataFrame per selected year.
+        Workflow metadata. When `retain_results` is True, `results` contains one
+        GeoDataFrame per selected year. When it is False, `results` is empty and
+        row counts plus validation tables are available in lightweight metadata
+        dictionaries.
 
     Raises:
         ValueError: If no year is supplied or an unsupported year is requested.
@@ -169,9 +190,34 @@ def run_h3_census_workflow(
 
     layers: dict[int, str] = {}
     results: dict[int, gpd.GeoDataFrame] = {}
+    row_counts: dict[int, int] = {}
+    total_validations: dict[int, pd.DataFrame] = {}
+    integer_total_validations: dict[int, pd.DataFrame] = {}
+    logger.info(
+        "Starting H3 census workflow: years=%s, output_path=%s, retain_results=%s.",
+        ", ".join(str(year) for year in selected_years),
+        h3_output_path,
+        retain_results,
+    )
+    stream_year_outputs = (
+        not retain_results and intermediate_storage == DEFAULT_INTERMEDIATE_STORAGE
+    )
+    h3_grid = generate_h3_grid(
+        aoi=aoi,
+        h3_resolution=REQUIRED_H3_RESOLUTION,
+        aoi_crs=aoi_crs,
+        area_crs=area_crs,
+        boundary_ring_size=boundary_ring_size,
+    )
+    logger.info(
+        "Prepared reusable H3 workflow grid: cells=%s, fingerprint=%s.",
+        len(h3_grid),
+        h3_grid.attrs.get("h3_grid_fingerprint"),
+    )
     for year in selected_years:
         output_layer = f"{output_layer_prefix}{year}_r{REQUIRED_H3_RESOLUTION}"
-        results[year] = estimate_h3_census_indexes(
+        logger.info("Starting H3 workflow estimation for year %s.", year)
+        year_result = estimate_h3_census_indexes(
             census_data_path=census_data_path,
             year=year,
             aoi=aoi,
@@ -190,10 +236,30 @@ def run_h3_census_workflow(
             intermediate_dir=intermediate_dir,
             keep_intermediates=keep_intermediates,
             reuse_intermediates=reuse_intermediates,
+            max_in_flight_chunks=max_in_flight_chunks,
+            stream_output=stream_year_outputs,
+            h3_grid=h3_grid,
             output_path=h3_output_path,
             output_layer=output_layer,
         )
         layers[year] = output_layer
+        row_count = year_result.attrs.get("row_count")
+        row_counts[year] = int(row_count) if row_count is not None else len(year_result)
+        if (total_validation := year_result.attrs.get("total_validation")) is not None:
+            total_validations[year] = total_validation.copy()
+        if (integer_validation := year_result.attrs.get("integer_total_validation")) is not None:
+            integer_total_validations[year] = integer_validation.copy()
+        if retain_results:
+            results[year] = year_result
+        logger.info(
+            "Completed H3 workflow estimation for year %s: layer=%s, rows=%s, retained=%s.",
+            year,
+            output_layer,
+            row_counts[year],
+            retain_results,
+        )
+        if not retain_results:
+            del year_result
 
     return H3CensusWorkflowResult(
         data_folder=root_folder,
@@ -202,6 +268,9 @@ def run_h3_census_workflow(
         years=selected_years,
         layers=layers,
         results=results,
+        row_counts=row_counts,
+        total_validations=total_validations,
+        integer_total_validations=integer_total_validations,
     )
 
 

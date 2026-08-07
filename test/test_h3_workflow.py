@@ -39,6 +39,13 @@ def test_run_h3_census_workflow_orchestrates_selected_years(
         calls.append(("estimate", kwargs))
         return _result_frame(year=int(kwargs["year"]))
 
+    grid_calls: list[dict[str, object]] = []
+    shared_grid = _grid_frame()
+
+    def fake_generate_h3_grid(**kwargs: object) -> gpd.GeoDataFrame:
+        grid_calls.append(kwargs)
+        return shared_grid
+
     monkeypatch.setattr("istat_census_data.h3_workflow.download_census", fake_download_census)
     monkeypatch.setattr("istat_census_data.h3_workflow.preprocess_census", fake_preprocess_census)
     monkeypatch.setattr(
@@ -49,6 +56,7 @@ def test_run_h3_census_workflow_orchestrates_selected_years(
         "istat_census_data.h3_workflow.estimate_h3_census_indexes",
         fake_estimate_h3_census_indexes,
     )
+    monkeypatch.setattr("istat_census_data.h3_workflow.generate_h3_grid", fake_generate_h3_grid)
 
     data_folder = tmp_path / "data"
     output_path = tmp_path / "h3.gpkg"
@@ -113,6 +121,10 @@ def test_run_h3_census_workflow_orchestrates_selected_years(
     assert all(call["workers"] == 2 for call in estimate_calls)
     assert all(call["chunk_size"] == 3 for call in estimate_calls)
     assert all(call["parallel_backend"] == "dask" for call in estimate_calls)
+    assert all(call["max_in_flight_chunks"] is None for call in estimate_calls)
+    assert all(call["stream_output"] is False for call in estimate_calls)
+    assert len(grid_calls) == 1
+    assert all(call["h3_grid"] is shared_grid for call in estimate_calls)
     assert [call["output_layer"] for call in estimate_calls] == [
         "h3_census2011_r11",
         "h3_census2021_r11",
@@ -152,6 +164,10 @@ def test_run_h3_census_workflow_can_reuse_existing_finalized_data(
         "istat_census_data.h3_workflow.estimate_h3_census_indexes",
         fake_estimate_h3_census_indexes,
     )
+    monkeypatch.setattr(
+        "istat_census_data.h3_workflow.generate_h3_grid",
+        lambda **kwargs: _grid_frame(),
+    )
 
     result = run_h3_census_workflow(
         years=[2021],
@@ -165,6 +181,60 @@ def test_run_h3_census_workflow_can_reuse_existing_finalized_data(
     assert result.census_data_path == data_folder / "census_data.gpkg"
     assert result.layers == {2021: "h3_census2021_r11"}
     assert result.results[2021]["h3_resolution"].unique().tolist() == [11]
+    assert result.row_counts == {2021: 1}
+
+
+def test_run_h3_census_workflow_can_discard_yearly_results(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    data_folder = tmp_path / "data"
+    data_folder.mkdir()
+    (data_folder / "census_data.gpkg").touch()
+    estimate_calls: list[dict[str, object]] = []
+
+    def fail_stage(**kwargs: object) -> None:
+        raise AssertionError(f"stage should have been skipped: {kwargs}")
+
+    def fake_estimate_h3_census_indexes(**kwargs: object) -> gpd.GeoDataFrame:
+        estimate_calls.append(kwargs)
+        result = _result_frame(year=int(kwargs["year"]))
+        if kwargs.get("stream_output"):
+            streamed = gpd.GeoDataFrame(geometry=[], crs=WGS84_CRS)
+            streamed.attrs.update(result.attrs)
+            streamed.attrs["row_count"] = int(kwargs["year"]) - 2000
+            return streamed
+        return result
+
+    monkeypatch.setattr("istat_census_data.h3_workflow.download_census", fail_stage)
+    monkeypatch.setattr("istat_census_data.h3_workflow.preprocess_census", fail_stage)
+    monkeypatch.setattr("istat_census_data.h3_workflow.finalize_census_data", fail_stage)
+    monkeypatch.setattr(
+        "istat_census_data.h3_workflow.estimate_h3_census_indexes",
+        fake_estimate_h3_census_indexes,
+    )
+    monkeypatch.setattr(
+        "istat_census_data.h3_workflow.generate_h3_grid",
+        lambda **kwargs: _grid_frame(),
+    )
+
+    result = run_h3_census_workflow(
+        years=[2011, 2021],
+        data_folder=data_folder,
+        aoi=box(12.0, 41.0, 12.02, 41.01),
+        run_download=False,
+        run_preprocess=False,
+        run_finalize=False,
+        max_in_flight_chunks=2,
+        retain_results=False,
+    )
+
+    assert result.results == {}
+    assert result.row_counts == {2011: 11, 2021: 21}
+    assert sorted(result.total_validations) == [2011, 2021]
+    assert sorted(result.integer_total_validations) == [2011, 2021]
+    assert [call["max_in_flight_chunks"] for call in estimate_calls] == [2, 2]
+    assert [call["stream_output"] for call in estimate_calls] == [True, True]
 
 
 def test_run_h3_census_workflow_requires_finalized_data_after_skipped_finalize(
@@ -190,4 +260,22 @@ def _result_frame(year: int) -> gpd.GeoDataFrame:
     frame.attrs["total_validation"] = pd.DataFrame(
         [{"index": "P1", "source_total": 10.0, "h3_total": 10.0, "within_tolerance": True}]
     )
+    frame.attrs["integer_total_validation"] = pd.DataFrame(
+        [{"index": "P1", "source_total": 10, "h3_total": 10, "within_tolerance": True}]
+    )
+    return frame
+
+
+def _grid_frame() -> gpd.GeoDataFrame:
+    frame = gpd.GeoDataFrame(
+        {
+            "h3_index": ["8b1e2"],
+            "h3_resolution": [11],
+            "h3_cell_area_sqm": [1.0],
+        },
+        geometry=[box(12.0, 41.0, 12.01, 41.01)],
+        crs=WGS84_CRS,
+    )
+    frame.attrs["h3_grid_fingerprint"] = "test-grid"
+    frame.attrs["h3_grid_metadata"] = {"fingerprint": "test-grid"}
     return frame

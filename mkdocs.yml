@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - Documentation:
       - Intro: documentation/intro.md
+      - Real-data tests: documentation/real-data-tests.md
       - References:
         - Data: documentation/data.md
         - Download: documentation/download.md
@@ -57,6 +58,7 @@ plugins:
               Home: Home
               Documentation: Documentazione
               Intro: Intro
+              Real-data tests: Test su dati reali
               References: References
               Data: Data
               Download: Download

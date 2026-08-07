@@ -55,11 +55,13 @@ def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
         workers=2,
         chunk_size=3,
         parallel_backend="dask",
+        max_in_flight_chunks=2,
         run_download=False,
         run_preprocess=True,
         run_finalize=True,
         delete_download_folder=False,
         delete_preprocessed_data=False,
+        retain_results=False,
     )
 
     assert result.years == (2011, 2021)
@@ -76,6 +78,8 @@ def test_run_h3_census_analysis_script_passes_selected_years_to_workflow(
     assert captured_kwargs["workers"] == 2
     assert captured_kwargs["chunk_size"] == 3
     assert captured_kwargs["parallel_backend"] == "dask"
+    assert captured_kwargs["max_in_flight_chunks"] == 2
+    assert captured_kwargs["retain_results"] is False
     assert captured_kwargs["output_path"] == output_path
 
 
@@ -103,12 +107,55 @@ def test_run_h3_census_analysis_script_reports_missing_aoi_crs(tmp_path: Path):
             workers=1,
             chunk_size=5000,
             parallel_backend="thread",
+            max_in_flight_chunks=None,
             run_download=False,
             run_preprocess=False,
             run_finalize=False,
             delete_download_folder=False,
             delete_preprocessed_data=False,
         )
+
+
+def test_run_h3_census_analysis_main_logs_fatal_traceback(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    def fake_run(**kwargs: object) -> H3CensusWorkflowResult:
+        raise RuntimeError("synthetic workflow failure")
+
+    monkeypatch.setattr(run_h3_census_analysis, "main_path", tmp_path)
+    monkeypatch.setattr(run_h3_census_analysis, "run", fake_run)
+
+    with pytest.raises(RuntimeError, match="synthetic workflow failure"):
+        run_h3_census_analysis.main()
+
+    log_paths = sorted((tmp_path / "logs").glob("run_h3_census_analysis_*.log"))
+    assert len(log_paths) == 1
+    log_text = log_paths[0].read_text(encoding="utf-8")
+    assert "H3 census workflow failed." in log_text
+    assert "Traceback (most recent call last)" in log_text
+    assert "RuntimeError: synthetic workflow failure" in log_text
+
+
+def test_run_h3_census_analysis_main_logs_keyboard_interrupt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    def fake_run(**kwargs: object) -> H3CensusWorkflowResult:
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(run_h3_census_analysis, "main_path", tmp_path)
+    monkeypatch.setattr(run_h3_census_analysis, "run", fake_run)
+
+    with pytest.raises(KeyboardInterrupt):
+        run_h3_census_analysis.main()
+
+    log_paths = sorted((tmp_path / "logs").glob("run_h3_census_analysis_*.log"))
+    assert len(log_paths) == 1
+    log_text = log_paths[0].read_text(encoding="utf-8")
+    assert "H3 census workflow interrupted." in log_text
+    assert "Traceback (most recent call last)" in log_text
+    assert "KeyboardInterrupt" in log_text
 
 
 def _write_aoi(tmp_path: Path) -> Path:

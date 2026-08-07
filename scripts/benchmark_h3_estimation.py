@@ -31,6 +31,7 @@ boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
 worker_counts = [1, 2, 4]  # [1]
 chunk_sizes = [DEFAULT_H3_CHUNK_SIZE]
 parallel_backend = "dask"  # DEFAULT_PARALLEL_BACKEND
+max_in_flight_chunks: int | None = None
 intermediate_storage = DEFAULT_INTERMEDIATE_STORAGE
 intermediate_dir = main_path / "h3_intermediates"
 keep_intermediates = True
@@ -57,6 +58,7 @@ class BenchmarkRecord:
     workers: int
     chunk_size: int
     parallel_backend: str
+    max_in_flight_chunks: int | None
     boundary_ring_size: int
     run: int
     seconds: float
@@ -84,6 +86,7 @@ def run_benchmark(
     reuse_intermediates: bool = False,
     output_path: Path | None = None,
     boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
+    max_in_flight_chunks: int | None = None,
 ) -> list[BenchmarkRecord]:
     """Run H3 estimation for each requested worker/chunk setting."""
     if runs < 1:
@@ -96,10 +99,11 @@ def run_benchmark(
             for run_number in range(1, runs + 1):
                 logger.info(
                     "Starting H3 benchmark: workers=%s chunk_size=%s backend=%s "
-                    "storage=%s boundary_ring_size=%s run=%s/%s.",
+                    "max_in_flight_chunks=%s storage=%s boundary_ring_size=%s run=%s/%s.",
                     worker_count,
                     chunk_size,
                     parallel_backend,
+                    max_in_flight_chunks,
                     intermediate_storage,
                     boundary_ring_size,
                     run_number,
@@ -120,6 +124,7 @@ def run_benchmark(
                     workers=worker_count,
                     chunk_size=chunk_size,
                     parallel_backend=parallel_backend,
+                    max_in_flight_chunks=max_in_flight_chunks,
                     intermediate_storage=intermediate_storage,
                     intermediate_dir=intermediate_dir,
                     keep_intermediates=keep_intermediates,
@@ -130,6 +135,7 @@ def run_benchmark(
                     workers=worker_count,
                     chunk_size=chunk_size,
                     parallel_backend=parallel_backend,
+                    max_in_flight_chunks=max_in_flight_chunks,
                     boundary_ring_size=boundary_ring_size,
                     run=run_number,
                     seconds=seconds,
@@ -139,11 +145,12 @@ def run_benchmark(
                 records.append(record)
                 logger.info(
                     "Completed H3 benchmark: workers=%s chunk_size=%s backend=%s "
-                    "storage=%s boundary_ring_size=%s run=%s seconds=%.6f "
+                    "max_in_flight_chunks=%s storage=%s boundary_ring_size=%s run=%s seconds=%.6f "
                     "h3_cells=%s validation=%s.",
                     record.workers,
                     record.chunk_size,
                     record.parallel_backend,
+                    record.max_in_flight_chunks,
                     intermediate_storage,
                     record.boundary_ring_size,
                     record.run,
@@ -184,13 +191,17 @@ def _write_records_json(records: list[BenchmarkRecord], output_path: Path) -> No
 
 
 def _log_records(records: list[BenchmarkRecord]) -> None:
-    logger.info("workers chunk_size backend boundary_ring_size run seconds h3_cells validation")
+    logger.info(
+        "workers chunk_size backend max_in_flight_chunks boundary_ring_size "
+        "run seconds h3_cells validation"
+    )
     for record in records:
         logger.info(
-            "%s %s %s %s %s %.6f %s %s",
+            "%s %s %s %s %s %s %.6f %s %s",
             record.workers,
             record.chunk_size,
             record.parallel_backend,
+            record.max_in_flight_chunks,
             record.boundary_ring_size,
             record.run,
             record.seconds,
@@ -215,6 +226,7 @@ if __name__ == "__main__":
         workers=worker_counts,
         chunk_sizes=chunk_sizes,
         parallel_backend=parallel_backend,
+        max_in_flight_chunks=max_in_flight_chunks,
         intermediate_storage=intermediate_storage,
         intermediate_dir=intermediate_dir,
         keep_intermediates=keep_intermediates,

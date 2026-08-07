@@ -5,6 +5,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.3] - 2026-08-07
+
+### Fixed
+- Hardened H3 AOI grid generation for multi-million-cell regions by filtering
+  candidate cells in bounded chunks with a prepared AOI geometry and Shapely
+  vectorized predicates, reducing exposure to long Python-level GEOS predicate
+  loops that previously hit a native `SIGSEGV` during real-data validation.
+
+## [2.6.2] - 2026-08-05
+
+### Fixed
+- Hardened Parquet-backed H3 result finalization so unreadable result-chunk WKB
+  geometries can be diagnosed and, for full-cell output, rebuilt from `h3_index`
+  instead of losing a completed chunk run during the final merge.
+- Added fatal exception logging to `scripts/run_h3_census_analysis.py` so the
+  timestamped official run log records full tracebacks instead of leaving them
+  only in terminal, tmux, or stderr output.
+
+### Changed
+- Real-data Ubuntu run documentation now explains how to recover retained H3
+  intermediates after finalization failures and how to verify fatal traceback
+  logging.
+
+## [2.6.1] - 2026-08-04
+
+### Fixed
+- Changed the default Parquet-backed H3 estimator path to prepare AOI-clipped H3
+  overlay grid chunks directly, avoiding the previous full-grid
+  `_prepare_h3_overlay_grid()` clipping step before intermediate creation.
+- Added progress logging for every prepared H3 overlay grid chunk, including
+  retained positive-area cells and elapsed seconds.
+
+### Changed
+- Bumped the H3 intermediate metadata schema so retained Parquet caches are
+  separated by the chunked grid-preparation layout and chunk size.
+- Retained Parquet intermediate directories now store prepared H3 grid chunks
+  under `grid_chunks/` instead of writing a full `h3_grid.parquet` file.
+
+## [2.6.0] - 2026-07-27
+
+### Added
+- Added reusable H3 grid metadata and fingerprints to `generate_h3_grid()`.
+- Added optional `h3_grid` reuse to `estimate_h3_census_indexes()` with
+  validation of AOI bounds, AOI area, AOI geometry hash, CRS, H3 resolution,
+  boundary ring size, and area CRS.
+- Added workflow-level H3 grid reuse so multi-year same-AOI runs generate the
+  H3 grid once and reuse it for every yearly overlay.
+
+### Changed
+- H3 intermediate metadata schema was bumped to separate retained chunk caches by
+  reusable grid fingerprint.
+
+## [2.5.0] - 2026-07-27
+
+### Added
+- Added `max_in_flight_chunks` to H3 estimation, workflow, benchmark, and example
+  scripts so thread, process, and optional Dask chunk execution can be scheduled
+  in bounded batches.
+- Added `retain_results` to the end-to-end H3 workflow so large multi-year
+  output-writing runs can discard full yearly GeoDataFrames after writing while
+  keeping row counts and validation metadata.
+- Added progress logging for H3 year start/end, prepared input sizes, bounded
+  chunk batches, and GeoPackage writes.
+
+### Changed
+- Dask H3 execution no longer calls `compute()` with every chunk task at once.
+  It computes bounded batches using the same Parquet chunk contract.
+- Thread and process H3 execution now refill a bounded future queue instead of
+  submitting every chunk at once.
+- The editable all-year H3 workflow script defaults to `retain_results=False` to
+  reduce peak memory after each yearly layer is written.
+
 ## [2.4.1] - 2026-07-26
 
 ### Fixed

@@ -31,6 +31,7 @@ boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
 workers = 4  # DEFAULT_H3_WORKERS
 chunk_size = DEFAULT_H3_CHUNK_SIZE
 parallel_backend = DEFAULT_PARALLEL_BACKEND  # "dask"
+max_in_flight_chunks: int | None = None
 intermediate_storage = DEFAULT_INTERMEDIATE_STORAGE
 intermediate_dir = main_path / "h3_intermediates"
 keep_intermediates = False
@@ -70,6 +71,7 @@ def run(
     keep_intermediates: bool = False,
     reuse_intermediates: bool = False,
     boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
+    max_in_flight_chunks: int | None = None,
 ) -> gpd.GeoDataFrame:
     """Run H3 estimation from finalized census data and an AOI file."""
     aoi = _read_aoi(path=aoi_path, layer=aoi_layer, fallback_crs=aoi_crs)
@@ -86,6 +88,7 @@ def run(
         workers=workers,
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
+        max_in_flight_chunks=max_in_flight_chunks,
         intermediate_storage=intermediate_storage,
         intermediate_dir=intermediate_dir,
         keep_intermediates=keep_intermediates,
@@ -146,6 +149,7 @@ if __name__ == "__main__":
         workers=workers,
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
+        max_in_flight_chunks=max_in_flight_chunks,
         intermediate_storage=intermediate_storage,
         intermediate_dir=intermediate_dir,
         keep_intermediates=keep_intermediates,

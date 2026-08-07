@@ -16,28 +16,31 @@ from istat_census_data.h3_estimation import (
 from istat_census_data.h3_workflow import H3CensusWorkflowResult, run_h3_census_workflow
 from istat_census_data.logger_config import configure_logging
 
-main_path = Path("/home/max/Desktop/census_test")
+main_path = Path("/home/max/Desktop/census")
 aoi_path = main_path / "aoi.gpkg"
 h3_output_path = main_path / "h3_census_analysis.gpkg"
-list_year = [1991, 2001, 2011, 2021]
+list_year = [1991]  # , 2001, 2011, 2021]
 list_region = [15]
-municipalities_code = [63049]  # None
+municipalities_code = None  # [63049]  # None
 selected_indexes: list[str] = []
 aoi_layer: str | None = None
 aoi_crs: str | None = None
 output_layer_prefix = "h3_census"
 clip_output = False
+
 boundary_ring_size = DEFAULT_BOUNDARY_RING_SIZE
-workers = 4  # DEFAULT_H3_WORKERS
+workers = 2  # DEFAULT_H3_WORKERS
 chunk_size = DEFAULT_H3_CHUNK_SIZE
-parallel_backend = "dask"  # DEFAULT_PARALLEL_BACKEND
+parallel_backend = "dask" # "thread" # DEFAULT_PARALLEL_BACKEND
+max_in_flight_chunks = 2  # int | None
 intermediate_storage = DEFAULT_INTERMEDIATE_STORAGE
-intermediate_dir = main_path / "h3_intermediates"
-keep_intermediates = False
+intermediate_dir = main_path / f"h3_intermediates_{parallel_backend}"
+keep_intermediates = True  # False
 reuse_intermediates = False
-run_download = True
-run_preprocess = True
-run_finalize = True
+retain_results = False
+run_download = False  # True
+run_preprocess = False  # True
+run_finalize = False  # True
 delete_download_folder = True
 delete_preprocessed_data = True
 
@@ -80,7 +83,9 @@ def run(
     intermediate_dir: Path | None = None,
     keep_intermediates: bool = False,
     reuse_intermediates: bool = False,
+    retain_results: bool = True,
     boundary_ring_size: int = DEFAULT_BOUNDARY_RING_SIZE,
+    max_in_flight_chunks: int | None = None,
 ) -> H3CensusWorkflowResult:
     """Run the selected-year H3 workflow from script-level settings."""
     aoi = _read_aoi(path=aoi_path, layer=aoi_layer, fallback_crs=aoi_crs)
@@ -101,10 +106,12 @@ def run(
         workers=workers,
         chunk_size=chunk_size,
         parallel_backend=parallel_backend,
+        max_in_flight_chunks=max_in_flight_chunks,
         intermediate_storage=intermediate_storage,
         intermediate_dir=intermediate_dir,
         keep_intermediates=keep_intermediates,
         reuse_intermediates=reuse_intermediates,
+        retain_results=retain_results,
         run_download=run_download,
         run_preprocess=run_preprocess,
         run_finalize=run_finalize,
@@ -131,44 +138,60 @@ def _log_summary(result: H3CensusWorkflowResult) -> None:
     logger.info("Finalized census data: %s", result.census_data_path)
     logger.info("H3 output: %s", result.output_path)
     for year in result.years:
-        frame = result.results[year]
         output_layer = result.layers[year]
+        row_count = result.row_counts.get(year)
+        if row_count is None and year in result.results:
+            row_count = len(result.results[year])
         logger.info(
             "%s: wrote %s H3 level-%s cells to layer %s.",
             year,
-            len(frame),
+            row_count,
             REQUIRED_H3_RESOLUTION,
             output_layer,
         )
 
 
-if __name__ == "__main__":
+def main() -> H3CensusWorkflowResult:
+    """Run the script configuration and persist fatal tracebacks to the run log."""
     setup_logging(log_dir=main_path)
-    run(
-        years=list_year,
-        regions=list_region,
-        data_dir=main_path,
-        aoi_path=aoi_path,
-        indexes=selected_indexes,
-        output_path=h3_output_path,
-        output_layer_prefix=output_layer_prefix,
-        aoi_layer=aoi_layer,
-        aoi_crs=aoi_crs,
-        municipality_codes=municipalities_code,
-        special_section_policy=DEFAULT_SPECIAL_SECTION_POLICY,
-        area_crs=DEFAULT_AREA_CRS,
-        clip_output=clip_output,
-        boundary_ring_size=boundary_ring_size,
-        workers=workers,
-        chunk_size=chunk_size,
-        parallel_backend=parallel_backend,
-        intermediate_storage=intermediate_storage,
-        intermediate_dir=intermediate_dir,
-        keep_intermediates=keep_intermediates,
-        reuse_intermediates=reuse_intermediates,
-        run_download=run_download,
-        run_preprocess=run_preprocess,
-        run_finalize=run_finalize,
-        delete_download_folder=delete_download_folder,
-        delete_preprocessed_data=delete_preprocessed_data,
-    )
+    try:
+        return run(
+            years=list_year,
+            regions=list_region,
+            data_dir=main_path,
+            aoi_path=aoi_path,
+            indexes=selected_indexes,
+            output_path=h3_output_path,
+            output_layer_prefix=output_layer_prefix,
+            aoi_layer=aoi_layer,
+            aoi_crs=aoi_crs,
+            municipality_codes=municipalities_code,
+            special_section_policy=DEFAULT_SPECIAL_SECTION_POLICY,
+            area_crs=DEFAULT_AREA_CRS,
+            clip_output=clip_output,
+            boundary_ring_size=boundary_ring_size,
+            workers=workers,
+            chunk_size=chunk_size,
+            parallel_backend=parallel_backend,
+            max_in_flight_chunks=max_in_flight_chunks,
+            intermediate_storage=intermediate_storage,
+            intermediate_dir=intermediate_dir,
+            keep_intermediates=keep_intermediates,
+            reuse_intermediates=reuse_intermediates,
+            retain_results=retain_results,
+            run_download=run_download,
+            run_preprocess=run_preprocess,
+            run_finalize=run_finalize,
+            delete_download_folder=delete_download_folder,
+            delete_preprocessed_data=delete_preprocessed_data,
+        )
+    except KeyboardInterrupt:
+        logger.exception("H3 census workflow interrupted.")
+        raise
+    except Exception:
+        logger.exception("H3 census workflow failed.")
+        raise
+
+
+if __name__ == "__main__":
+    main()
