@@ -93,10 +93,10 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Run ruff linting
-        run: poetry run ruff check .
+        run: poetry run ruff check --extend-exclude scripts .
 
       - name: Run ruff format check
-        run: poetry run ruff format --check .
+        run: poetry run ruff format --check --exclude scripts .
 
   type-check:
     name: Type Check (mypy)

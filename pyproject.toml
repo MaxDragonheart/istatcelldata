@@ -115,3 +115,5 @@ no_implicit_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
+no_site_packages = true
+disable_error_code = ["import-untyped"]

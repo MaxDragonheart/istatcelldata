@@ -392,6 +392,8 @@ def estimate_h3_census_indexes(
             grid_chunk_size=selected_chunk_size,
         )
         if stream_output:
+            if output_path is None:
+                raise ValueError("stream_output requires output_path.")
             streamed_result = _estimate_intersections_parquet_prepared_grid_stream_output(
                 source_area=source_area,
                 grid_wgs84=grid_wgs84,
@@ -2449,7 +2451,8 @@ def _sqlite_object_exists(connection: sqlite3.Connection, object_name: str) -> b
 
 
 def _quote_sql_identifier(identifier: str) -> str:
-    return f'"{identifier.replace("\"", "\"\"")}"'
+    escaped_identifier = identifier.replace('"', '""')
+    return f'"{escaped_identifier}"'
 
 
 def _safe_sqlite_name(name: str) -> str:
@@ -3167,7 +3170,10 @@ def _build_h3_grid_metadata(
 def _crs_to_string(crs: Any) -> str | None:
     if crs is None:
         return None
-    return gpd.GeoDataFrame(geometry=[], crs=crs).crs.to_string()
+    crs_object = gpd.GeoDataFrame(geometry=[], crs=crs).crs
+    if crs_object is None:
+        return None
+    return str(crs_object.to_string())
 
 
 def _h3_grid_metadata_bounds(frame: gpd.GeoDataFrame) -> list[float]:

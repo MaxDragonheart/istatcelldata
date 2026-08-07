@@ -763,6 +763,11 @@ def test_estimate_h3_census_indexes_streams_geopackage_output_without_global_mer
     assert _has_spatial_index(output_path=output_path, output_layer="streamed_h3")
 
 
+def test_quote_sql_identifier_escapes_double_quotes():
+    assert h3_module._quote_sql_identifier("plain_name") == '"plain_name"'
+    assert h3_module._quote_sql_identifier('name"with"quotes') == '"name""with""quotes"'
+
+
 def test_finalize_h3_result_chunks_rejects_duplicate_h3_index(tmp_path: Path):
     source = _source_cells()
     census_path = _write_census_geopackage(tmp_path=tmp_path, source=source)
